@@ -156,9 +156,37 @@ La ubicación del usuario se obtiene con la geolocalización del navegador, con 
 | ✅     | **F2a · Cuentas y reportes** | Backups a R2, Auth.js (Google + correo), formulario de reporte, confirmaciones, recálculo de disponibilidad                            | Un usuario logueado reporta y el resultado cambia al instante para todos                           |
 | ✅     | **F2b · Fotos**              | Subida directa a R2, worker BullMQ + `sharp` (sin EXIF), variantes AVIF/WebP, moderación                                               | Un reporte con foto se ve sin datos GPS y en el formato adecuado                                   |
 | ✅     | **F3 · Alertas**             | CRUD de alertas con radar, correo y Web Push, PWA instalable                                                                           | Al reportar "Hay", llega un correo o push a quien tiene alerta en el radio                         |
-| 🧪     | **F4 · Moderación y pulido** | Panel admin, página de privacidad, SEO/OG (404 reales, abrir `robots.txt`), agrupar marcadores del mapa, estados de error, modo oscuro | Checklist de lanzamiento completa                                                                  |
-| ⏳     | **F5 · Beta y lanzamiento**  | Mapa propio (PMTiles en R2), Umami, Sentry, Lighthouse CI, sucursales reales verificadas                                               | En línea con un grupo pequeño de pacientes (tu hermana primero)                                    |
+| ✅     | **F4 · Moderación y pulido** | Panel admin, página de privacidad, SEO/OG (404 reales, abrir `robots.txt`), agrupar marcadores del mapa, estados de error, modo oscuro | Checklist de lanzamiento completa                                                                  |
+| ⏭️     | **F5 · Beta y lanzamiento**  | Mapa propio (PMTiles en R2), Umami, Sentry, Lighthouse CI, sucursales reales verificadas                                               | En línea con un grupo pequeño de pacientes (tu hermana primero)                                    |
 | ⏳     | **Después**                  | Bot de WhatsApp (reutiliza `server/services`), lectura de webs de farmacias, acuerdos con cadenas                                      | —                                                                                                  |
+
+## Dónde quedamos (2026-11-26)
+
+F0 a F4 están en producción (último deploy: `c5f0903`). **Sigue la F5.**
+
+**Pendiente del dueño del proyecto**
+
+- [ ] Volver a entrar con su Gmail para quedar como ADMIN (está en `ADMIN_EMAILS`) y probar `/admin`
+- [ ] Google Cloud → Desarrollo de la marca: `https://myfarma.net/privacidad` y `https://myfarma.net/terminos`
+- [ ] Hacer revisar `/privacidad` y `/terminos` con alguien que conozca la Ley 81 de 2019
+- [ ] Juntar las sucursales reales (nombre, dirección, teléfono, horario, coordenadas) en el CSV de `prisma/seed/data/branches.csv`
+- [ ] Opcional: cambiar la API key de Resend por una solo de envío limitada a `myfarma.net` (la actual tiene acceso completo)
+
+**F5 · lo que falta**
+
+- [ ] Plantilla y validación del CSV de sucursales reales; marcar `verified`
+- [ ] Mapa propio (PMTiles en R2) para no depender de las teselas de OpenStreetMap
+- [ ] Umami (analítica sin cookies) y Web Vitals de usuarios reales
+- [ ] Sentry (errores y peticiones lentas); pide crear una cuenta
+- [ ] Lighthouse CI con presupuesto de rendimiento
+- [ ] Lanzamiento: `SEED_DEMO=0` y borrar reportes de ejemplo, quitar la etiqueta "Datos de ejemplo" y el texto "Datos" del pie, `INDEXING=1` y `ROBOTS_TAG=all` en el `.env` del servidor
+
+**Para la próxima sesión (trucos del entorno)**
+
+- Después de `prisma migrate dev`, reiniciar `pnpm dev` y `pnpm worker`: si no, siguen con el cliente de Prisma viejo
+- Si el navegador se recarga solo en bucle en desarrollo (o tras correr `pnpm build` con `pnpm dev` abierto): parar `pnpm dev`, borrar `.next/dev` y volver a arrancar
+- Los e2e de alertas y moderación necesitan `pnpm worker` corriendo y `ADMIN_EMAILS` con `e2e-admin@myfarma.local` en el `.env` local
+- El límite de 5 enlaces por hora también frena los e2e repetidos: `docker compose exec redis redis-cli --scan --pattern "rl:signin*"` y borrar esas claves
 
 ## F2 en detalle (siguiente sesión)
 
@@ -244,7 +272,7 @@ Dos buckets: `myfarma-uploads` (privado, originales, se borran solos al día) y 
 - [x] PWA: `manifest.ts`, íconos normal/maskable/badge, `public/sw.js` (solo push, sin caché). En iPhone el push requiere instalar la app (la página lo explica)
 - [x] Pruebas: Vitest (firmas, radar) y Playwright (alerta → reporte en el radio → correo en Mailpit → baja). El push real no se puede probar sin interfaz: se prueba a mano con "Probar aviso al celular"
 
-### F4 · Moderación y pulido 🧪
+### F4 · Moderación y pulido ✅
 
 - [x] Panel `/admin` (solo ADMIN; los correos de `ADMIN_EMAILS` quedan como admin al entrar): cifras del día y la semana, reportes con filtros (todos, con foto, ocultos) y paginación por cursor, ocultar/mostrar reporte (recalcula la disponibilidad), quitar foto, bloquear cuenta (con o sin ocultar todos sus reportes); `/admin/usuarios` con búsqueda
 - [x] Cuentas bloqueadas: pueden buscar, pero no reportar, confirmar, subir fotos ni crear alertas
