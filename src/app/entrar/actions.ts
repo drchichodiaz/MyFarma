@@ -4,6 +4,7 @@ import { AuthError } from "next-auth";
 import { z } from "zod";
 import { safeNext } from "@/lib/redirect";
 import { signIn } from "@/server/auth";
+import { limit } from "@/server/rate-limit";
 
 export type EmailState = { error?: string; email?: string };
 
@@ -19,6 +20,15 @@ export async function signInWithEmail(_prev: EmailState, formData: FormData): Pr
     .toLowerCase();
   const parsed = emailSchema.safeParse(raw);
   if (!parsed.success) return { error: parsed.error.issues[0]?.message, email: raw };
+
+  // Máximo 5 enlaces por hora por correo (evita usar el formulario para mandar spam).
+  const rl = await limit(`signin:${parsed.data}`, 5, 60 * 60);
+  if (!rl.ok) {
+    return {
+      email: raw,
+      error: `Ya te mandamos varios enlaces. Revisa tu correo (también Spam) o pide otro en ${Math.ceil(rl.retryAfterSec / 60)} min.`,
+    };
+  }
 
   try {
     // Lanza un redirect a /entrar/revisa cuando el correo sale bien.

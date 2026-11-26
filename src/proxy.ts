@@ -75,7 +75,34 @@ export async function proxy(request: NextRequest) {
   let s = await current();
   if (s && !exists(s, parts)) s = await current(RECHECK_MS); // ¿se agregó hace poco?
   if (!s || exists(s, parts)) return NextResponse.next();
-  return NextResponse.rewrite(new URL("/no-encontrado", request.url), { status: 404 });
+  return notFound(request);
+}
+
+/**
+ * Respuesta 404 con la página "no encontrado" del propio sitio.
+ * Un rewrite a esa página no sirve: con Cache Components sale prerenderizada y con 200.
+ * Por eso se pide el HTML al servidor local (una vez cada 5 min) y se responde aquí con 404.
+ */
+let notFoundHtml: { html: string; at: number } | null = null;
+
+async function notFound(request: NextRequest) {
+  // Navegación interna (RSC): basta el 404; el navegador recarga y recibe el HTML.
+  if (request.headers.get("rsc")) return new NextResponse(null, { status: 404 });
+  try {
+    if (!notFoundHtml || Date.now() - notFoundHtml.at > TTL_MS) {
+      const res = await fetch(`http://127.0.0.1:${process.env.PORT ?? 3000}/no-encontrado`, {
+        signal: AbortSignal.timeout(3_000),
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      notFoundHtml = { html: await res.text(), at: Date.now() };
+    }
+    return new NextResponse(notFoundHtml.html, {
+      status: 404,
+      headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" },
+    });
+  } catch {
+    return NextResponse.rewrite(new URL("/no-encontrado", request.url), { status: 404 });
+  }
 }
 
 export const config = { matcher: ["/m/:path+", "/c/:path+"] };

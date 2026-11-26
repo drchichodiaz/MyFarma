@@ -37,8 +37,8 @@ const providers: Provider[] = [
     from: env.EMAIL_FROM,
     maxAge: 24 * 60 * 60,
     async sendVerificationRequest({ identifier, url }) {
-      // Máximo 5 enlaces por hora por correo: evita usar el formulario para mandar spam.
-      const rl = await limit(`signin:${identifier}`, 5, 60 * 60);
+      // Respaldo para quien llame a /api/auth directo: el límite amable (5/h) está en /entrar.
+      const rl = await limit(`signin-api:${identifier}`, 10, 60 * 60);
       if (!rl.ok) throw new Error("Demasiados enlaces pedidos para este correo");
       await sendSignInLink(identifier, url);
     },
