@@ -14,7 +14,7 @@ services:
       - "443:443"
       - "443:443/udp" # HTTP/3
     environment:
-      DOMAIN: ${DOMAIN:-:80}
+      DOMAIN: ${DOMAIN:?Falta DOMAIN en .env}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy-data:/data

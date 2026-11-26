@@ -79,7 +79,7 @@ jobs:
       - name: Verificar
         run: |
           for i in $(seq 1 10); do
-            if curl -fsS --max-time 5 "http://$HOST/api/health"; then exit 0; fi
+            if curl -fsS --max-time 5 "https://myfarma.net/api/health"; then exit 0; fi
             sleep 3
           done
           echo "La app no responde después del deploy" && exit 1
