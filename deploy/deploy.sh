@@ -28,6 +28,9 @@ $COMPOSE run --rm migrate
 echo "▶ Levantando la app"
 $COMPOSE up -d --wait --remove-orphans
 
+echo "▶ Recargando Caddy (por si cambió el Caddyfile; sin cortar conexiones)"
+$COMPOSE exec -T caddy caddy reload --config /etc/caddy/Caddyfile >/dev/null 2>&1 || true
+
 echo "▶ Timer de backups diarios"
 mkdir -p state
 cat > /etc/systemd/system/myfarma-backup.service <<'UNIT'
