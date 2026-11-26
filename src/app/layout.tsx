@@ -1,5 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Archivo, JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
+import { BottomNav } from "@/components/site/nav-links";
+import { SiteFooter } from "@/components/site/site-footer";
+import { SiteHeader } from "@/components/site/site-header";
 import "./globals.css";
 
 // Fuentes alojadas en nuestro propio servidor (next/font): variables, solo el subconjunto latino.
@@ -13,9 +16,9 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: { default: "MyFarma", template: "%s · MyFarma" },
+  title: { default: "MyFarma — Encuentra tu medicamento", template: "%s · MyFarma" },
   description:
-    "Encuentra en qué farmacia de Panamá hay tu medicamento, a qué precio y cuándo se confirmó.",
+    "Encuentra en qué farmacia de Panamá hay tu medicamento, a qué precio y cuándo se confirmó. Reportes de pacientes.",
   applicationName: "MyFarma",
 };
 
@@ -30,7 +33,12 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="es" className={`${display.variable} ${sans.variable} ${mono.variable}`}>
-      <body className="min-h-dvh bg-bg font-sans text-ink antialiased">{children}</body>
+      <body className="min-h-dvh bg-bg font-sans text-ink antialiased">
+        <SiteHeader />
+        <main>{children}</main>
+        <SiteFooter />
+        <BottomNav />
+      </body>
     </html>
   );
 }

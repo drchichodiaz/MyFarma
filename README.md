@@ -20,6 +20,7 @@ pnpm install              # también genera el cliente de Prisma
 cp .env.example .env      # valores de desarrollo listos para usar
 pnpm services:up          # Postgres/PostGIS :5433, Redis :6380, Mailpit :8025
 pnpm db:deploy            # aplica migraciones
+pnpm db:seed              # catálogo + reportes de ejemplo (SEED_DEMO=0 para solo catálogo)
 pnpm dev                  # http://localhost:3000
 ```
 

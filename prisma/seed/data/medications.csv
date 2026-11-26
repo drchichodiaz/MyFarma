@@ -1,0 +1,16 @@
+slug,active_ingredient,strength,form,pack,requires_rx,scarce_in_css,conditions,aliases
+metotrexato-2-5-mg-tabletas,Metotrexato,2.5 mg,Tabletas,Caja x 50,true,true,artritis-reumatoide|lupus,MTX|Trexall
+metotrexato-25-mg-ml-inyectable,Metotrexato,25 mg/mL,Solución inyectable,Vial 2 mL,true,true,artritis-reumatoide,MTX inyectable
+acido-folico-5-mg-tabletas,Ácido fólico,5 mg,Tabletas,Caja x 30,false,false,artritis-reumatoide,Folato
+hidroxicloroquina-200-mg-tabletas,Hidroxicloroquina,200 mg,Tabletas,Caja x 30,true,true,artritis-reumatoide|lupus,Plaquenil
+leflunomida-20-mg-tabletas,Leflunomida,20 mg,Tabletas,Caja x 30,true,true,artritis-reumatoide,Arava
+sulfasalazina-500-mg-tabletas,Sulfasalazina,500 mg,Tabletas,Caja x 60,true,false,artritis-reumatoide,Azulfidine
+prednisona-5-mg-tabletas,Prednisona,5 mg,Tabletas,Caja x 20,true,false,inflamacion|artritis-reumatoide|lupus,
+metformina-850-mg-tabletas,Metformina,850 mg,Tabletas,Caja x 30,true,false,diabetes,Glucophage
+insulina-glargina-100-ui-ml,Insulina glargina,100 UI/mL,Pluma prellenada,Caja x 5 plumas,true,true,diabetes,Lantus|Basaglar
+glibenclamida-5-mg-tabletas,Glibenclamida,5 mg,Tabletas,Caja x 30,true,false,diabetes,Daonil
+losartan-50-mg-tabletas,Losartán,50 mg,Tabletas,Caja x 30,true,true,hipertension,Cozaar
+amlodipino-5-mg-tabletas,Amlodipino,5 mg,Tabletas,Caja x 30,true,false,hipertension,Norvasc
+enalapril-20-mg-tabletas,Enalapril,20 mg,Tabletas,Caja x 30,true,false,hipertension,
+levotiroxina-100-mcg-tabletas,Levotiroxina,100 mcg,Tabletas,Caja x 50,true,true,tiroides,Eutirox|Synthroid
+warfarina-5-mg-tabletas,Warfarina,5 mg,Tabletas,Caja x 30,true,true,anticoagulacion,Coumadin

@@ -1,5 +1,7 @@
-// Esquema de MyFarma. Los modelos de dominio llegan en la F1 (ver PLAN.md).
-// Las extensiones (postgis, pg_trgm, unaccent) se activan en la migración 0000_extensions.
+// Esquema de MyFarma (ver PLAN.md → Modelo de datos).
+// Extensiones (postgis, pg_trgm, unaccent) en la migración 0000_extensions.
+// Las columnas geográficas `location` se llenan con un trigger a partir de lat/lng
+// (ver migración de la F1), porque Prisma no escribe tipos PostGIS directamente.
 
 generator client {
   provider = "prisma-client"
@@ -8,4 +10,166 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+enum StockStatus {
+  AVAILABLE // Hay
+  LOW // Quedan pocas
+  OUT // No hay
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+/// Usuario. En la F2 se completa con los modelos de Auth.js (Account, Session, VerificationToken).
+model User {
+  id        String   @id @default(cuid())
+  name      String?
+  email     String?  @unique
+  image     String?
+  role      Role     @default(USER)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  reports Report[]
+
+  @@map("users")
+}
+
+/// Condición o enfermedad para navegar por categorías (Artritis reumatoide, Diabetes…).
+model Condition {
+  id    Int    @id @default(autoincrement())
+  slug  String @unique
+  name  String
+  /// Token de color del cuadro pastel: teal | yellow | salmon | pink | blue | sun | lime
+  color String
+  /// Nombre del ícono en el set de la UI.
+  icon  String
+  sort  Int    @default(0)
+
+  medications MedicationCondition[]
+
+  @@map("conditions")
+}
+
+/// Un medicamento es principio activo + concentración + presentación.
+/// "Metotrexato 2.5 mg tabletas" y "Metotrexato 25 mg/mL inyectable" son registros distintos.
+model Medication {
+  id               Int     @id @default(autoincrement())
+  slug             String  @unique
+  activeIngredient String  @map("active_ingredient")
+  strength         String
+  form             String
+  pack             String?
+  requiresRx       Boolean @default(true) @map("requires_rx")
+  scarceInCss      Boolean @default(false) @map("scarce_in_css")
+  /// Marcas comerciales y nombres alternativos, para la búsqueda.
+  aliases          String[]
+  /// Texto normalizado (sin acentos, minúsculas) con nombre, concentración, alias y condiciones.
+  /// Índice GIN trigram para búsqueda difusa.
+  searchText       String  @map("search_text")
+
+  conditions   MedicationCondition[]
+  availability Availability[]
+  reports      Report[]
+
+  @@index([searchText(ops: raw("gin_trgm_ops"))], type: Gin, map: "medications_search_trgm")
+  @@index([scarceInCss])
+  @@map("medications")
+}
+
+model MedicationCondition {
+  medicationId Int @map("medication_id")
+  conditionId  Int @map("condition_id")
+
+  medication Medication @relation(fields: [medicationId], references: [id], onDelete: Cascade)
+  condition  Condition  @relation(fields: [conditionId], references: [id], onDelete: Cascade)
+
+  @@id([medicationId, conditionId])
+  @@index([conditionId])
+  @@map("medication_conditions")
+}
+
+/// Cadena de farmacias.
+model Chain {
+  id      Int     @id @default(autoincrement())
+  slug    String  @unique
+  name    String
+  website String?
+  /// Token de color del distintivo de la cadena.
+  color   String
+
+  branches Branch[]
+
+  @@map("chains")
+}
+
+/// Sucursal de una cadena, con su ubicación.
+model Branch {
+  id       Int     @id @default(autoincrement())
+  slug     String  @unique
+  chainId  Int     @map("chain_id")
+  /// Barrio o nombre corto ("Los Pueblos").
+  name     String
+  address  String
+  phone    String?
+  /// Texto de horario legible ("Lun–Dom 7:00–22:00").
+  hours    String?
+  lat      Float
+  lng      Float
+  /// geography(Point,4326) calculada por trigger desde lat/lng. Índice GIST.
+  location Unsupported("geography(Point,4326)")?
+  /// false = dato de ejemplo o sin confirmar.
+  verified Boolean @default(false)
+
+  chain        Chain          @relation(fields: [chainId], references: [id])
+  availability Availability[]
+  reports      Report[]
+
+  @@index([location], type: Gist)
+  @@index([chainId])
+  @@map("branches")
+}
+
+/// Un reporte de un paciente: "en tal sucursal, tal medicamento, hay / quedan pocas / no hay".
+model Report {
+  id           String      @id @default(cuid())
+  userId       String?     @map("user_id")
+  medicationId Int         @map("medication_id")
+  branchId     Int         @map("branch_id")
+  status       StockStatus
+  /// Precio en centavos de balboa (B/. 15.20 → 1520).
+  priceCents   Int?        @map("price_cents")
+  hidden       Boolean     @default(false)
+  createdAt    DateTime    @default(now()) @map("created_at")
+
+  user       User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+  medication Medication @relation(fields: [medicationId], references: [id], onDelete: Cascade)
+  branch     Branch     @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([branchId, medicationId, createdAt(sort: Desc)])
+  @@index([medicationId, createdAt(sort: Desc)])
+  @@index([userId, createdAt(sort: Desc)])
+  @@map("reports")
+}
+
+/// Estado actual de un medicamento en una sucursal. Se recalcula con cada reporte,
+/// para que la búsqueda no tenga que recorrer el historial.
+model Availability {
+  branchId      Int         @map("branch_id")
+  medicationId  Int         @map("medication_id")
+  status        StockStatus
+  priceCents    Int?        @map("price_cents")
+  confirmedAt   DateTime    @map("confirmed_at")
+  /// Cuántas personas confirmaron este estado desde el último cambio.
+  confirmations Int         @default(1)
+  lastReportId  String?     @map("last_report_id")
+
+  branch     Branch     @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  medication Medication @relation(fields: [medicationId], references: [id], onDelete: Cascade)
+
+  @@id([branchId, medicationId])
+  @@index([medicationId, status])
+  @@map("availability")
 }
