@@ -1,13 +1,13 @@
-slug,chain,name,address,phone,hours,lat,lng,verified
-bi-los-pueblos,botica-del-istmo,Los Pueblos,"Centro comercial Los Pueblos, local 14",+507 000-0101,Lun–Dom 8:00–22:00,9.0352,-79.4655,false
-bi-el-dorado,botica-del-istmo,El Dorado,"Centro comercial El Dorado, local 3",+507 000-0105,Lun–Dom 8:00–22:00,9.0122,-79.5368,false
-bi-bella-vista,botica-del-istmo,Bella Vista,"Calle 50 y Vía Argentina",+507 000-0109,Lun–Sáb 7:00–21:00,8.9829,-79.5262,false
-fp-via-espana,farmacia-puente,Vía España,"Vía España, frente a la parada de El Carmen",+507 000-0102,Abierta 24 horas,8.9897,-79.5287,false
-fp-costa-del-este,farmacia-puente,Costa del Este,"Av. Centenario, Plaza Costa",+507 000-0106,Lun–Dom 8:00–23:00,9.0103,-79.4604,false
-fp-condado-del-rey,farmacia-puente,Condado del Rey,"Vía Ricardo J. Alfaro, Plaza Condado",+507 000-0110,Lun–Dom 8:00–22:00,9.0256,-79.5297,false
-fn-brisas-del-golf,farmanorte,Brisas del Golf,"Plaza Brisas, planta baja",+507 000-0103,Lun–Dom 8:00–21:00,9.0624,-79.4436,false
-fn-villa-lucre,farmanorte,Villa Lucre,"Plaza Villa Lucre, local 8",+507 000-0107,Lun–Sáb 8:00–20:00,9.0530,-79.4882,false
-fn-transistmica,farmanorte,Transístmica,"Vía Transístmica, Los Ángeles",+507 000-0111,Lun–Dom 7:00–22:00,9.0190,-79.5160,false
-dc-albrook,drogueria-canal,Albrook,"Albrook Mall, pasillo del Canguro",+507 000-0104,Lun–Dom 10:00–21:00,8.9727,-79.5508,false
-dc-san-francisco,drogueria-canal,San Francisco,"Calle 74, San Francisco",+507 000-0108,Lun–Dom 8:00–22:00,8.9935,-79.5110,false
-dc-paitilla,drogueria-canal,Paitilla,"Av. Balboa, Punta Paitilla",+507 000-0112,Lun–Dom 7:00–23:00,8.9787,-79.5133,false
+slug,chain,name,address,phone,hours,lat,lng,verified,place_id
+bi-los-pueblos,botica-del-istmo,Los Pueblos,"Centro comercial Los Pueblos, local 14",+507 000-0101,Lun–Dom 8:00–22:00,9.0352,-79.4655,false,
+bi-el-dorado,botica-del-istmo,El Dorado,"Centro comercial El Dorado, local 3",+507 000-0105,Lun–Dom 8:00–22:00,9.0122,-79.5368,false,
+bi-bella-vista,botica-del-istmo,Bella Vista,"Calle 50 y Vía Argentina",+507 000-0109,Lun–Sáb 7:00–21:00,8.9829,-79.5262,false,
+fp-via-espana,farmacia-puente,Vía España,"Vía España, frente a la parada de El Carmen",+507 000-0102,Abierta 24 horas,8.9897,-79.5287,false,
+fp-costa-del-este,farmacia-puente,Costa del Este,"Av. Centenario, Plaza Costa",+507 000-0106,Lun–Dom 8:00–23:00,9.0103,-79.4604,false,
+fp-condado-del-rey,farmacia-puente,Condado del Rey,"Vía Ricardo J. Alfaro, Plaza Condado",+507 000-0110,Lun–Dom 8:00–22:00,9.0256,-79.5297,false,
+fn-brisas-del-golf,farmanorte,Brisas del Golf,"Plaza Brisas, planta baja",+507 000-0103,Lun–Dom 8:00–21:00,9.0624,-79.4436,false,
+fn-villa-lucre,farmanorte,Villa Lucre,"Plaza Villa Lucre, local 8",+507 000-0107,Lun–Sáb 8:00–20:00,9.0530,-79.4882,false,
+fn-transistmica,farmanorte,Transístmica,"Vía Transístmica, Los Ángeles",+507 000-0111,Lun–Dom 7:00–22:00,9.0190,-79.5160,false,
+dc-albrook,drogueria-canal,Albrook,"Albrook Mall, pasillo del Canguro",+507 000-0104,Lun–Dom 10:00–21:00,8.9727,-79.5508,false,
+dc-san-francisco,drogueria-canal,San Francisco,"Calle 74, San Francisco",+507 000-0108,Lun–Dom 8:00–22:00,8.9935,-79.5110,false,
+dc-paitilla,drogueria-canal,Paitilla,"Av. Balboa, Punta Paitilla",+507 000-0112,Lun–Dom 7:00–23:00,8.9787,-79.5133,false,

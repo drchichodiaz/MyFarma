@@ -2,6 +2,7 @@ import "server-only";
 import type { Channel } from "@/generated/prisma/client";
 import { env } from "@/lib/env";
 import { money } from "@/lib/format";
+import { directionsUrl as mapsUrl } from "@/lib/maps";
 import { statusMeta, type Status } from "@/lib/status";
 import { db } from "@/server/db";
 import { sendAlertEmail } from "@/server/mail";
@@ -36,6 +37,7 @@ export async function dispatchAlerts(reportId: string) {
           name: true,
           lat: true,
           lng: true,
+          placeId: true,
           chain: { select: { name: true } },
         },
       },
@@ -70,7 +72,7 @@ export async function dispatchAlerts(reportId: string) {
   const branchLabel = `${branch.chain.name} ${branch.name}`;
   const path = `/m/${med.slug}/${branch.slug}`;
   const price = now.priceCents != null ? money(now.priceCents) : null;
-  const directionsUrl = `https://www.google.com/maps/search/?api=1&query=${branch.lat},${branch.lng}`;
+  const directionsUrl = mapsUrl(branch);
 
   for (const alert of claimed) {
     const distance = `${(alert.meters / 1000).toFixed(1)} km`;

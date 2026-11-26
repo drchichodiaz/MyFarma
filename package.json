@@ -21,7 +21,8 @@
     "db:seed": "prisma db seed",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "worker": "tsx --env-file-if-exists=.env --conditions=react-server src/worker/index.ts"
+    "worker": "tsx --env-file-if-exists=.env --conditions=react-server src/worker/index.ts",
+    "branches:import": "tsx scripts/import-branches.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.3",
@@ -60,6 +61,7 @@
     "dotenv": "^18.0.10",
     "eslint": "^9",
     "eslint-config-next": "16.4.6",
+    "exceljs": "^4.4.0",
     "prettier": "^3.10.1",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "prisma": "^7.10.1",

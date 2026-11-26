@@ -189,6 +189,9 @@ model Branch {
   location Unsupported("geography(Point,4326)")?
   /// false = dato de ejemplo o sin confirmar.
   verified Boolean                               @default(false)
+  /// Place ID de Google Maps: lo único de Google que se puede guardar sin límite.
+  /// Sirve para que "Cómo llegar" abra la ficha exacta.
+  placeId  String?                               @unique @map("place_id")
 
   chain        Chain          @relation(fields: [chainId], references: [id])
   availability Availability[]

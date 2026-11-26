@@ -32,11 +32,11 @@ WORKDIR /app
 # Mismas versiones mayores que package.json.
 RUN npm init -y >/dev/null \
  && npm install --no-audit --no-fund --omit=dev \
-      prisma@7.10.1 @prisma/client@7.10.1 @prisma/adapter-pg@7.10.1 pg@8 tsx@4 csv-parse@7 dotenv@18 \
+      prisma@7.10.1 @prisma/client@7.10.1 @prisma/adapter-pg@7.10.1 pg@8 tsx@4 csv-parse@7 dotenv@18 zod@4 \
  && npm cache clean --force
 COPY prisma.config.ts ./
 COPY prisma ./prisma
-COPY src/lib/text.ts ./src/lib/text.ts
+COPY src/lib/text.ts src/lib/branch-import.ts ./src/lib/
 RUN npx prisma generate
 CMD ["sh", "-c", "npx prisma migrate deploy && npx tsx prisma/seed/index.ts"]
 

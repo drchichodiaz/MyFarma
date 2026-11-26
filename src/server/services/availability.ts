@@ -123,6 +123,7 @@ export type BranchDetail = {
   lat: number;
   lng: number;
   verified: boolean;
+  placeId: string | null;
   chainName: string;
   chainColor: string;
 };
@@ -143,6 +144,7 @@ export async function getBranch(slug: string): Promise<BranchDetail | null> {
       lat: true,
       lng: true,
       verified: true,
+      placeId: true,
       chain: { select: { name: true, color: true } },
     },
   });

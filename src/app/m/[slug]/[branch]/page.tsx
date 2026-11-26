@@ -7,6 +7,7 @@ import { ChainBadge } from "@/components/med/chain-badge";
 import { CopyButton } from "@/components/ui/copy-button";
 import { Icon } from "@/components/ui/icon";
 import { money, timeAgo } from "@/lib/format";
+import { directionsUrl } from "@/lib/maps";
 import { isAvailable, statusMeta } from "@/lib/status";
 import { hidePhotoAction } from "@/app/reportar/actions";
 import { ConfirmBox } from "@/components/results/confirm-box";
@@ -54,7 +55,7 @@ async function BranchDetail({
   );
   const now = await requestTime();
   const s = statusMeta(availability?.status);
-  const directions = `https://www.google.com/maps/search/?api=1&query=${branch.lat},${branch.lng}`;
+  const directions = directionsUrl(branch);
 
   return (
     <article className="rise">

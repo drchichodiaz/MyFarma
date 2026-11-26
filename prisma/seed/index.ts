@@ -18,6 +18,7 @@ import { parse } from "csv-parse/sync";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient, StockStatus } from "../../src/generated/prisma/client";
 import { normalize } from "../../src/lib/text";
+import { branchRowSchema, chainRowSchema, validateBranchRows } from "../../src/lib/branch-import";
 
 const db = new PrismaClient({
   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL! }),
@@ -44,18 +45,6 @@ type MedicationRow = {
   scarce_in_css: string;
   conditions: string;
   aliases: string;
-};
-type ChainRow = { slug: string; name: string; website: string; color: string };
-type BranchRow = {
-  slug: string;
-  chain: string;
-  name: string;
-  address: string;
-  phone: string;
-  hours: string;
-  lat: string;
-  lng: string;
-  verified: string;
 };
 
 async function seedCatalog() {
@@ -109,7 +98,21 @@ async function seedCatalog() {
     });
   }
 
-  for (const c of readCsv<ChainRow>("chains.csv")) {
+  // Cadenas y sucursales se validan completas antes de escribir nada.
+  const chainRows = readCsv<unknown>("chains.csv").map((row, i) => {
+    const parsed = chainRowSchema.safeParse(row);
+    if (!parsed.success) throw new Error(`chains.csv fila ${i + 2}: ${parsed.error.message}`);
+    return parsed.data;
+  });
+  const branchRaw = readCsv<unknown>("branches.csv");
+  const errors = validateBranchRows(
+    branchRaw,
+    chainRows.map((c) => c.slug),
+  );
+  if (errors.length) throw new Error(`branches.csv tiene errores:\n  ${errors.join("\n  ")}`);
+  const branchRows = branchRaw.map((row) => branchRowSchema.parse(row));
+
+  for (const c of chainRows) {
     const data = { name: c.name, website: c.website || null, color: c.color };
     await db.chain.upsert({
       where: { slug: c.slug },
@@ -121,7 +124,7 @@ async function seedCatalog() {
     (await db.chain.findMany({ select: { id: true, slug: true } })).map((c) => [c.slug, c.id]),
   );
 
-  for (const b of readCsv<BranchRow>("branches.csv")) {
+  for (const b of branchRows) {
     const chainId = chainIds.get(b.chain);
     if (!chainId) throw new Error(`Cadena desconocida "${b.chain}" en ${b.slug}`);
     const data = {
@@ -130,9 +133,10 @@ async function seedCatalog() {
       address: b.address,
       phone: b.phone || null,
       hours: b.hours || null,
-      lat: Number(b.lat),
-      lng: Number(b.lng),
-      verified: bool(b.verified),
+      lat: b.lat,
+      lng: b.lng,
+      verified: b.verified === "true",
+      placeId: b.place_id || null,
     };
     await db.branch.upsert({
       where: { slug: b.slug },

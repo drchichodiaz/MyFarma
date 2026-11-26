@@ -166,15 +166,20 @@ F0 a F4 están en producción (último deploy: `c5f0903`). **Sigue la F5.**
 
 **Pendiente del dueño del proyecto**
 
-- [ ] Volver a entrar con su Gmail para quedar como ADMIN (está en `ADMIN_EMAILS`) y probar `/admin`
+- [x] Volver a entrar con su Gmail para quedar como ADMIN (está en `ADMIN_EMAILS`) y probar `/admin`
+- [x] Revisar `/privacidad` y `/terminos` (revisados por el dueño el 2026-11-26)
 - [ ] Google Cloud → Desarrollo de la marca: `https://myfarma.net/privacidad` y `https://myfarma.net/terminos`
 - [ ] Hacer revisar `/privacidad` y `/terminos` con alguien que conozca la Ley 81 de 2019
-- [ ] Juntar las sucursales reales (nombre, dirección, teléfono, horario, coordenadas) en el CSV de `prisma/seed/data/branches.csv`
+- [ ] Llamar a las farmacias de `D:/Workspace/LeadSeeker/farmacias_ciudad_panama.xlsx` (464 en Ciudad de Panamá) y marcar "Llamada: confirmado" = sí; corregir teléfono u horario en la hoja si cambió
 - [ ] Opcional: cambiar la API key de Resend por una solo de envío limitada a `myfarma.net` (la actual tiene acceso completo)
 
 **F5 · lo que falta**
 
-- [ ] Plantilla y validación del CSV de sucursales reales; marcar `verified`
+- [x] Listado de farmacias de Ciudad de Panamá con Google Places (`LeadSeeker/buscar_farmacias.py`): 464, de ellas 235 de 12 cadenas
+- [x] `branches.place_id` + "Cómo llegar" abre la ficha exacta de Google Maps (`src/lib/maps.ts`)
+- [x] `pnpm branches:import <xlsx>`: confirmadas → `branches.csv`/`chains.csv` con `verified`, coordenadas de OSM si hay una farmacia a menos de 120 m; el seed valida todo el CSV (`src/lib/branch-import.ts`, con tests)
+- [ ] Pin en `/admin` para corregir coordenadas: ~60 % de las sucursales no tienen punto en OSM y quedan con las de la hoja
+- [ ] Al lanzar: quitar del CSV las 12 sucursales y 4 cadenas de ejemplo
 - [ ] Mapa propio (PMTiles en R2) para no depender de las teselas de OpenStreetMap
 - [ ] Umami (analítica sin cookies) y Web Vitals de usuarios reales
 - [ ] Sentry (errores y peticiones lentas); pide crear una cuenta
