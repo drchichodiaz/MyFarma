@@ -2,6 +2,7 @@ import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/server/db";
 import { DEFAULT_RADIUS_M } from "@/lib/geo";
+import { env } from "@/lib/env";
 import { publicName } from "@/lib/people";
 import type { Status } from "@/lib/status";
 import { TAGS } from "./catalog";
@@ -179,6 +180,10 @@ export async function getBranchMedication(
         status: true,
         priceCents: true,
         createdAt: true,
+        photoKey: true,
+        photoStatus: true,
+        photoWidth: true,
+        photoHeight: true,
         user: { select: { name: true } },
         confirmations: {
           select: { agrees: true, user: { select: { name: true } } },
@@ -195,12 +200,25 @@ export async function getBranchMedication(
   const hasMore = reports.length > take;
   return {
     availability,
-    reports: reports.slice(0, take).map(({ user, confirmations, ...r }) => ({
-      ...r,
-      who: publicName(user?.name),
-      agreed: confirmations.filter((c) => c.agrees).map((c) => publicName(c.user.name)),
-      disagreed: confirmations.filter((c) => !c.agrees).map((c) => publicName(c.user.name)),
-    })),
+    reports: reports
+      .slice(0, take)
+      .map(({ user, confirmations, photoKey, photoStatus, photoWidth, photoHeight, ...r }) => ({
+        ...r,
+        // Solo las fotos ya procesadas (sin EXIF/GPS) llegan a la página.
+        photo:
+          photoStatus === "READY" && photoKey && photoWidth && photoHeight
+            ? {
+                base: env.PHOTOS_PUBLIC_URL,
+                prefix: photoKey,
+                width: photoWidth,
+                height: photoHeight,
+              }
+            : null,
+        photoPending: photoStatus === "PENDING",
+        who: publicName(user?.name),
+        agreed: confirmations.filter((c) => c.agrees).map((c) => publicName(c.user.name)),
+        disagreed: confirmations.filter((c) => !c.agrees).map((c) => publicName(c.user.name)),
+      })),
     nextCursor: hasMore ? reports[take - 1]!.id : null,
   };
 }

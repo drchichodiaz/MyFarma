@@ -4,6 +4,7 @@
 #
 #   target "app"     → servidor Next.js standalone (~150 MB, sin node_modules completos)
 #   target "migrate" → Prisma CLI + migraciones + seed, se ejecuta una vez por deploy
+#   target "worker"  → cola de fotos (BullMQ + sharp), mismo código de src/server
 # ══════════════════════════════════════════════════════════════════════
 
 FROM node:22-alpine AS base
@@ -38,6 +39,19 @@ COPY prisma ./prisma
 COPY src/lib/text.ts ./src/lib/text.ts
 RUN npx prisma generate
 CMD ["sh", "-c", "npx prisma migrate deploy && npx tsx prisma/seed/index.ts"]
+
+# ── Worker de fotos (mismo código de src/server, ejecutado con tsx) ─────
+# Solo los paquetes que usa el worker (no las dependencias de Next ni de desarrollo).
+FROM node:22-alpine AS worker
+ENV NODE_ENV=production
+WORKDIR /app
+RUN npm init -y >/dev/null  && npm install --no-audit --no-fund --omit=dev       sharp@0.35 bullmq@6 aws4fetch@1 ioredis@6 zod@4 server-only tsx@4       @prisma/client@7.10.1 @prisma/adapter-pg@7.10.1 pg@8  && npm cache clean --force
+COPY tsconfig.json ./
+COPY src ./src
+# Cliente de Prisma ya generado en la etapa deps (src/generated no entra al contexto).
+COPY --from=deps /app/src/generated ./src/generated
+USER node
+CMD ["node_modules/.bin/tsx", "--conditions=react-server", "src/worker/index.ts"]
 
 # ── Servidor ────────────────────────────────────────────────────────────
 FROM node:22-alpine AS app

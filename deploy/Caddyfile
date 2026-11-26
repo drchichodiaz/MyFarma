@@ -19,6 +19,9 @@ www.{$DOMAIN} {
 		-Server
 	}
 
+	# Solo para el worker, por la red interna de Docker: desde fuera no existe.
+	respond /api/internal/* 404
+
 	# Archivos de Next con hash en el nombre: caché de un año en navegador y CDN.
 	@static path /_next/static/*
 	header @static Cache-Control "public, max-age=31536000, immutable"

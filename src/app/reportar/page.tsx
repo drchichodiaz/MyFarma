@@ -5,6 +5,7 @@ import { Icon } from "@/components/ui/icon";
 import { publicName } from "@/lib/people";
 import { currentUser } from "@/server/auth";
 import { getReportOptions } from "@/server/services/reports";
+import { photosEnabled } from "@/server/storage";
 import { ReportForm } from "./report-form";
 
 export const metadata: Metadata = { title: "Reportar" };
@@ -91,6 +92,7 @@ async function ReportArea({
       defaultMedId={medications.find((m) => m.slug === med)?.id}
       defaultBranchId={branches.find((b) => b.slug === branch)?.id}
       who={publicName(user.name) === "Paciente" ? "ti" : publicName(user.name)}
+      photos={photosEnabled}
     />
   );
 }

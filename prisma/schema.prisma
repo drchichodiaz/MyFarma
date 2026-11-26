@@ -18,6 +18,14 @@ enum StockStatus {
   OUT // No hay
 }
 
+/// Foto de un reporte: el worker la procesa (sin EXIF/GPS) antes de mostrarla.
+enum PhotoStatus {
+  PENDING // subida, esperando al worker
+  READY // variantes AVIF/WebP publicadas en img.myfarma.net
+  FAILED // no se pudo procesar
+  HIDDEN // ocultada por un admin
+}
+
 enum Role {
   USER
   ADMIN
@@ -182,15 +190,21 @@ model Branch {
 
 /// Un reporte de un paciente: "en tal sucursal, tal medicamento, hay / quedan pocas / no hay".
 model Report {
-  id           String      @id @default(cuid())
-  userId       String?     @map("user_id")
-  medicationId Int         @map("medication_id")
-  branchId     Int         @map("branch_id")
+  id           String       @id @default(cuid())
+  userId       String?      @map("user_id")
+  medicationId Int          @map("medication_id")
+  branchId     Int          @map("branch_id")
   status       StockStatus
   /// Precio en centavos de balboa (B/. 15.20 → 1520).
-  priceCents   Int?        @map("price_cents")
-  hidden       Boolean     @default(false)
-  createdAt    DateTime    @default(now()) @map("created_at")
+  priceCents   Int?         @map("price_cents")
+  /// PENDING: clave del original en el bucket privado. READY: prefijo de las variantes ("r/<id>").
+  photoKey     String?      @map("photo_key")
+  photoStatus  PhotoStatus? @map("photo_status")
+  /// Tamaño de la variante más grande, para reservar el espacio (sin saltos al cargar).
+  photoWidth   Int?         @map("photo_width")
+  photoHeight  Int?         @map("photo_height")
+  hidden       Boolean      @default(false)
+  createdAt    DateTime     @default(now()) @map("created_at")
 
   user          User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
   medication    Medication     @relation(fields: [medicationId], references: [id], onDelete: Cascade)
@@ -200,6 +214,7 @@ model Report {
   @@index([branchId, medicationId, createdAt(sort: Desc)])
   @@index([medicationId, createdAt(sort: Desc)])
   @@index([userId, createdAt(sort: Desc)])
+  @@index([photoStatus])
   @@map("reports")
 }
 

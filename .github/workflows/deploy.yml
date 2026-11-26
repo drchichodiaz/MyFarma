@@ -55,6 +55,18 @@ jobs:
             ghcr.io/drchichodiaz/myfarma-migrate:latest
           cache-from: type=gha,scope=migrate
           cache-to: type=gha,scope=migrate,mode=max
+      - name: Imagen del worker
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: worker
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ghcr.io/drchichodiaz/myfarma-worker:${{ github.sha }}
+            ghcr.io/drchichodiaz/myfarma-worker:latest
+          cache-from: type=gha,scope=worker
+          cache-to: type=gha,scope=worker,mode=max
 
   deploy:
     needs: images

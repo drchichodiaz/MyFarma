@@ -2,10 +2,19 @@
 
 import { updateTag } from "next/cache";
 import { z } from "zod";
+import { MAX_UPLOAD_BYTES, UPLOAD_TYPES } from "@/lib/photos";
 import { parsePrice } from "@/lib/price";
 import { currentUser } from "@/server/auth";
 import { TAGS } from "@/server/services/catalog";
-import { confirmReport, createReport, LIMITS } from "@/server/services/reports";
+import { limit } from "@/server/rate-limit";
+import {
+  confirmReport,
+  createReport,
+  hidePhoto,
+  LIMITS,
+  uploadPrefix,
+} from "@/server/services/reports";
+import { photosEnabled, presignUpload } from "@/server/storage";
 
 export type ReportState =
   | { status: "idle" }
@@ -48,12 +57,14 @@ export async function submitReport(_prev: ReportState, form: FormData): Promise<
     };
   }
 
-  const result = await createReport(user.id, { ...parsed.data, priceCents });
+  const photoKey = String(form.get("photoKey") ?? "") || null;
+  const result = await createReport(user.id, { ...parsed.data, priceCents, photoKey });
   if (!result.ok) {
     const message = {
       rate_pair: `Ya reportaste esta sucursal hace poco. Puedes volver a reportarla en ${Math.ceil((result.retryAfterSec ?? 60) / 60)} min.`,
       rate_hour: `Llegaste al máximo de ${LIMITS.reportsPerHour} reportes por hora. Gracias por ayudar tanto; intenta más tarde.`,
       not_found: "Ese medicamento o esa sucursal ya no existe.",
+      bad_photo: "La foto no terminó de subir. Quítala y vuelve a elegirla.",
     }[result.error];
     return { status: "error", message };
   }
@@ -91,4 +102,44 @@ export async function submitConfirmation(
   updateTag(TAGS.overview);
   updateTag(TAGS.userReports(user.id));
   return { done: true };
+}
+
+export type UploadTicket = { ok: true; key: string; url: string } | { ok: false; error: string };
+
+const ticketSchema = z.object({
+  type: z.enum(UPLOAD_TYPES),
+  size: z.number().int().positive().max(MAX_UPLOAD_BYTES),
+});
+
+/**
+ * URL firmada para subir la foto directo a R2 (no pasa por el servidor).
+ * Solo con sesión, tipo y tamaño exactos, y como máximo 20 por hora.
+ */
+export async function requestPhotoUpload(input: {
+  type: string;
+  size: number;
+}): Promise<UploadTicket> {
+  if (!photosEnabled) return { ok: false, error: "Las fotos todavía no están disponibles." };
+  const user = await currentUser();
+  if (!user) return { ok: false, error: "Tu sesión venció. Vuelve a entrar." };
+  const parsed = ticketSchema.safeParse(input);
+  if (!parsed.success)
+    return { ok: false, error: "La foto es demasiado grande o no es una imagen." };
+  const rl = await limit(`upload:user:${user.id}`, 20, 60 * 60);
+  if (!rl.ok) return { ok: false, error: "Subiste muchas fotos seguidas. Intenta en un rato." };
+
+  const ext = parsed.data.type === "image/webp" ? "webp" : "jpg";
+  const key = `${uploadPrefix(user.id)}${crypto.randomUUID()}.${ext}`;
+  const url = await presignUpload(key, parsed.data.type, parsed.data.size);
+  return { ok: true, key, url };
+}
+
+/** Moderación: solo ADMIN. */
+export async function hidePhotoAction(form: FormData) {
+  const user = await currentUser();
+  if (user?.role !== "ADMIN") return;
+  const result = await hidePhoto(String(form.get("reportId") ?? ""));
+  if (!result) return;
+  updateTag(TAGS.availability(result.medicationId));
+  if (result.userId) updateTag(TAGS.userReports(result.userId));
 }

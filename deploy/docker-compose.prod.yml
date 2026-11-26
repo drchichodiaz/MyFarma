@@ -42,6 +42,23 @@ services:
         condition: service_healthy
     mem_limit: 512m
 
+  # Procesa las fotos de los reportes (quita EXIF/GPS, genera AVIF/WebP) desde la cola en Redis.
+  worker:
+    image: ghcr.io/drchichodiaz/myfarma-worker:${TAG:-latest}
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://myfarma:${POSTGRES_PASSWORD}@db:5432/myfarma?schema=public
+      REDIS_URL: redis://redis:6379
+      DB_POOL_MAX: "2"
+      APP_INTERNAL_URL: http://app:3000
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    mem_limit: 320m
+
   # Se ejecuta en cada deploy antes de levantar la app: migraciones + catálogo.
   migrate:
     image: ghcr.io/drchichodiaz/myfarma-migrate:${TAG:-latest}
@@ -82,14 +99,16 @@ services:
   redis:
     image: redis:7-alpine
     restart: unless-stopped
+    # noeviction: BullMQ no tolera que Redis borre claves de la cola para hacer espacio.
+    # Sin disco: si se reinicia, el worker re-encola las fotos pendientes desde Postgres.
     command:
-      ["redis-server", "--maxmemory", "64mb", "--maxmemory-policy", "allkeys-lru", "--save", ""]
+      ["redis-server", "--maxmemory", "96mb", "--maxmemory-policy", "noeviction", "--save", ""]
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 3s
       retries: 20
-    mem_limit: 96m
+    mem_limit: 128m
 
 volumes:
   db-data:

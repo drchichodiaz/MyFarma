@@ -20,12 +20,15 @@
     "db:studio": "prisma studio",
     "db:seed": "prisma db seed",
     "test": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "worker": "tsx --env-file-if-exists=.env --conditions=react-server src/worker/index.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.3",
     "@prisma/adapter-pg": "^7.10.1",
     "@prisma/client": "^7.10.1",
+    "aws4fetch": "^1.0.20",
+    "bullmq": "^6.7.10",
     "ioredis": "^6.1.0",
     "leaflet": "^1.9.4",
     "next": "16.4.6",
@@ -36,6 +39,7 @@
     "react-dom": "19.3.0",
     "react-leaflet": "^5.0.0",
     "server-only": "^0.0.1",
+    "sharp": "^0.35.5",
     "zod": "^4.6.7"
   },
   "devDependencies": {

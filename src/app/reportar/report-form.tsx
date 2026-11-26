@@ -8,6 +8,7 @@ import { money } from "@/lib/format";
 import { parsePrice } from "@/lib/price";
 import { STATUS, type Status } from "@/lib/status";
 import { submitReport, type ReportState } from "./actions";
+import { PhotoField } from "./photo-field";
 
 type Med = { id: number; slug: string; activeIngredient: string; strength: string; form: string };
 type Branch = { id: number; slug: string; name: string; chainName: string; chainColor: string };
@@ -20,12 +21,15 @@ export function ReportForm({
   defaultMedId,
   defaultBranchId,
   who,
+  photos,
 }: {
   medications: Med[];
   branches: Branch[];
   defaultMedId?: number;
   defaultBranchId?: number;
   who: string;
+  /** Si R2 está configurado, aparece el paso de foto. */
+  photos: boolean;
 }) {
   const [state, action, pending] = useActionState<ReportState, FormData>(submitReport, {
     status: "idle",
@@ -36,6 +40,7 @@ export function ReportForm({
   const [price, setPrice] = useState("");
   // Al pulsar "Hacer otro reporte" se descarta el éxito de ese reporte y vuelve el formulario.
   const [dismissed, setDismissed] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   const med = medications.find((m) => m.id === medId);
   const branch = branches.find((b) => b.id === branchId);
@@ -231,6 +236,14 @@ export function ReportForm({
           </div>
         )}
 
+        {photos && (
+          <PhotoField
+            key={dismissed ?? "first"}
+            step={status === "OUT" ? 4 : 5}
+            onBusyChange={setUploading}
+          />
+        )}
+
         {error && (
           <p
             id="form-error"
@@ -244,11 +257,11 @@ export function ReportForm({
 
         <button
           type="submit"
-          disabled={pending}
+          disabled={pending || uploading}
           className="btn-primary justify-center py-4 text-base disabled:opacity-60"
         >
           <Icon name="check" className="size-5" />
-          {pending ? "Publicando…" : "Publicar reporte"}
+          {pending ? "Publicando…" : uploading ? "Esperando la foto…" : "Publicar reporte"}
         </button>
       </form>
       {preview}

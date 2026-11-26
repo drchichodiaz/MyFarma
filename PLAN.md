@@ -153,8 +153,8 @@ La ubicación del usuario se obtiene con la geolocalización del navegador, con 
 | ✅     | **F0 · Base**                | Repo git, Next.js + Tailwind con tokens y fuentes, Prisma + PostGIS + Redis + Mailpit en Docker, ESLint/Prettier, CI                   | `pnpm dev` levanta la app con la DB local; `/api/health` responde con PostGIS y Redis; CI en verde |
 | ✅     | **F1 · Catálogo y búsqueda** | Schema + seed, inicio, autocompletar, resultados con mapa real, ficha de sucursal (solo lectura)                                       | Busco "metotrexato" y veo las sucursales del seed ordenadas por distancia                          |
 | ✅     | **Deploy temprano**          | Droplet NYC1 aprovisionado, imágenes en GHCR, Caddy + Cloudflare, pipeline push → producción                                           | https://myfarma.net en línea; cada push a `main` despliega en ~2 min                               |
-| 🧪     | **F2a · Cuentas y reportes** | Backups a R2, Auth.js (Google + correo), formulario de reporte, confirmaciones, recálculo de disponibilidad                            | Un usuario logueado reporta y el resultado cambia al instante para todos                           |
-| ⏳     | **F2b · Fotos**              | Subida directa a R2, worker BullMQ + `sharp` (sin EXIF), variantes AVIF/WebP, moderación                                               | Un reporte con foto se ve sin datos GPS y en el formato adecuado                                   |
+| ✅     | **F2a · Cuentas y reportes** | Backups a R2, Auth.js (Google + correo), formulario de reporte, confirmaciones, recálculo de disponibilidad                            | Un usuario logueado reporta y el resultado cambia al instante para todos                           |
+| 🧪     | **F2b · Fotos**              | Subida directa a R2, worker BullMQ + `sharp` (sin EXIF), variantes AVIF/WebP, moderación                                               | Un reporte con foto se ve sin datos GPS y en el formato adecuado                                   |
 | ⏳     | **F3 · Alertas**             | CRUD de alertas con radar, correo y Web Push, PWA instalable                                                                           | Al reportar "Hay", llega un correo o push a quien tiene alerta en el radio                         |
 | ⏳     | **F4 · Moderación y pulido** | Panel admin, página de privacidad, SEO/OG (404 reales, abrir `robots.txt`), agrupar marcadores del mapa, estados de error, modo oscuro | Checklist de lanzamiento completa                                                                  |
 | ⏳     | **F5 · Beta y lanzamiento**  | Mapa propio (PMTiles en R2), Umami, Sentry, Lighthouse CI, sucursales reales verificadas                                               | En línea con un grupo pequeño de pacientes (tu hermana primero)                                    |
@@ -223,14 +223,16 @@ La ubicación del usuario se obtiene con la geolocalización del navegador, con 
 - [x] Playwright (`pnpm test:e2e`): entrar con correo (Mailpit) → reportar → otra persona confirma → el estado cambia para todos
 - [x] Job `e2e` en el CI con Postgres/PostGIS, Redis y Mailpit; el deploy espera a que pase
 
-### F2b · Fotos
+### F2b · Fotos 🧪
 
-- [ ] Endpoint de URL firmada de R2 (corta duración, solo `image/*`, tamaño máximo)
-- [ ] En el cliente: redimensionar a 1600 px y convertir a WebP antes de subir
-- [ ] Contenedor `worker` (mismo código, BullMQ): `sharp` quita EXIF/GPS, genera AVIF y WebP en 400/800/1200 px y borra el original
-- [ ] Estado `pending` → `ready`; el admin puede ocultar
-- [ ] Subdominio `img.myfarma.net` con caché `immutable` y loader propio de `next/image`
-- [ ] Prueba: subir una foto con GPS y verificar que las variantes no lo traen
+Dos buckets: `myfarma-uploads` (privado, originales, se borran solos al día) y `myfarma-photos` (público en `img.myfarma.net`, solo variantes limpias).
+
+- [x] URL firmada de R2 (5 min, solo `image/webp` o `image/jpeg`, tamaño exacto firmado, máx. 4 MB, 20 por hora, solo con sesión, clave `u/<userId>/…`)
+- [x] En el cliente: endereza, reduce a 1600 px y convierte a WebP (JPEG si el navegador no puede) antes de subir
+- [x] Contenedor `worker` (BullMQ + `sharp`, imagen de 441 MB): quita EXIF/GPS, genera AVIF y WebP en 400/800/1200 px, borra el original y avisa a la app (`/api/internal/revalidate`, bloqueada en Caddy)
+- [x] Estados `PENDING → READY | FAILED | HIDDEN`; barrido cada 5 min de las pendientes (Redis no guarda la cola en disco); botón "Ocultar foto" para ADMIN que borra las variantes
+- [x] `img.myfarma.net` con `Cache-Control: immutable`; `<picture>` con AVIF + WebP y `srcset` (en vez de un loader de `next/image`)
+- [x] Prueba: Vitest confirma que una foto con GPS sale sin EXIF; Playwright (`E2E_PHOTOS=1`, no corre en el CI) sube una foto real y verifica la variante pública
 
 ## Rendimiento (checklist obligatorio)
 

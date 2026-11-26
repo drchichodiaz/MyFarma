@@ -4,7 +4,10 @@ import type { Prisma } from "@/generated/prisma/client";
 import { computeAvailability, type AvailabilityEvent } from "@/lib/availability-rules";
 import type { Status } from "@/lib/status";
 import { db } from "@/server/db";
+import { enqueuePhoto } from "@/server/queue";
 import { limit, release } from "@/server/rate-limit";
+import { BUCKETS, deleteObject, headObject, photosEnabled } from "@/server/storage";
+import { PHOTO_WIDTHS } from "@/lib/photos";
 import { TAGS } from "./catalog";
 
 /** Límites contra abuso (PLAN.md → Reglas contra abuso). */
@@ -78,11 +81,20 @@ export type ReportInput = {
   branchId: number;
   status: Status;
   priceCents: number | null;
+  /** Clave del original ya subido a R2 (uploads/u/<userId>/…). */
+  photoKey?: string | null;
 };
 
 export type ReportResult =
   | { ok: true; reportId: string; medicationId: number }
-  | { ok: false; error: "rate_hour" | "rate_pair" | "not_found"; retryAfterSec?: number };
+  | {
+      ok: false;
+      error: "rate_hour" | "rate_pair" | "not_found" | "bad_photo";
+      retryAfterSec?: number;
+    };
+
+/** Prefijo de las subidas de un usuario: nadie puede adjuntar la foto de otro. */
+export const uploadPrefix = (userId: string) => `u/${userId}/`;
 
 export async function createReport(userId: string, input: ReportInput): Promise<ReportResult> {
   const pairKey = `report:pair:${userId}:${input.branchId}:${input.medicationId}`;
@@ -94,13 +106,17 @@ export async function createReport(userId: string, input: ReportInput): Promise<
     return { ok: false, error: "rate_hour", retryAfterSec: hour.retryAfterSec };
   }
 
-  const [med, branch] = await Promise.all([
+  const photoKey = input.photoKey || null;
+  const [med, branch, photoSize] = await Promise.all([
     db.medication.findUnique({ where: { id: input.medicationId }, select: { id: true } }),
     db.branch.findUnique({ where: { id: input.branchId }, select: { id: true } }),
+    photoKey && photosEnabled && photoKey.startsWith(uploadPrefix(userId))
+      ? headObject(BUCKETS.uploads, photoKey)
+      : Promise.resolve(photoKey ? null : 0),
   ]);
-  if (!med || !branch) {
+  if (!med || !branch || photoSize === null) {
     await Promise.all([release(pairKey), release(`report:user:${userId}`)]);
-    return { ok: false, error: "not_found" };
+    return { ok: false, error: photoSize === null ? "bad_photo" : "not_found" };
   }
 
   const report = await db.$transaction(async (tx) => {
@@ -111,12 +127,16 @@ export async function createReport(userId: string, input: ReportInput): Promise<
         branchId: input.branchId,
         status: input.status,
         priceCents: input.status === "OUT" ? null : input.priceCents,
+        ...(photoKey && { photoKey, photoStatus: "PENDING" as const }),
       },
       select: { id: true },
     });
     await recomputeAvailability(tx, input.branchId, input.medicationId);
     return r;
   });
+
+  // Si Redis falla, el barrido del worker la encola en unos minutos.
+  if (photoKey) await enqueuePhoto(report.id).catch((e) => console.warn("enqueuePhoto:", e));
 
   return { ok: true, reportId: report.id, medicationId: input.medicationId };
 }
@@ -227,4 +247,29 @@ export async function getReportOptions() {
       chainColor: chain.color,
     })),
   };
+}
+
+/**
+ * Moderación: oculta la foto de un reporte y borra sus variantes públicas
+ * (ocultarla en la página no basta: la URL seguiría funcionando).
+ */
+export async function hidePhoto(reportId: string) {
+  const report = await db.report.findUnique({
+    where: { id: reportId },
+    select: { photoKey: true, photoStatus: true, medicationId: true, userId: true },
+  });
+  if (!report?.photoKey) return null;
+  if (report.photoStatus === "READY") {
+    await Promise.all(
+      PHOTO_WIDTHS.flatMap((w) =>
+        (["avif", "webp"] as const).map((ext) =>
+          deleteObject(BUCKETS.photos, `${report.photoKey}/${w}.${ext}`),
+        ),
+      ),
+    );
+  } else if (report.photoStatus === "PENDING") {
+    await deleteObject(BUCKETS.uploads, report.photoKey);
+  }
+  await db.report.update({ where: { id: reportId }, data: { photoStatus: "HIDDEN" } });
+  return { medicationId: report.medicationId, userId: report.userId };
 }

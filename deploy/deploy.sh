@@ -17,7 +17,7 @@ COMPOSE="docker compose -f docker-compose.prod.yml"
 if grep -q '^TAG=' .env; then sed -i "s/^TAG=.*/TAG=${TAG}/" .env; else echo "TAG=${TAG}" >> .env; fi
 
 echo "▶ Descargando imágenes ${TAG}"
-$COMPOSE pull app migrate caddy
+$COMPOSE pull app migrate worker caddy
 
 echo "▶ Base de datos y Redis"
 $COMPOSE up -d --wait db redis

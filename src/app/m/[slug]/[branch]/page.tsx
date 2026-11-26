@@ -8,7 +8,9 @@ import { CopyButton } from "@/components/ui/copy-button";
 import { Icon } from "@/components/ui/icon";
 import { money, timeAgo } from "@/lib/format";
 import { isAvailable, statusMeta } from "@/lib/status";
+import { hidePhotoAction } from "@/app/reportar/actions";
 import { ConfirmBox } from "@/components/results/confirm-box";
+import { ReportPhoto } from "@/components/results/report-photo";
 import type { Status } from "@/lib/status";
 import { currentUser } from "@/server/auth";
 import { getBranch, getBranchMedication, getMyVote } from "@/server/services/availability";
@@ -165,7 +167,21 @@ async function BranchDetail({
                     </>
                   )}
                 </div>
-                <div className="text-xs text-muted">{timeAgo(r.createdAt, now)}</div>
+                <div className="text-xs text-muted">
+                  {timeAgo(r.createdAt, now)}
+                  {r.photoPending && " · procesando foto"}
+                </div>
+                {r.photo && (
+                  <div className="flex items-end gap-2">
+                    <ReportPhoto
+                      photo={r.photo}
+                      alt={`Foto del reporte de ${r.who} en ${branch.chainName} ${branch.name}`}
+                    />
+                    <Suspense>
+                      <AdminHidePhoto reportId={r.id} />
+                    </Suspense>
+                  </div>
+                )}
                 {(r.agreed.length > 0 || r.disagreed.length > 0) && (
                   <div className="mt-1 flex flex-col gap-0.5 text-xs text-muted">
                     {r.agreed.length > 0 && (
@@ -239,6 +255,21 @@ async function Confirmation({
     );
   }
   return <ConfirmBox reportId={reportId} status={status} myVote={vote.agrees} />;
+}
+
+/** Botón de moderación (solo admins). */
+async function AdminHidePhoto({ reportId }: { reportId: string }) {
+  const user = await currentUser();
+  if (user?.role !== "ADMIN") return null;
+  return (
+    <form action={hidePhotoAction}>
+      <input type="hidden" name="reportId" value={reportId} />
+      <button type="submit" className="pill bg-bad/10 text-bad hover:bg-bad/20">
+        <Icon name="x" className="size-3" />
+        Ocultar foto
+      </button>
+    </form>
+  );
 }
 
 function BranchSkeleton() {
