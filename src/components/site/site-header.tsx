@@ -1,12 +1,21 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
 import { DEFAULT_LOCATION } from "@/lib/geo";
 import { TopNav } from "./nav-links";
 
+/** Marca: pin de ubicación con cápsula. Original y variantes en `brand/`. */
 export function Logo({ className = "" }: { className?: string }) {
   return (
-    <span className={`grid place-items-center rounded-xl bg-lime text-limeink ${className}`}>
-      <Icon name="plus" className="size-[55%]" strokeWidth={3} />
+    <span className={`grid place-items-center ${className}`}>
+      <Image
+        src="/brand/logo.png"
+        alt=""
+        width={160}
+        height={160}
+        sizes="80px"
+        className="size-full"
+      />
     </span>
   );
 }

@@ -7,6 +7,7 @@ node_modules
 !.env.example
 src/generated
 prototype
+brand
 deploy
 *.webp
 *.md

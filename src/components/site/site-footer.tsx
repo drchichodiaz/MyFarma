@@ -27,7 +27,7 @@ export function SiteFooter() {
           ))}
         </div>
         <div className="flex items-center gap-3 overflow-hidden rounded-[1.5rem] bg-lime px-5 py-5 text-limeink sm:gap-5 sm:px-8 sm:py-7">
-          <Logo className="size-14 shrink-0 bg-limeink! text-lime! sm:size-20" />
+          <Logo className="size-14 shrink-0 rounded-2xl bg-limeink p-2 sm:size-20 sm:p-3" />
           <span className="font-display text-[clamp(2.6rem,11vw,7.5rem)] leading-none font-black tracking-[-0.05em]">
             MyFarma
           </span>
