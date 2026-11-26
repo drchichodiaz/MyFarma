@@ -164,29 +164,31 @@ La ubicación del usuario se obtiene con la geolocalización del navegador, con 
 
 ### Antes de empezar: lo que prepara el dueño del proyecto
 
-- [ ] **Google OAuth** (Google Cloud Console → APIs y servicios → Credenciales → ID de cliente OAuth, tipo "Aplicación web").
+- [x] **Google OAuth** (Google Cloud Console → APIs y servicios → Credenciales → ID de cliente OAuth, tipo "Aplicación web").
   - Orígenes autorizados: `https://myfarma.net` y `http://localhost:3000`
   - URI de redirección: `https://myfarma.net/api/auth/callback/google` y `http://localhost:3000/api/auth/callback/google`
   - Pantalla de consentimiento: nombre "MyFarma", correo de soporte, dominio `myfarma.net`
   - Entregar: `AUTH_GOOGLE_ID` y `AUTH_GOOGLE_SECRET`
-- [ ] **Correo transaccional** para los enlaces mágicos en producción. Recomendado: **Resend** (3,000 correos/mes gratis).
+- [x] **Correo transaccional** para los enlaces mágicos en producción. Recomendado: **Resend** (3,000 correos/mes gratis).
   - Verificar el dominio `myfarma.net` (registros SPF/DKIM en Cloudflare)
   - Entregar: API key o credenciales SMTP; remitente `MyFarma <hola@myfarma.net>`
-- [ ] **Cloudflare R2** activado (pide tarjeta; el plan gratis de 10 GB alcanza).
+- [x] **Cloudflare R2** activado (pide tarjeta; el plan gratis de 10 GB alcanza).
   - Buckets: `myfarma-backups` (privado) y `myfarma-photos` (F2b)
   - Token de API con permisos de lectura y escritura solo para esos buckets
   - Entregar: `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`
 
+> Credenciales listas el 2026-11-25. En el servidor: `AUTH_*`, `SMTP_*` (Resend por el puerto **2465**, porque DigitalOcean bloquea 25/465/587), `R2_*` y `ALERT_EMAIL`.
+>
 > Los secretos de producción se cargan en `/opt/myfarma/.env` del servidor y, si el CI los necesita, con `gh secret set` desde Git Bash (no CMD).
 
 ### F2a · Cuentas y reportes
 
-**0. Backups (antes de cualquier dato real)**
+**0. Backups (antes de cualquier dato real)** ✅
 
-- [ ] Servicio `backup` en `docker-compose.prod.yml`: `pg_dump -Fc` diario comprimido → R2 `myfarma-backups/AAAA/MM/DD.dump`
-- [ ] Retención de 30 días (regla de ciclo de vida en el bucket)
-- [ ] `deploy/restore.sh` y **prueba real de restauración** en una base temporal
-- [ ] Alerta si el backup falla (por correo, o como check en `/api/health`)
+- [x] `deploy/backup.sh` con timer de systemd (03:00): `pg_dump -Fc` → rclone → R2 `myfarma-backups/AAAA/MM/DD.dump`
+- [x] Retención de 30 días (regla de ciclo de vida en el bucket)
+- [x] `deploy/restore.sh` (prueba en base temporal, `--list`, `--real`) y **prueba real de restauración** hecha el 2026-11-25
+- [x] Alerta por correo (Resend → `ALERT_EMAIL`) si el backup falla; último backup visible en `/api/health`
 
 **1. Login (Auth.js)**
 

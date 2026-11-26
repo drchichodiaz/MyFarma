@@ -73,7 +73,7 @@ jobs:
           echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy && chmod 600 ~/.ssh/deploy
           echo "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
       - name: Copiar archivos de deploy
-        run: scp -i ~/.ssh/deploy deploy/docker-compose.prod.yml deploy/Caddyfile deploy/deploy.sh root@$HOST:/opt/myfarma/
+        run: scp -i ~/.ssh/deploy deploy/docker-compose.prod.yml deploy/Caddyfile deploy/deploy.sh deploy/backup.sh deploy/restore.sh root@$HOST:/opt/myfarma/
       - name: Desplegar
         run: |
           ssh -i ~/.ssh/deploy root@$HOST "echo '${{ secrets.GITHUB_TOKEN }}' | docker login ghcr.io -u '${{ github.actor }}' --password-stdin >/dev/null \

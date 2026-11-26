@@ -1,3 +1,4 @@
+import { readFile } from "node:fs/promises";
 import { connection } from "next/server";
 import { db } from "@/server/db";
 import { redis } from "@/server/redis";
@@ -24,11 +25,26 @@ async function check(fn: () => Promise<string>, timeoutMs = 2_000): Promise<Chec
   }
 }
 
+/**
+ * Último backup a R2 (lo escribe deploy/backup.sh). Informativo: no cambia el estado,
+ * porque el health check del deploy no debe fallar por un backup. La alerta va por correo.
+ */
+async function lastBackup() {
+  try {
+    const raw = await readFile("/state/backup.json", "utf8");
+    const { at, key, bytes } = JSON.parse(raw) as { at: string; key: string; bytes: number };
+    const ageHours = Math.round((Date.now() - Date.parse(at)) / 36e5);
+    return { ok: ageHours <= 26, at, key, bytes, ageHours };
+  } catch {
+    return null; // en desarrollo, o antes del primer backup
+  }
+}
+
 /** GET /api/health — estado de Postgres/PostGIS y Redis. Lo usan Docker y el monitoreo. */
 export async function GET() {
   await connection(); // siempre en tiempo de petición, nunca prerenderizado
 
-  const [postgis, cache] = await Promise.all([
+  const [postgis, cache, backup] = await Promise.all([
     check(async () => {
       const rows = await db.$queryRaw<{ v: string }[]>`SELECT postgis_lib_version() AS v`;
       return `postgis ${rows[0]?.v}`;
@@ -37,11 +53,12 @@ export async function GET() {
       if (redis.status === "wait") await redis.connect();
       return await redis.ping();
     }),
+    lastBackup(),
   ]);
 
   const ok = postgis.ok && cache.ok;
   return Response.json(
-    { status: ok ? "ok" : "degraded", postgis, redis: cache },
+    { status: ok ? "ok" : "degraded", postgis, redis: cache, backup },
     { status: ok ? 200 : 503, headers: { "Cache-Control": "no-store" } },
   );
 }

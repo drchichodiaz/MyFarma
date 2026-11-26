@@ -32,6 +32,9 @@ services:
       DATABASE_URL: postgresql://myfarma:${POSTGRES_PASSWORD}@db:5432/myfarma?schema=public
       REDIS_URL: redis://redis:6379
       DB_POOL_MAX: "10"
+    volumes:
+      # state/backup.json lo escribe backup.sh; /api/health lo muestra.
+      - ./state:/state:ro
     depends_on:
       db:
         condition: service_healthy

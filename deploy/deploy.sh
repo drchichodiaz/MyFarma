@@ -28,6 +28,33 @@ $COMPOSE run --rm migrate
 echo "▶ Levantando la app"
 $COMPOSE up -d --wait --remove-orphans
 
+echo "▶ Timer de backups diarios"
+mkdir -p state
+cat > /etc/systemd/system/myfarma-backup.service <<'UNIT'
+[Unit]
+Description=MyFarma: backup de Postgres a R2
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/bash /opt/myfarma/backup.sh
+UNIT
+cat > /etc/systemd/system/myfarma-backup.timer <<'UNIT'
+[Unit]
+Description=MyFarma: backup diario a las 03:00
+
+[Timer]
+OnCalendar=*-*-* 03:00:00
+Persistent=true
+RandomizedDelaySec=10m
+
+[Install]
+WantedBy=timers.target
+UNIT
+systemctl daemon-reload
+systemctl enable --now myfarma-backup.timer >/dev/null
+
 echo "▶ Limpiando imágenes sin uso"
 docker image prune -f >/dev/null
 
