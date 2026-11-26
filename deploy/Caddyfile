@@ -1,0 +1,25 @@
+# MyFarma — proxy de producción.
+# DOMAIN=":80"               → solo HTTP por IP (mientras no hay dominio)
+# DOMAIN="myfarma.ejemplo"   → HTTPS automático con Let's Encrypt
+{$DOMAIN} {
+	encode zstd gzip
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "camera=(), microphone=(), geolocation=(self)"
+		# Beta con datos de ejemplo: que los buscadores no la indexen todavía.
+		X-Robots-Tag "noindex, nofollow"
+		-Server
+	}
+
+	# Archivos de Next con hash en el nombre: caché de un año en navegador y CDN.
+	@static path /_next/static/*
+	header @static Cache-Control "public, max-age=31536000, immutable"
+
+	reverse_proxy app:3000 {
+		health_uri /api/health
+		health_interval 30s
+	}
+}

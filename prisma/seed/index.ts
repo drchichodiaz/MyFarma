@@ -4,6 +4,10 @@
  *
  *   pnpm db:seed               → catálogo + reportes de ejemplo
  *   SEED_DEMO=0 pnpm db:seed   → solo catálogo (lo que se usará en producción)
+ *   SEED_DEMO=force pnpm db:seed → regenera los reportes de ejemplo aunque ya haya reportes
+ *
+ * Por defecto los reportes de ejemplo solo se crean si la tabla está vacía:
+ * así un deploy nunca borra reportes reales.
  *
  * Es idempotente: se puede correr varias veces.
  */
@@ -264,10 +268,14 @@ async function main() {
   console.log(
     `Catálogo: ${counts[0]} condiciones, ${counts[1]} medicamentos, ${counts[2]} cadenas, ${counts[3]} sucursales`,
   );
-  if (process.env.SEED_DEMO !== "0") {
-    const n = await seedDemoReports();
-    console.log(`Ejemplo: ${n} reportes y su disponibilidad actual`);
+  const demo = process.env.SEED_DEMO ?? "1";
+  if (demo === "0") return;
+  if (demo !== "force" && (await db.report.count()) > 0) {
+    console.log("Ejemplo: ya hay reportes, no se tocan (SEED_DEMO=force para regenerar)");
+    return;
   }
+  const n = await seedDemoReports();
+  console.log(`Ejemplo: ${n} reportes y su disponibilidad actual`);
 }
 
 main()

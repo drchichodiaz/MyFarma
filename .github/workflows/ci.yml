@@ -1,9 +1,9 @@
 name: CI
 
+# En PRs, y llamado por deploy.yml antes de cada deploy a main.
 on:
-  push:
-    branches: [main]
   pull_request:
+  workflow_call:
 
 jobs:
   check:
