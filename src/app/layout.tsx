@@ -1,0 +1,36 @@
+import type { Metadata, Viewport } from "next";
+import { Archivo, JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
+import "./globals.css";
+
+// Fuentes alojadas en nuestro propio servidor (next/font): variables, solo el subconjunto latino.
+const display = Archivo({ subsets: ["latin"], variable: "--font-archivo", display: "swap" });
+const sans = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-jakarta", display: "swap" });
+const mono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains",
+  display: "swap",
+  preload: false, // solo se usa en precios y dosis; no bloquea el primer render
+});
+
+export const metadata: Metadata = {
+  title: { default: "MyFarma", template: "%s · MyFarma" },
+  description:
+    "Encuentra en qué farmacia de Panamá hay tu medicamento, a qué precio y cuándo se confirmó.",
+  applicationName: "MyFarma",
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f0f3f6" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0f1e" },
+  ],
+  viewportFit: "cover",
+};
+
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  return (
+    <html lang="es" className={`${display.variable} ${sans.variable} ${mono.variable}`}>
+      <body className="min-h-dvh bg-bg font-sans text-ink antialiased">{children}</body>
+    </html>
+  );
+}

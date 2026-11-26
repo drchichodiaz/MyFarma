@@ -1,0 +1,1096 @@
+<title>MyFarma</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script>
+  const tok = v => `rgb(var(--${v}) / <alpha-value>)`;
+  tailwind.config = { theme: { extend: {
+    colors: { bg: tok('bg'), surface: tok('surface'), surface2: tok('surface2'), ink: tok('ink'), muted: tok('muted'), line: tok('line'),
+      brand: tok('brand'), brandink: tok('brandink'), brandsoft: tok('brandsoft'), sun: tok('sun'), sunink: tok('sunink'),
+      ok: tok('ok'), warn: tok('warn'), bad: tok('bad'), onstat: tok('onstat'),
+      lime: tok('lime'), limeink: tok('limeink'), forest: tok('forest'),
+      tteal: tok('t-teal'), tyellow: tok('t-yellow'), tsalmon: tok('t-salmon'), tpink: tok('t-pink'), tblue: tok('t-blue'), tileink: tok('tileink') },
+    fontFamily: {
+      display: ['Archivo', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+      sans: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+      mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'] },
+    boxShadow: {
+      soft: '0 1px 2px rgb(var(--ink) / .04), 0 8px 24px -14px rgb(var(--ink) / .22)',
+      lift: '0 2px 6px rgb(var(--ink) / .05), 0 22px 44px -18px rgb(var(--ink) / .32)' }
+  } } };
+</script>
+<style>
+  /* Layout: app shell — sticky header, single content column (max 72rem), map+list split on results, bottom tab bar on phones */
+  /* Palette: lime hero blocks + forest-green actions + navy type + pastel category tiles (user's reference) */
+  :root {
+    --bg: 240 243 246; --surface: 255 255 255; --surface2: 236 240 244; --ink: 22 30 66; --muted: 98 106 132; --line: 221 227 235;
+    --brand: 14 79 32; --brandink: 255 255 255; --brandsoft: 224 245 208;
+    --lime: 160 228 104; --limeink: 9 44 17; --forest: 10 42 18;
+    --sun: 255 212 72; --sunink: 122 86 0;
+    --t-teal: 142 215 214; --t-yellow: 255 215 80; --t-salmon: 255 180 138; --t-pink: 248 200 224; --t-blue: 162 198 255; --tileink: 16 26 52;
+    --ok: 22 140 62; --warn: 194 118 0; --bad: 212 60 50; --onstat: 255 255 255;
+    --land: 236 240 244; --sea: 190 231 229; --road: 255 255 255;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --bg: 10 15 30; --surface: 18 25 44; --surface2: 26 35 58; --ink: 236 240 250; --muted: 152 162 188; --line: 40 52 80;
+    --brand: 160 228 104; --brandink: 9 44 17; --brandsoft: 30 58 36;
+    --lime: 160 228 104; --limeink: 9 44 17; --forest: 8 30 14;
+    --sun: 255 212 72; --sunink: 255 222 120;
+    --t-teal: 118 196 196; --t-yellow: 238 200 74; --t-salmon: 238 162 122; --t-pink: 228 176 204; --t-blue: 136 174 238; --tileink: 16 26 52;
+    --ok: 96 222 132; --warn: 246 182 72; --bad: 250 122 108; --onstat: 8 22 12;
+    --land: 20 29 50; --sea: 20 52 64; --road: 34 46 74; color-scheme: dark; } }
+  :root[data-theme="dark"] {
+    --bg: 10 15 30; --surface: 18 25 44; --surface2: 26 35 58; --ink: 236 240 250; --muted: 152 162 188; --line: 40 52 80;
+    --brand: 160 228 104; --brandink: 9 44 17; --brandsoft: 30 58 36;
+    --lime: 160 228 104; --limeink: 9 44 17; --forest: 8 30 14;
+    --sun: 255 212 72; --sunink: 255 222 120;
+    --t-teal: 118 196 196; --t-yellow: 238 200 74; --t-salmon: 238 162 122; --t-pink: 228 176 204; --t-blue: 136 174 238; --tileink: 16 26 52;
+    --ok: 96 222 132; --warn: 246 182 72; --bad: 250 122 108; --onstat: 8 22 12;
+    --land: 20 29 50; --sea: 20 52 64; --road: 34 46 74; color-scheme: dark; }
+
+  html, body { min-height: 100%; }
+  body { background: rgb(var(--bg)); color: rgb(var(--ink)); font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  [hidden] { display: none !important; }
+  .peer:checked + span .opt-ic { background: rgb(255 255 255 / .25); color: inherit; }
+  .tile-ic { transition: transform .5s cubic-bezier(.3,1.5,.5,1); }
+  .group:hover .tile-ic { transform: rotate(-8deg) scale(1.08); }
+  @keyframes marquee { to { transform: translateX(-50%); } }
+  .marquee { animation: marquee 28s linear infinite; }
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 45; background: rgb(var(--bg)); }
+  .gutter { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .balance { text-wrap: balance; }
+  :focus-visible { outline: 2px solid rgb(var(--brand)); outline-offset: 2px; border-radius: 10px; }
+  select.input:focus-visible, .input input:focus-visible, #q:focus-visible { outline: none; }
+  .no-scrollbar { scrollbar-width: none; } .no-scrollbar::-webkit-scrollbar { display: none; }
+  .tabular { font-variant-numeric: tabular-nums; }
+
+  /* motion */
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  .rise, .rise-card { animation: rise .7s cubic-bezier(.2,.8,.2,1) both; animation-delay: calc(var(--d, 0) * 70ms); }
+  .no-rise .rise { animation: none; }
+  @keyframes viewIn { from { opacity: 0; transform: translateY(8px); } }
+  .view-in { animation: viewIn .45s cubic-bezier(.2,.8,.2,1); }
+  @keyframes ping { 0% { transform: scale(1); opacity: .55; } 100% { transform: scale(2.8); opacity: 0; } }
+  .pulse::after { content: ""; position: absolute; inset: 0; border-radius: 999px; background: currentColor; animation: ping 1.8s ease-out infinite; }
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+  .float { animation: float 6s ease-in-out infinite; } .float2 { animation: float 7s ease-in-out -2.5s infinite; }
+  @keyframes pop { 0% { transform: scale(0); } 70% { transform: scale(1.14); } 100% { transform: scale(1); } }
+  @keyframes hl { from { background-size: 0 .3em; } }
+  .hl { background: linear-gradient(rgb(var(--sun) / .6), rgb(var(--sun) / .6)) no-repeat 0 90% / 100% .3em; animation: hl 1s .55s cubic-bezier(.2,.8,.2,1) both; }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(-12px) scale(.98); } }
+  .feed-new { animation: slideIn .6s cubic-bezier(.2,.8,.2,1) both; }
+  @keyframes grow { from { transform: scaleX(0); } }
+  .growbar { transform-origin: left; animation: grow 1.1s cubic-bezier(.2,.8,.2,1) .25s both; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  .draw { stroke-dasharray: 40; stroke-dashoffset: 40; animation: draw .6s .25s cubic-bezier(.6,0,.2,1) forwards; }
+  @keyframes burst { from { transform: translate(-50%,-50%) scale(.3); opacity: 1; } to { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) rotate(var(--r)) scale(1); opacity: 0; } }
+  .burst { position: absolute; left: 50%; top: 50%; border-radius: 999px; animation: burst 1s cubic-bezier(.15,.8,.25,1) .15s both; }
+  .pop { animation: pop .55s cubic-bezier(.3,1.6,.5,1) both; }
+
+  /* blister hero */
+  .foil { background: linear-gradient(135deg, rgb(var(--surface2)) 0%, rgb(var(--surface)) 34%, rgb(var(--surface2)) 58%, rgb(var(--surface)) 100%); }
+  .pocket { position: relative; display: grid; place-items: center; border-radius: 999px; border: 1px solid rgb(var(--line));
+    background: radial-gradient(circle at 50% 32%, rgb(var(--surface)), rgb(var(--surface2)));
+    box-shadow: inset 0 -2px 5px rgb(var(--ink) / .06), 0 3px 8px -3px rgb(var(--ink) / .22); }
+  .pocket.empty { background: transparent; box-shadow: none; border: 1.5px dashed rgb(var(--muted) / .45); }
+  .pocket.empty::after { content: ""; width: 34%; height: 1.5px; background: rgb(var(--muted) / .45); transform: rotate(-35deg); }
+  .tab { position: relative; width: 62%; aspect-ratio: 1; border-radius: 999px;
+    background: radial-gradient(circle at 35% 28%, rgb(255 255 255 / .6), transparent 46%), rgb(var(--sun));
+    box-shadow: inset 0 -2px 0 rgb(0 0 0 / .12), 0 1px 2px rgb(0 0 0 / .18); animation: pop .55s cubic-bezier(.3,1.6,.5,1) both; }
+  .tab::after { content: ""; position: absolute; left: 20%; right: 20%; top: 50%; height: 1.5px; background: rgb(0 0 0 / .16); }
+
+  /* map */
+  .m-sea { fill: rgb(var(--sea)); } .m-land { fill: rgb(var(--land)); }
+  .m-coast { fill: none; stroke: rgb(var(--brand) / .35); stroke-width: 2; }
+  .m-road { fill: none; stroke: rgb(var(--road)); stroke-width: 6; stroke-linecap: round; }
+  .m-road2 { fill: none; stroke: rgb(var(--line)); stroke-width: 1; stroke-dasharray: 3 5; }
+  .m-label { fill: rgb(var(--muted)); font: 700 8px "Plus Jakarta Sans", sans-serif; letter-spacing: .06em; }
+  .m-sea-label { fill: rgb(var(--brand) / .6); letter-spacing: .45em; font-size: 9px; }
+  .m-dot { fill: rgb(var(--muted) / .16); }
+  @keyframes wave { to { stroke-dashoffset: -140; } }
+  .m-wave { fill: none; stroke: rgb(var(--brand) / .2); stroke-width: 1.5; stroke-dasharray: 8 10; stroke-linecap: round; animation: wave 14s linear infinite; }
+  .pin { transform: translate(-50%, -100%); animation: drop .65s cubic-bezier(.2,.9,.3,1.3) both; z-index: 2; transition: opacity .3s, filter .3s; }
+  @keyframes drop { 0% { transform: translate(-50%, -190%); opacity: 0; } 65% { transform: translate(-50%, -90%); opacity: 1; } 100% { transform: translate(-50%, -100%); } }
+  .no-rise .pin { animation: none; }
+  .pin-body { transition: transform .25s cubic-bezier(.3,1.5,.5,1); }
+  .pin:hover, .pin.is-hot { z-index: 5; }
+  .pin:hover .pin-body, .pin.is-hot .pin-body { transform: scale(1.16); }
+  .pin-dim { opacity: .3; filter: grayscale(1); }
+  .sweep { border-radius: 999px; background: conic-gradient(from 0deg, transparent 0deg, rgb(var(--brand) / .22) 55deg, transparent 56deg); animation: spin 5s linear infinite; }
+
+  /* sheet + toast */
+  .sheet { left: 0; right: 0; bottom: 0; max-height: 88%; border-radius: 28px 28px 0 0; transform: translateY(105%);
+    transition: transform .45s cubic-bezier(.2,.8,.2,1); padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
+  @media (min-width: 768px) { .sheet { left: auto; top: 0; width: 440px; max-height: none; border-radius: 28px 0 0 28px; transform: translateX(105%);
+    padding-top: env(safe-area-inset-top, 0px); padding-left: 0; } }
+  .sheet.open { transform: none; }
+  .backdrop.open { opacity: 1; pointer-events: auto; }
+  .toast { left: 50%; bottom: calc(92px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 24px); opacity: 0; pointer-events: none;
+    transition: transform .4s cubic-bezier(.2,.8,.2,1), opacity .3s; max-width: calc(100% - 32px); }
+  @media (min-width: 768px) { .toast { bottom: calc(28px + env(safe-area-inset-bottom, 0px)); } }
+  .toast.show { transform: translate(-50%, 0); opacity: 1; }
+
+  /* switch */
+  .switch { position: relative; flex-shrink: 0; width: 44px; height: 26px; border-radius: 999px; background: rgb(var(--line)); transition: background .25s; }
+  .switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 999px; background: rgb(var(--surface));
+    box-shadow: 0 1px 3px rgb(0 0 0 / .25); transition: transform .3s cubic-bezier(.3,1.5,.5,1); }
+  .peer:checked ~ .switch { background: rgb(var(--brand)); }
+  .peer:checked ~ .switch::after { transform: translateX(18px); }
+  .peer:focus-visible ~ .switch { outline: 2px solid rgb(var(--brand)); outline-offset: 2px; }
+  .peer:disabled ~ .switch { opacity: .45; }
+  input[type="range"] { accent-color: rgb(var(--brand)); }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    .pulse::after, .sweep { display: none; }
+  }
+</style>
+<style type="text/tailwindcss">
+  @layer components {
+    .chip { @apply inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-3.5 py-2 text-sm font-semibold text-ink shadow-soft transition duration-200 hover:-translate-y-px hover:border-brand/50 active:translate-y-0; }
+    .chip-on { @apply border-brand bg-brand text-brandink hover:border-brand; }
+    .btn-primary { @apply inline-flex items-center gap-2 rounded-full bg-brand px-5 py-3 text-sm font-bold text-brandink shadow-soft transition duration-200 hover:-translate-y-px hover:shadow-lift hover:brightness-110 active:translate-y-0 active:scale-[.98]; }
+    .btn-ghost { @apply inline-flex items-center justify-center gap-2 rounded-full border border-line bg-surface px-4 py-3 text-sm font-semibold transition duration-200 hover:bg-surface2 active:scale-[.98]; }
+    .pill { @apply inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-bold; }
+    .eyebrow { @apply text-xs font-extrabold uppercase tracking-[.16em] text-brand; }
+    .input { @apply w-full rounded-2xl border-2 border-transparent bg-surface2 px-4 py-3.5 text-base font-semibold text-ink transition hover:border-line focus-within:border-brand/60 focus-within:bg-surface focus-within:ring-4 focus-within:ring-brand/10; }
+    .flabel { @apply flex items-center gap-2.5 text-base font-extrabold; }
+    .stepn { @apply grid h-7 w-7 shrink-0 place-items-center rounded-full bg-lime font-display text-sm font-black text-limeink; }
+    .stat-n { @apply font-display text-3xl font-extrabold tracking-tight tabular-nums sm:text-4xl; }
+    .stat-l { @apply mt-1 text-xs leading-snug text-muted; }
+    .h-section { @apply mt-1 font-display text-3xl font-extrabold leading-[1.05] tracking-tight sm:text-4xl; }
+  }
+</style>
+
+<header class="sticky z-40 pt-3" style="top: env(safe-area-inset-top, 0px)">
+  <div class="gutter">
+    <div class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 rounded-2xl border border-line/60 bg-surface/90 px-3 shadow-soft backdrop-blur-xl sm:px-4">
+      <div class="flex min-w-0 items-center gap-4">
+        <a href="#inicio" class="group flex shrink-0 items-center gap-2" aria-label="MyFarma, inicio">
+          <span class="relative grid h-9 w-9 place-items-center rounded-xl bg-lime text-limeink transition group-hover:rotate-[-8deg]">
+            <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          </span>
+          <span class="font-display text-xl font-black tracking-tight">MyFarma</span>
+        </a>
+        <span class="hidden h-8 w-px bg-line lg:block"></span>
+        <span class="hidden items-center gap-2 lg:flex">
+          <svg viewBox="0 0 24 24" class="h-4 w-4 text-muted" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 1 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+          <span class="leading-tight"><span class="block text-[10px] font-semibold text-muted">Tu zona</span><span class="block text-xs font-extrabold">Vía España</span></span>
+        </span>
+      </div>
+      <nav id="topnav" class="hidden items-center gap-1 rounded-full bg-surface2 p-1 md:flex" aria-label="Principal"></nav>
+      <div class="flex items-center gap-2">
+        <span class="pill border border-sun/50 bg-sun/20 text-sunink">Datos de ejemplo</span>
+        <a href="#reportar" class="btn-primary hidden py-2.5 lg:inline-flex">Reportar</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="view" class="gutter pb-36 md:pb-20"></main>
+
+<footer class="gutter pb-28 md:pb-8">
+  <div class="mx-auto max-w-6xl rounded-[2rem] bg-forest p-3 text-white sm:p-4">
+    <div class="grid gap-6 px-3 pb-6 pt-5 text-sm sm:grid-cols-3 sm:px-5">
+      <div><div class="text-xs font-extrabold uppercase tracking-[.14em] text-lime">Qué es</div><p class="mt-2 text-white/75">Un buscador comunitario de medicamentos escasos en Panamá. Prototipo para validar con pacientes.</p></div>
+      <div><div class="text-xs font-extrabold uppercase tracking-[.14em] text-lime">Qué no es</div><p class="mt-2 text-white/75">MyFarma no vende medicamentos: informa dónde hay. Los medicamentos con receta se compran con receta.</p></div>
+      <div><div class="text-xs font-extrabold uppercase tracking-[.14em] text-lime">Datos</div><p class="mt-2 text-white/75">Farmacias, precios y reportes de esta página son de ejemplo.</p></div>
+    </div>
+    <div class="flex items-center gap-3 overflow-hidden rounded-[1.5rem] bg-lime px-5 py-5 text-limeink sm:gap-5 sm:px-8 sm:py-7">
+      <span class="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-limeink text-lime sm:h-20 sm:w-20">
+        <svg viewBox="0 0 24 24" class="h-8 w-8 sm:h-11 sm:w-11" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+      </span>
+      <span class="font-display text-[clamp(2.6rem,11vw,7.5rem)] font-black leading-none tracking-[-0.05em]">MyFarma</span>
+    </div>
+  </div>
+</footer>
+
+<nav id="bottomnav" class="gutter fixed inset-x-0 bottom-0 z-40 border-t border-line bg-surface/90 backdrop-blur-xl md:hidden" style="padding-bottom: max(8px, env(safe-area-inset-bottom, 0px))" aria-label="Principal"></nav>
+
+<div id="backdrop" class="backdrop fixed inset-0 z-50 bg-ink/30 opacity-0 backdrop-blur-[2px] transition-opacity duration-300 pointer-events-none"></div>
+<aside id="sheet" class="sheet fixed z-50 overflow-y-auto bg-surface shadow-lift" role="dialog" aria-modal="true" aria-labelledby="sheetTitle"></aside>
+<div id="toast" class="toast fixed z-[60] flex items-center gap-2 rounded-full bg-ink px-5 py-3 text-sm font-semibold text-bg shadow-lift" role="status" aria-live="polite"></div>
+
+<script>
+/* ---------- data (examples) ---------- */
+const BR = [
+  { id: 'b1', chain: 'Botica del Istmo', area: 'Los Pueblos',     addr: 'Centro comercial Los Pueblos, local 14', hours: 'Abierta hasta 10:00 p. m.', phone: '+507 000-0101', x: 70, y: 38, km: 3.2 },
+  { id: 'b2', chain: 'Farmacia Puente',  area: 'Vía España',      addr: 'Vía España, frente a la parada de El Carmen', hours: 'Abierta 24 horas', phone: '+507 000-0102', x: 42, y: 50, km: 1.1 },
+  { id: 'b3', chain: 'FarmaNorte',       area: 'Brisas del Golf', addr: 'Plaza Brisas, planta baja', hours: 'Abierta hasta 9:00 p. m.', phone: '+507 000-0103', x: 84, y: 20, km: 6.8 },
+  { id: 'b4', chain: 'Droguería Canal',  area: 'Albrook',         addr: 'Albrook Mall, pasillo del Canguro', hours: 'Abierta hasta 9:00 p. m.', phone: '+507 000-0104', x: 16, y: 44, km: 5.9 },
+  { id: 'b5', chain: 'Botica del Istmo', area: 'El Dorado',       addr: 'Centro comercial El Dorado, local 3', hours: 'Abierta hasta 10:00 p. m.', phone: '+507 000-0105', x: 30, y: 28, km: 3.9 },
+  { id: 'b6', chain: 'Farmacia Puente',  area: 'Costa del Este',  addr: 'Av. Centenario, Plaza Costa', hours: 'Abierta hasta 11:00 p. m.', phone: '+507 000-0106', x: 77, y: 54, km: 7.4 },
+  { id: 'b7', chain: 'FarmaNorte',       area: 'Villa Lucre',     addr: 'Plaza Villa Lucre, local 8', hours: 'Abierta hasta 8:00 p. m.', phone: '+507 000-0107', x: 60, y: 19, km: 4.6 },
+  { id: 'b8', chain: 'Droguería Canal',  area: 'San Francisco',   addr: 'Calle 74, San Francisco', hours: 'Abierta hasta 10:00 p. m.', phone: '+507 000-0108', x: 55, y: 58, km: 2.4 },
+];
+const ME = { x: 48, y: 42, area: 'Vía España' };
+const MEDS = [
+  { id: 'mtx',  name: 'Metotrexato',       dose: '2.5 mg',   form: 'Tabletas',            pack: 'Caja x 50', use: 'Artritis reumatoide', scarce: true,  base: 15 },
+  { id: 'mtxi', name: 'Metotrexato',       dose: '25 mg/mL', form: 'Solución inyectable', pack: 'Vial 2 mL', use: 'Artritis reumatoide', scarce: true,  base: 38 },
+  { id: 'fol',  name: 'Ácido fólico',      dose: '5 mg',     form: 'Tabletas',            pack: 'Caja x 30', use: 'Acompaña al metotrexato', scarce: false, base: 3.5 },
+  { id: 'hcq',  name: 'Hidroxicloroquina', dose: '200 mg',   form: 'Tabletas',            pack: 'Caja x 30', use: 'Artritis reumatoide y lupus', scarce: true, base: 22 },
+  { id: 'los',  name: 'Losartán',          dose: '50 mg',    form: 'Tabletas',            pack: 'Caja x 30', use: 'Hipertensión', scarce: true,  base: 9 },
+  { id: 'met',  name: 'Metformina',        dose: '850 mg',   form: 'Tabletas',            pack: 'Caja x 30', use: 'Diabetes tipo 2', scarce: false, base: 6 },
+  { id: 'levo', name: 'Levotiroxina',      dose: '100 mcg',  form: 'Tabletas',            pack: 'Caja x 50', use: 'Hipotiroidismo', scarce: true,  base: 12 },
+  { id: 'pred', name: 'Prednisona',        dose: '5 mg',     form: 'Tabletas',            pack: 'Caja x 20', use: 'Antiinflamatorio', scarce: false, base: 4 },
+];
+const NAMES = ['Mariela G.', 'Rubén A.', 'Yariela C.', 'Iván P.', 'Daysi M.', 'Ricardo Q.', 'Lourdes B.', 'Abdiel S.', 'Itzel R.', 'Kathia V.'];
+const MTX = { b1: ['hay', 15.20, 45, 9], b2: ['pocas', 16.80, 150, 4], b3: ['no', null, 300, 5], b4: ['hay', 14.75, 600, 6],
+              b5: ['nd'], b6: ['hay', 17.10, 30, 3], b7: ['no', null, 2000, 2], b8: ['pocas', 15.95, 1500, 2] };
+
+const SM = {
+  hay:   { label: 'Hay',          pill: 'bg-ok/15 text-ok',     dot: 'bg-ok',       text: 'text-ok',    panel: 'bg-ok/10',    icon: 'check', opt: 'peer-checked:border-ok peer-checked:bg-ok peer-checked:text-onstat peer-checked:shadow-lift peer-checked:-translate-y-1', tint: 'bg-ok/15 text-ok' },
+  pocas: { label: 'Quedan pocas', pill: 'bg-warn/15 text-warn', dot: 'bg-warn',     text: 'text-warn',  panel: 'bg-warn/10',  icon: 'alert', opt: 'peer-checked:border-warn peer-checked:bg-warn peer-checked:text-onstat peer-checked:shadow-lift peer-checked:-translate-y-1', tint: 'bg-warn/15 text-warn' },
+  no:    { label: 'No hay',       pill: 'bg-bad/15 text-bad',   dot: 'bg-bad',      text: 'text-bad',   panel: 'bg-bad/10',   icon: 'x',     opt: 'peer-checked:border-bad peer-checked:bg-bad peer-checked:text-onstat peer-checked:shadow-lift peer-checked:-translate-y-1', tint: 'bg-bad/15 text-bad' },
+  nd:    { label: 'Sin reportes', pill: 'bg-surface2 text-muted', dot: 'bg-muted/50', text: 'text-muted', panel: 'bg-surface2', icon: 'clock', opt: '' },
+};
+
+/* ---------- helpers ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const M = id => MEDS.find(m => m.id === id);
+const B = id => BR.find(b => b.id === id);
+const money = p => 'B/. ' + p.toFixed(2);
+const avail = s => s.status === 'hay' || s.status === 'pocas';
+const fresh = a => a != null && a < 180;
+const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+const initials = n => n.split(' ').map(w => w[0]).join('').slice(0, 2);
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+function ago(m) {
+  if (m == null) return 'sin reportes';
+  if (m < 1) return 'justo ahora';
+  if (m < 60) return `hace ${m} min`;
+  if (m < 1440) return `hace ${Math.round(m / 60)} h`;
+  const d = Math.round(m / 1440); return `hace ${d} ${d === 1 ? 'día' : 'días'}`;
+}
+function agoShort(m) { if (m < 1) return 'ahora'; if (m < 60) return m + ' min'; if (m < 1440) return Math.round(m / 60) + ' h'; return Math.round(m / 1440) + ' d'; }
+function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+const IC = {
+  search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+  pin: '<path d="M12 21s-7-6.2-7-11a7 7 0 1 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>',
+  bell: '<path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  home: '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  check: '<path d="M20 6 9 17l-5-5"/>',
+  x: '<path d="M18 6 6 18M6 6l12 12"/>',
+  alert: '<path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17h.01"/>',
+  camera: '<path d="M4 7h3l2-3h6l2 3h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="4"/>',
+  copy: '<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>',
+  nav: '<path d="m3 11 18-8-8 18-2-8z"/>',
+  users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
+  mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
+  phone: '<rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/>',
+  chat: '<path d="M21 12a9 9 0 0 1-13.5 7.8L3 21l1.2-4.5A9 9 0 1 1 21 12z"/>',
+  chev: '<path d="m6 9 6 6 6-6"/>',
+  arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
+  trash: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
+  shield: '<path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/>',
+  bone: '<path d="M17 10c.7-.7 1.69 0 2.5 0a2.5 2.5 0 1 0 0-5 .5.5 0 0 1-.5-.5 2.5 2.5 0 1 0-5 0c0 .81.7 1.8 0 2.5l-7 7c-.7.7-1.69 0-2.5 0a2.5 2.5 0 0 0 0 5c.28 0 .5.22.5.5a2.5 2.5 0 1 0 5 0c0-.82-.7-1.8 0-2.5Z"/>',
+  drop: '<path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/>',
+  heart: '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.2 12h3.3l2-3 3 6 2-3h7.3"/>',
+  thyroid: '<path d="M12 6v14"/><path d="M12 8C9 4 4 5 4 10s5 8 8 4"/><path d="M12 8c3-4 8-3 8 2s-5 8-8 4"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  flame: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
+  map: '<path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3z"/><path d="M9 3v15M15 6v15"/>',
+};
+const icon = (n, c = 'w-5 h-5') => `<svg viewBox="0 0 24 24" class="${c}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n]}</svg>`;
+
+/* ---------- stock store (in memory) ---------- */
+const STOCK = {};
+function makeReports(s, r) {
+  if (s.status === 'nd') return [];
+  const out = [{ who: NAMES[Math.floor(r() * NAMES.length)], status: s.status, price: s.price, ago: s.ago }];
+  let t = s.ago;
+  for (let i = 0; i < 2; i++) {
+    t += 240 + Math.round(r() * 1400);
+    const st = r() < .6 ? s.status : (s.status === 'no' ? 'hay' : 'no');
+    out.push({ who: NAMES[Math.floor(r() * NAMES.length)], status: st, price: st === 'no' ? null : (s.price || null), ago: t });
+  }
+  return out;
+}
+function stock(id) {
+  if (STOCK[id]) return STOCK[id];
+  const med = M(id), idx = MEDS.indexOf(med), r = rng(idx * 97 + 13), out = {};
+  BR.forEach(b => {
+    let s;
+    if (id === 'mtx') {
+      const [status, price, a, votes] = MTX[b.id];
+      s = { status, price: price ?? null, ago: a ?? null, votes: votes ?? 0 };
+    } else {
+      const roll = r(), status = roll < .45 ? 'hay' : roll < .62 ? 'pocas' : roll < .86 ? 'no' : 'nd';
+      s = { status, price: avail({ status }) ? +(med.base * (.9 + r() * .3)).toFixed(2) : null,
+            ago: status === 'nd' ? null : Math.round(15 + r() * 2400), votes: status === 'nd' ? 0 : 1 + Math.floor(r() * 11) };
+    }
+    s.reports = makeReports(s, r);
+    out[b.id] = s;
+  });
+  return (STOCK[id] = out);
+}
+const FEED = [
+  { who: 'Mariela G.', med: 'mtx', br: 'b6', status: 'hay', ago: 30 },
+  { who: 'Rubén A.',   med: 'mtx', br: 'b1', status: 'hay', ago: 45 },
+  { who: 'Itzel R.',   med: 'los', br: 'b2', status: stock('los').b2.status, ago: 70 },
+  { who: 'Abdiel S.',  med: 'mtx', br: 'b2', status: 'pocas', ago: 150 },
+  { who: 'Daysi M.',   med: 'hcq', br: 'b4', status: stock('hcq').b4.status, ago: 190 },
+];
+const state = { med: 'mtx', only: false, fresh: false, sort: 'dist', sheet: null,
+  alerts: [ { med: 'mtx', rad: 5, ch: ['Correo', 'Celular'], on: true }, { med: 'hcq', rad: 8, ch: ['Correo'], on: false } ] };
+let timers = [];
+const clearTimers = () => { timers.forEach(t => { clearTimeout(t); clearInterval(t); }); timers = []; };
+
+/* ---------- shell ---------- */
+const NAV = [ ['inicio', 'Inicio', 'home'], ['resultados', 'Buscar', 'search'], ['reportar', 'Reportar', 'plus'], ['alertas', 'Alertas', 'bell'] ];
+function renderNav(cur) {
+  $('#topnav').innerHTML = NAV.map(([k, l]) => `<a href="#${k}" class="rounded-full px-4 py-2 text-sm font-bold transition ${k === cur ? 'bg-lime text-limeink shadow-soft' : 'text-muted hover:text-ink'}" ${k === cur ? 'aria-current="page"' : ''}>${l}</a>`).join('');
+  $('#bottomnav').innerHTML = `<div class="grid grid-cols-4 pt-2">${NAV.map(([k, l, ic]) => k === 'reportar'
+    ? `<a href="#${k}" class="flex flex-col items-center gap-1 text-[11px] font-bold ${k === cur ? 'text-brand' : 'text-muted'}"><span class="-mt-5 grid h-12 w-12 place-items-center rounded-full bg-lime text-limeink shadow-lift ring-4 ring-bg">${icon(ic, 'w-6 h-6')}</span>${l}</a>`
+    : `<a href="#${k}" class="flex flex-col items-center gap-1 py-1 text-[11px] font-bold transition ${k === cur ? 'text-brand' : 'text-muted'}" ${k === cur ? 'aria-current="page"' : ''}>${icon(ic, 'w-6 h-6')}${l}</a>`).join('')}</div>`;
+}
+function view(html, anim = true) {
+  const v = $('#view');
+  v.classList.toggle('no-rise', !anim);
+  v.innerHTML = html;
+  if (anim) { v.classList.remove('view-in'); void v.offsetWidth; v.classList.add('view-in'); }
+}
+function toast(msg) {
+  const t = $('#toast');
+  t.innerHTML = `<span class="grid h-5 w-5 place-items-center rounded-full bg-ok text-onstat">${icon('check', 'w-3.5 h-3.5')}</span>${msg}`;
+  t.classList.add('show');
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 2800);
+}
+function countUp(root) {
+  if (reduced) return;
+  $$('[data-count]', root).forEach(el => {
+    const target = +el.dataset.count, t0 = performance.now();
+    const step = now => { const p = Math.min(1, (now - t0) / 1300), e = 1 - Math.pow(1 - p, 3); el.textContent = Math.round(target * e); if (p < 1) requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+  });
+}
+
+/* ---------- home ---------- */
+function blister(av, mp) {
+  const filled = [1, 1, 0, 1, 0, 1, 1, 0, 1, 0];
+  return `
+  <div class="relative mx-auto aspect-[4/3.7] w-full max-w-[440px]">
+    <div class="absolute inset-[10%] rounded-full bg-white/40 blur-3xl"></div>
+    <div class="foil absolute rounded-[1.8rem] border border-line p-5 shadow-lift sm:p-6" style="inset: 6% 5% 18% 9%; transform: rotate(-6deg)">
+      <div class="flex items-center justify-between font-mono text-[10px] tracking-wider text-muted"><span>METOTREXATO 2.5 mg</span><span>LOTE 24-118</span></div>
+      <div class="mt-4 grid grid-cols-5 gap-3 sm:gap-4">
+        ${filled.map((f, i) => `<div class="pocket aspect-square ${f ? '' : 'empty'}">${f ? `<span class="tab" style="animation-delay:${450 + i * 90}ms"></span>` : ''}</div>`).join('')}
+      </div>
+      <div class="mt-4 h-px bg-line"></div>
+      <div class="mt-2 font-mono text-[10px] tracking-wider text-muted">VENTA BAJO RECETA MÉDICA</div>
+    </div>
+    <div class="float absolute bottom-0 left-0 w-[80%] rounded-2xl border border-line bg-surface p-4 text-ink shadow-lift sm:-left-2">
+      <div class="flex items-center gap-3">
+        <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-ok/15 text-ok">${icon('pin')}</span>
+        <div class="min-w-0">
+          <div class="text-sm font-extrabold">Hay en ${av} sucursales cerca de ti</div>
+          <div class="truncate text-xs text-muted">Metotrexato 2.5 mg · desde <span class="font-mono font-semibold text-ink">${money(mp)}</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="float2 absolute right-0 top-0 flex items-center gap-1.5 rounded-full bg-ink px-3 py-1.5 text-xs font-bold text-bg shadow-lift">
+      <span class="relative h-1.5 w-1.5 rounded-full bg-ok text-ok pulse"></span>Confirmado hace 30 min
+    </div>
+  </div>`;
+}
+function feedItem(f, isNew) {
+  const m = M(f.med), b = B(f.br), s = SM[f.status];
+  return `<li><button data-feed="${f.med}|${f.br}" class="${isNew ? 'feed-new ' : ''}group flex w-full items-center gap-3 rounded-2xl border border-line bg-surface p-3 pr-4 text-left shadow-soft transition hover:border-brand/40 hover:shadow-lift">
+    <span class="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-surface2 text-sm font-extrabold text-muted">${initials(f.who)}</span>
+    <span class="min-w-0 flex-1">
+      <span class="block truncate text-sm"><b>${f.who}</b> <span class="text-muted">reportó</span> <b>${m.name} ${m.dose}</b></span>
+      <span class="block truncate text-xs text-muted">${b.chain} · ${b.area} · ${ago(f.ago)}</span>
+    </span>
+    <span class="pill ${s.pill}">${s.label}</span>
+  </button></li>`;
+}
+const CONDS = [
+  { k: 'Artritis reumatoide', med: 'mtx',  tile: 'bg-tteal',   ic: 'bone' },
+  { k: 'Diabetes',            med: 'met',  tile: 'bg-tyellow', ic: 'drop' },
+  { k: 'Hipertensión',        med: 'los',  tile: 'bg-tsalmon', ic: 'heart' },
+  { k: 'Tiroides',            med: 'levo', tile: 'bg-tpink',   ic: 'thyroid' },
+  { k: 'Lupus',               med: 'hcq',  tile: 'bg-tblue',   ic: 'sun' },
+  { k: 'Inflamación',         med: 'pred', tile: 'bg-sun',     ic: 'flame' },
+];
+const TILE_OF = { mtx: 'bg-tteal', mtxi: 'bg-tteal', hcq: 'bg-tblue', los: 'bg-tsalmon', met: 'bg-tyellow', levo: 'bg-tpink', pred: 'bg-sun', fol: 'bg-lime' };
+function boxArt(m) {
+  const t = TILE_OF[m.id] || 'bg-lime';
+  return `<div class="relative h-32 w-24">
+    <div class="absolute inset-0 translate-x-2.5 -translate-y-2.5 rounded-lg ${t} brightness-90"></div>
+    <div class="absolute inset-0 flex flex-col overflow-hidden rounded-lg border border-line bg-surface shadow-lift">
+      <div class="h-7 ${t}"></div>
+      <div class="flex flex-1 flex-col justify-between p-2 text-left">
+        <div><div class="text-[11px] font-extrabold leading-tight text-ink">${m.name}</div><div class="mt-0.5 font-mono text-[9px] text-muted">${m.dose}</div></div>
+        <div class="flex items-end justify-between"><span class="font-mono text-[8px] leading-tight text-muted">${m.pack}</span><span class="text-[10px] font-black text-bad">Rx</span></div>
+      </div>
+    </div>
+  </div>`;
+}
+function productCard(m, i) {
+  const st = stock(m.id), vals = Object.values(st), av = vals.filter(avail).length;
+  const pr = vals.filter(s => avail(s) && s.price).map(s => s.price), mp = pr.length ? Math.min(...pr) : null;
+  return `<article class="rise group flex flex-col rounded-2xl bg-surface p-3 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-lift" style="--d:${i + 1}">
+    <div class="relative grid place-items-center overflow-hidden rounded-xl bg-surface2 pb-6 pt-9">
+      <span class="absolute left-0 top-3 rounded-r-lg bg-sun px-2.5 py-1 text-[11px] font-extrabold text-[#3b2a00]">Escaso en CSS</span>
+      <div class="transition duration-500 group-hover:-rotate-6 group-hover:scale-105">${boxArt(m)}</div>
+    </div>
+    <div class="flex flex-1 flex-col px-1 pt-3">
+      <div class="flex items-center justify-between gap-2 text-[11px] text-muted"><span class="truncate">${m.use}</span><span class="shrink-0 font-bold ${av ? 'text-ok' : 'text-bad'}">${av}/${BR.length} con existencia</span></div>
+      <div class="mt-1 font-bold leading-snug">${m.name} ${m.dose}</div>
+      <div class="mt-auto flex items-center justify-between gap-2 pt-3">
+        <button data-med="${m.id}" class="rounded-full border-2 border-ink px-3 py-1.5 text-xs font-extrabold transition hover:bg-ink hover:text-bg">Ver dónde hay</button>
+        <span class="font-mono text-sm font-semibold tabular">${mp ? money(mp) : '—'}</span>
+      </div>
+    </div>
+  </article>`;
+}
+function renderHome() {
+  const st = stock('mtx'), list = Object.values(st);
+  const av = list.filter(avail).length, mp = Math.min(...list.filter(s => s.price).map(s => s.price));
+  const ticker = MEDS.filter(m => m.scarce).map(m => `<span class="inline-flex items-center gap-3"><span class="h-2 w-2 rounded-full bg-limeink"></span>${m.name} ${m.dose}</span>`).join('');
+  view(`<div class="mx-auto max-w-6xl">
+    <section class="rise relative mt-5 overflow-hidden rounded-[2rem] bg-lime px-5 pb-6 pt-7 text-limeink sm:px-10 sm:pt-10 lg:pb-9" style="--d:0">
+      <div class="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full border-[40px] border-white/25" aria-hidden="true"></div>
+      <div class="relative flex flex-wrap items-center gap-2 text-xs font-bold">
+        <span class="inline-flex items-center gap-2 rounded-full bg-limeink px-3 py-1.5 text-lime"><span class="relative h-2 w-2 rounded-full bg-lime text-lime pulse"></span><b class="tabular" data-count="128">128</b> reportes esta semana</span>
+        <span class="rounded-full bg-white/50 px-3 py-1.5">Hecho por y para pacientes de la CSS</span>
+      </div>
+      <h1 class="relative mt-4 font-display text-[clamp(2.5rem,11.4vw,10.4rem)] font-black leading-[.86] tracking-[-0.055em]">Encuéntralo.</h1>
+      <div class="relative mt-6 grid items-end gap-8 lg:mt-0 lg:grid-cols-[1fr_minmax(0,380px)_1fr]">
+        <div class="order-2 min-w-0 lg:order-1">
+          <p class="max-w-xs text-[13px] font-extrabold uppercase leading-snug tracking-wide">Deja de recorrer farmacia por farmacia. Pacientes reportan dónde hay tu medicamento, a qué precio y cuándo lo confirmaron.</p>
+          <div class="mt-5 flex flex-wrap gap-5 text-xs font-bold">
+            <span class="flex items-center gap-2"><span class="grid h-9 w-9 place-items-center rounded-full border-2 border-limeink/80">${icon('users', 'w-4 h-4')}</span>Reportes de<br>pacientes</span>
+            <span class="flex items-center gap-2"><span class="grid h-9 w-9 place-items-center rounded-full border-2 border-limeink/80">${icon('map', 'w-4 h-4')}</span>Sucursales<br>en el mapa</span>
+          </div>
+        </div>
+        <div class="order-1 min-w-0 lg:order-2 lg:-mt-24">${blister(av, mp)}</div>
+        <div class="order-3 min-w-0">
+          <div class="w-full rounded-2xl bg-surface p-3 text-ink shadow-lift sm:max-w-[300px] lg:ml-auto">
+            <div class="flex items-center justify-between gap-3 rounded-xl border-2 border-dashed border-line p-4">
+              <div class="font-display text-lg font-extrabold leading-tight">¿Fuiste a una<br>farmacia hoy?</div>
+              <span class="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-lime/40 text-brand">${icon('camera', 'w-6 h-6')}</span>
+            </div>
+            <div class="mt-3 flex items-center gap-2">
+              <span class="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-line text-brand">${icon('plus', 'w-5 h-5')}</span>
+              <a href="#reportar" class="btn-primary flex-1 justify-center">Reporta lo que viste</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <form id="searchForm" class="relative z-20 mt-8" autocomplete="off" role="search">
+        <label for="q" class="sr-only">Buscar medicamento</label>
+        <div class="flex items-center gap-2 rounded-full bg-surface p-2 pl-3 text-ink shadow-lift transition focus-within:ring-4 focus-within:ring-limeink/20">
+          <span class="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-lime text-limeink">${icon('search', 'w-5 h-5')}</span>
+          <input id="q" class="min-w-0 flex-1 bg-transparent py-2.5 text-base font-medium outline-none placeholder:text-muted/80" placeholder="Busca un medicamento">
+          <button class="btn-primary shrink-0 px-6">Buscar</button>
+        </div>
+        <div id="sugg" class="absolute left-0 right-0 top-full mt-2 overflow-hidden rounded-2xl border border-line bg-surface text-ink shadow-lift" hidden></div>
+      </form>
+    </section>
+
+    <div class="rise mt-4 overflow-hidden rounded-full bg-limeink py-2.5 text-sm font-extrabold text-lime" style="--d:1" aria-label="Medicamentos escasos en la CSS">
+      <div class="marquee flex w-max gap-10 whitespace-nowrap pl-10"><span class="text-lime/60">ESCASEANDO EN LA CSS</span>${ticker}<span class="text-lime/60">ESCASEANDO EN LA CSS</span>${ticker}</div>
+    </div>
+
+    <section class="mt-14">
+      <div class="flex flex-wrap items-end justify-between gap-3"><h2 class="h-section">Busca por<br>condición</h2><a href="#resultados" class="inline-flex items-center gap-1 text-xs font-extrabold uppercase tracking-[.12em] hover:gap-2 transition-all">Ver todos ${icon('arrow', 'w-4 h-4')}</a></div>
+      <div class="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+        ${CONDS.map((c, i) => `<button data-med="${c.med}" class="rise group text-center" style="--d:${i + 2}">
+          <span class="relative grid aspect-[4/3.6] place-items-center overflow-hidden rounded-2xl ${c.tile} text-tileink transition duration-300 group-hover:-translate-y-1 group-hover:shadow-lift">
+            <span class="absolute -bottom-6 -right-6 h-20 w-20 rounded-full bg-white/30"></span>
+            <span class="tile-ic relative">${icon(c.ic, 'w-14 h-14')}</span>
+          </span>
+          <span class="mt-2 block text-sm font-bold">${c.k}</span>
+        </button>`).join('')}
+      </div>
+    </section>
+
+    <section class="mt-16">
+      <div class="flex flex-wrap items-end justify-between gap-3"><h2 class="h-section">Escaseando hoy,<br>esto es lo que hay</h2><a href="#resultados" class="inline-flex items-center gap-1 text-xs font-extrabold uppercase tracking-[.12em] hover:gap-2 transition-all">Todos los medicamentos ${icon('arrow', 'w-4 h-4')}</a></div>
+      <div class="mt-6 grid grid-cols-1 gap-4 min-[480px]:grid-cols-2 lg:grid-cols-4">
+        ${['mtx', 'mtxi', 'hcq', 'los'].map((id, i) => productCard(M(id), i)).join('')}
+      </div>
+    </section>
+
+    <section class="mt-16 grid gap-4 md:grid-cols-3">
+      ${[['bg-tsalmon', '1', 'Busca', 'Escribe el principio activo y la concentración.', 'search'], ['bg-tteal', '2', 'Ve quién tiene', 'Existencia, precio y hace cuánto lo confirmaron.', 'pin'], ['bg-tyellow', '3', 'Reporta', 'Cuenta lo que viste y ayuda al siguiente paciente.', 'chat']]
+        .map(([bg, n, t, d, ic], i) => `<div class="rise group relative min-h-[190px] overflow-hidden rounded-2xl ${bg} p-6 text-tileink" style="--d:${i + 1}">
+          <div class="text-xs font-extrabold uppercase tracking-[.14em] opacity-70">Paso ${n}</div>
+          <div class="mt-1 max-w-[12rem] font-display text-3xl font-extrabold leading-none tracking-tight">${t}</div>
+          <p class="mt-3 max-w-[14rem] text-sm font-medium opacity-80">${d}</p>
+          <span class="tile-ic absolute -bottom-4 -right-3 opacity-90">${icon(ic, 'w-28 h-28')}</span>
+        </div>`).join('')}
+    </section>
+
+    <section class="mt-16 grid gap-8 lg:grid-cols-[1.1fr_.9fr]">
+      <div class="min-w-0">
+        <div class="flex flex-wrap items-end justify-between gap-3">
+          <div><div class="eyebrow flex items-center gap-2"><span class="relative h-1.5 w-1.5 rounded-full bg-ok text-ok pulse"></span>En vivo</div><h2 class="h-section">Reportes recientes</h2></div>
+          <a href="#reportar" class="inline-flex items-center gap-1 text-xs font-extrabold uppercase tracking-[.12em] hover:gap-2 transition-all">Reportar ${icon('arrow', 'w-4 h-4')}</a>
+        </div>
+        <ul id="feed" class="mt-5 flex flex-col gap-2.5">${FEED.slice(0, 5).map(f => feedItem(f)).join('')}</ul>
+      </div>
+      <div class="flex min-w-0 flex-col gap-4">
+        <a href="#alertas" class="group relative overflow-hidden rounded-2xl bg-sun p-6 text-[#2b2000] transition hover:-translate-y-1 hover:shadow-lift">
+          <span class="inline-flex items-center gap-1.5 rounded-full bg-[#2b2000] px-3 py-1 text-[11px] font-extrabold text-sun">${icon('bell', 'w-3.5 h-3.5')}Alertas</span>
+          <div class="mt-3 max-w-[15rem] font-display text-3xl font-extrabold leading-[1.02] tracking-tight">Te avisamos cuando haya cerca</div>
+          <span class="mt-5 inline-flex items-center gap-2 rounded-full bg-[#2b2000] px-4 py-2 text-xs font-extrabold text-sun transition group-hover:gap-3">Activar alerta ${icon('arrow', 'w-4 h-4')}</span>
+          <span class="tile-ic absolute -right-4 bottom-0 text-[#2b2000]/85">${icon('bell', 'w-32 h-32')}</span>
+        </a>
+        <div class="rounded-2xl bg-lime p-6 text-limeink">
+          <div class="text-xs font-extrabold uppercase tracking-[.14em] opacity-70">La comunidad esta semana</div>
+          <div class="mt-4 grid grid-cols-3 gap-3">
+            <div><div class="font-display text-4xl font-black tabular" data-count="42">42</div><div class="mt-1 text-xs font-semibold opacity-80">sucursales reportadas</div></div>
+            <div><div class="font-display text-4xl font-black tabular" data-count="17">17</div><div class="mt-1 text-xs font-semibold opacity-80">medicamentos escasos</div></div>
+            <div><div class="font-display text-4xl font-black tabular" data-count="316">316</div><div class="mt-1 text-xs font-semibold opacity-80">alertas activas</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>`);
+  countUp($('#view'));
+  initSearch();
+  timers.push(setInterval(tickFeed, 5200));
+}
+function tickFeed() {
+  const ul = $('#feed'); if (!ul) return;
+  const pool = MEDS.filter(m => m.id !== 'mtx');
+  const med = pool[Math.floor(Math.random() * pool.length)], b = BR[Math.floor(Math.random() * BR.length)];
+  const s = stock(med.id)[b.id]; if (s.status === 'nd') return;
+  const f = { who: NAMES[Math.floor(Math.random() * NAMES.length)], med: med.id, br: b.id, status: s.status, ago: 0 };
+  FEED.unshift(f);
+  ul.insertAdjacentHTML('afterbegin', feedItem(f, true));
+  while (ul.children.length > 5) ul.lastElementChild.remove();
+}
+function initSearch() {
+  const input = $('#q'), sugg = $('#sugg'), form = $('#searchForm');
+  const match = q => { const n = norm(q.trim()); return n ? MEDS.filter(m => norm(`${m.name} ${m.dose} ${m.use}`).includes(n)) : []; };
+  input.addEventListener('input', () => {
+    const res = match(input.value);
+    if (!input.value.trim()) { sugg.hidden = true; return; }
+    sugg.innerHTML = res.length ? res.map(m => `<button type="button" data-med="${m.id}" class="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition hover:bg-surface2">
+        <span class="min-w-0"><span class="block font-bold">${m.name} <span class="font-mono text-sm text-brand">${m.dose}</span></span><span class="block truncate text-xs text-muted">${m.form} · ${m.use}</span></span>
+        ${m.scarce ? '<span class="pill bg-sun/20 text-sunink">Escaso</span>' : ''}</button>`).join('')
+      : `<div class="px-4 py-4 text-sm text-muted">No tenemos “${input.value.trim()}” todavía. Prueba con el principio activo, por ejemplo <b class="text-ink">metotrexato</b>.</div>`;
+    sugg.hidden = false;
+  });
+  input.addEventListener('blur', () => setTimeout(() => { sugg.hidden = true; }, 180));
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const res = match(input.value || 'metotrexato');
+    if (!res.length) { toast('Prueba con el principio activo del medicamento'); return; }
+    state.med = res[0].id; go('resultados');
+  });
+  if (reduced) return;
+  const words = ['metotrexato 2.5 mg', 'hidroxicloroquina 200 mg', 'losartán 50 mg', 'levotiroxina 100 mcg'];
+  let w = 0, i = 0, dir = 1;
+  const schedule = ms => timers.push(setTimeout(tick, ms));
+  function tick() {
+    if (!document.body.contains(input)) return;
+    if (document.activeElement === input || input.value) { input.placeholder = 'Busca un medicamento'; return schedule(700); }
+    const word = words[w]; i += dir; input.placeholder = 'Busca ' + word.slice(0, i) + (dir === 1 ? '|' : '');
+    if (dir === 1 && i >= word.length) { dir = -1; return schedule(1700); }
+    if (dir === -1 && i <= 0) { dir = 1; w = (w + 1) % words.length; return schedule(350); }
+    schedule(dir === 1 ? 75 : 30);
+  }
+  schedule(900);
+}
+
+/* ---------- results ---------- */
+function pinHTML(r, i, vis) {
+  const s = r.s, b = r.b, m = SM[s.status];
+  const tone = { hay: 'bg-ok text-onstat', pocas: 'bg-warn text-onstat', no: 'bg-surface text-bad border border-bad/40', nd: 'bg-surface text-muted border border-line' }[s.status];
+  const label = avail(s) ? (s.price ? money(s.price) : m.label) : s.status === 'no' ? 'No hay' : '?';
+  return `<button data-branch="${b.id}" data-pin="${b.id}" aria-label="${b.chain}, ${b.area}: ${m.label}" class="pin absolute ${vis ? '' : 'pin-dim'}" style="left:${b.x}%;top:${b.y}%;animation-delay:${250 + i * 70}ms">
+    <span class="pin-body relative inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 font-mono text-[11px] font-semibold shadow-lift ${tone}">${s.status === 'hay' && fresh(s.ago) ? '<span class="relative h-1.5 w-1.5 rounded-full bg-onstat text-onstat pulse"></span>' : ''}${label}</span>
+    ${avail(s) ? `<span class="absolute -bottom-1 left-1/2 h-2.5 w-2.5 -translate-x-1/2 rotate-45 ${s.status === 'hay' ? 'bg-ok' : 'bg-warn'}"></span>` : ''}
+  </button>`;
+}
+function mapHTML(all, rows) {
+  const vis = new Set(rows.map(r => r.b.id));
+  const dots = []; for (let x = 12; x < 400; x += 22) for (let y = 12; y < 175; y += 22) dots.push(`<circle cx="${x}" cy="${y}" r="1.2" class="m-dot"/>`);
+  return `<div class="overflow-hidden rounded-[2rem] bg-surface p-2 shadow-soft">
+    <div class="relative aspect-[4/3] w-full max-w-full overflow-hidden rounded-[1.6rem]">
+      <span class="absolute left-3 top-3 z-[6] inline-flex items-center gap-1.5 rounded-full bg-surface/95 px-3 py-1.5 text-xs font-extrabold shadow-soft">${icon('pin', 'w-3.5 h-3.5 text-brand')}Cerca de ${ME.area}</span>
+      <svg viewBox="0 0 400 300" class="absolute inset-0 h-full w-full" aria-hidden="true">
+        <rect width="400" height="300" class="m-sea"/>
+        <path class="m-wave" d="M30 240 C90 232 150 248 210 240 S330 232 380 242"/>
+        <path class="m-wave" d="M70 268 C130 260 190 276 250 268 S350 262 390 270" style="animation-duration:18s"/>
+        <path class="m-land" d="M0 0H400V182C368 176 345 168 318 178C292 188 280 206 252 204C222 202 206 214 178 212C148 210 132 196 104 198C76 200 58 214 34 206C20 201 10 196 0 194Z"/>
+        ${dots.join('')}
+        <path class="m-road" d="M0 62 C120 72 240 48 400 70"/>
+        <path class="m-road" d="M0 150 C90 142 160 152 220 140 S330 122 400 128"/>
+        <path class="m-road" d="M150 0 C155 60 168 120 186 206"/>
+        <path class="m-road" d="M30 202 C110 194 200 204 300 186 S370 172 400 176"/>
+        <path class="m-road2" d="M0 62 C120 72 240 48 400 70"/>
+        <path class="m-road2" d="M0 150 C90 142 160 152 220 140 S330 122 400 128"/>
+        <path class="m-coast" d="M0 194C10 196 20 201 34 206C58 214 76 200 104 198C132 196 148 210 178 212C206 214 222 202 252 204C280 206 292 188 318 178C345 168 368 176 400 182"/>
+        <text x="200" y="258" text-anchor="middle" class="m-label m-sea-label">BAHÍA DE PANAMÁ</text>
+        <text x="96" y="140" class="m-label">VÍA ESPAÑA</text>
+        <text x="14" y="54" class="m-label">CORREDOR NORTE</text>
+        <text x="158" y="40" class="m-label" transform="rotate(84 158 40)">TRANSÍSTMICA</text>
+        <text x="40" y="224" class="m-label">CORREDOR SUR</text>
+      </svg>
+      <div class="absolute z-[3]" style="left:${ME.x}%;top:${ME.y}%;transform:translate(-50%,-50%)">
+        <span class="relative block h-4 w-4 rounded-full bg-brand text-brand ring-4 ring-surface pulse"></span>
+        <span class="absolute left-1/2 top-full mt-1 -translate-x-1/2 whitespace-nowrap text-[10px] font-extrabold uppercase tracking-wider text-brand">Tú</span>
+      </div>
+      ${all.map((r, i) => pinHTML(r, i, vis.has(r.b.id))).join('')}
+    </div>
+    <div class="flex flex-wrap items-center gap-x-4 gap-y-1 px-3 pb-1.5 pt-3 text-xs font-semibold text-muted">
+      ${['hay', 'pocas', 'no'].map(k => `<span class="inline-flex items-center gap-1.5"><span class="h-2 w-2 rounded-full ${SM[k].dot}"></span>${SM[k].label}</span>`).join('')}
+      <span class="ml-auto font-mono font-medium">Mapa ilustrativo</span>
+    </div>
+  </div>`;
+}
+const CHAIN_TILE = { 'Botica del Istmo': 'bg-tteal', 'Farmacia Puente': 'bg-tsalmon', 'FarmaNorte': 'bg-tblue', 'Droguería Canal': 'bg-tyellow' };
+const chainBadge = (b, size = 'h-14 w-14 text-base') => `<span class="relative grid shrink-0 place-items-center overflow-hidden rounded-2xl ${CHAIN_TILE[b.chain]} ${size} font-display font-black text-tileink"><span class="absolute -bottom-3 -right-3 h-8 w-8 rounded-full bg-white/35"></span><span class="relative">${(b.chain.match(/[A-ZÁÉÍÓÚ]/g) || []).join('').slice(0, 2)}</span></span>`;
+function cardHTML(r, i) {
+  const s = r.s, m = SM[s.status], ok = avail(s);
+  return `<button data-branch="${r.b.id}" class="rise-card group w-full rounded-[1.4rem] bg-surface p-3 text-left shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-lift sm:p-4" style="--d:${i + 2}">
+    <div class="flex items-start gap-3 sm:gap-4">
+      ${chainBadge(r.b)}
+      <div class="min-w-0 flex-1">
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            <div class="text-[11px] font-bold text-muted">${r.b.chain}</div>
+            <div class="font-display text-xl font-extrabold leading-tight tracking-tight">${r.b.area}</div>
+          </div>
+          <span class="pill shrink-0 ${m.pill}">${icon(m.icon, 'w-3.5 h-3.5')}${m.label}</span>
+        </div>
+        <div class="mt-1.5 flex flex-wrap gap-x-3 gap-y-1 text-xs font-medium text-muted"><span class="inline-flex items-center gap-1">${icon('pin', 'w-3.5 h-3.5')}<span class="tabular">${r.b.km.toFixed(1)} km</span></span><span>${r.b.hours}</span></div>
+      </div>
+    </div>
+    <div class="mt-3 flex items-center justify-between gap-3 rounded-xl bg-surface2 px-3 py-2.5">
+      <span class="inline-flex min-w-0 items-center gap-2 text-xs text-muted"><span class="relative h-2 w-2 shrink-0 rounded-full ${fresh(s.ago) ? 'bg-ok text-ok pulse' : 'bg-muted/40'}"></span><span class="truncate">${s.ago != null ? 'Confirmado ' + ago(s.ago) + (s.votes ? ` · ${s.votes} ${s.votes === 1 ? 'persona' : 'personas'}` : '') : 'Nadie ha reportado esta sucursal'}</span></span>
+      <span class="font-mono text-base font-semibold tabular ${ok && s.price ? '' : 'text-muted'}">${ok && s.price ? money(s.price) : '—'}</span>
+    </div>
+    <div class="mt-3 flex items-center justify-between gap-3 px-1">
+      <span class="text-xs font-semibold ${ok ? m.text : 'text-muted'}">${ok ? (s.status === 'pocas' ? 'Ve pronto, quedan pocas' : 'Disponible para retirar') : s.status === 'no' ? 'Prueba otra sucursal' : 'Si pasas por aquí, repórtalo'}</span>
+      <span class="inline-flex items-center gap-1 rounded-full border-2 border-ink px-3 py-1 text-xs font-extrabold transition group-hover:bg-ink group-hover:text-bg">Ver detalle ${icon('arrow', 'w-3.5 h-3.5')}</span>
+    </div>
+  </button>`;
+}
+function renderResults(anim = true) {
+  const med = M(state.med), st = stock(state.med);
+  const all = BR.map(b => ({ b, s: st[b.id] }));
+  let rows = all.filter(r => (!state.only || avail(r.s)) && (!state.fresh || (r.s.ago != null && r.s.ago < 1440)));
+  const big = 1e9;
+  rows.sort(state.sort === 'price' ? (a, b) => ((avail(a.s) && a.s.price) || big) - ((avail(b.s) && b.s.price) || big)
+          : state.sort === 'recent' ? (a, b) => (a.s.ago ?? big) - (b.s.ago ?? big)
+          : (a, b) => a.b.km - b.b.km);
+  const vals = Object.values(st), av = vals.filter(avail).length;
+  const prices = vals.filter(s => avail(s) && s.price).map(s => s.price), mp = prices.length ? Math.min(...prices) : null;
+  const ages = vals.filter(s => s.ago != null).map(s => s.ago), last = ages.length ? Math.min(...ages) : null;
+  const cnt = k => vals.filter(s => s.status === k).length;
+  const tile = TILE_OF[med.id] || 'bg-lime';
+  view(`<div class="mx-auto max-w-6xl pt-5">
+    <div class="rise no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1 pb-2" style="--d:0" aria-label="Cambiar medicamento">
+      ${MEDS.map(m => `<button data-med="${m.id}" class="chip shrink-0 ${m.id === med.id ? 'chip-on' : ''}" ${m.id === med.id ? 'aria-pressed="true"' : ''}><span class="h-2.5 w-2.5 rounded-full ${TILE_OF[m.id]} ring-1 ring-black/10"></span>${m.name} <span class="font-mono text-[11px] opacity-70">${m.dose}</span></button>`).join('')}
+    </div>
+
+    <section class="rise relative mt-3 overflow-hidden rounded-[2rem] bg-lime p-5 text-limeink sm:p-8" style="--d:1">
+      <div class="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full border-[36px] border-white/25" aria-hidden="true"></div>
+      <div class="relative grid items-center gap-6 md:grid-cols-[minmax(0,1fr)_auto]">
+        <div class="min-w-0">
+          <div class="flex flex-wrap items-center gap-2 text-xs font-bold">
+            ${med.scarce ? `<span class="inline-flex items-center gap-1.5 rounded-full bg-limeink px-3 py-1.5 text-lime">${icon('alert', 'w-3.5 h-3.5')}Escasez en la CSS</span>` : ''}
+            <span class="rounded-full bg-white/50 px-3 py-1.5">${med.use}</span>
+          </div>
+          <h1 class="mt-4 break-words font-display text-[clamp(2.4rem,8vw,5.6rem)] font-black leading-[.9] tracking-[-0.045em]">${med.name}</h1>
+          <div class="mt-4 flex flex-wrap items-center gap-2">
+            <span class="rounded-full bg-limeink px-4 py-1.5 font-mono text-lg font-semibold text-lime">${med.dose}</span>
+            <span class="rounded-full bg-white/50 px-3 py-1.5 font-mono text-xs font-semibold">${med.form} · ${med.pack}</span>
+            <span class="rounded-full bg-white/50 px-3 py-1.5 font-mono text-xs font-semibold"><b class="text-bad">Rx</b> Requiere receta</span>
+          </div>
+        </div>
+        <div class="hidden -rotate-6 transition duration-500 hover:rotate-0 md:block">${boxArt(med)}</div>
+      </div>
+      <div class="relative mt-6 grid grid-cols-3 gap-2 sm:gap-3">
+        <div class="rounded-2xl bg-surface p-3 text-ink shadow-soft sm:p-4"><div class="font-display text-3xl font-black tabular sm:text-4xl">${av}<span class="text-lg text-muted">/${BR.length}</span></div><div class="mt-1 text-[11px] font-semibold leading-tight text-muted sm:text-xs">sucursales con existencia</div></div>
+        <div class="rounded-2xl bg-surface p-3 text-ink shadow-soft sm:p-4"><div class="font-display text-3xl font-black tabular sm:text-4xl">${mp ? mp.toFixed(2) : '—'}</div><div class="mt-1 text-[11px] font-semibold leading-tight text-muted sm:text-xs">precio más bajo, en B/.</div></div>
+        <div class="rounded-2xl bg-surface p-3 text-ink shadow-soft sm:p-4"><div class="font-display text-3xl font-black tabular sm:text-4xl">${last != null ? agoShort(last) : '—'}</div><div class="mt-1 text-[11px] font-semibold leading-tight text-muted sm:text-xs">desde el último reporte</div></div>
+      </div>
+      <div class="relative mt-4 flex h-3 w-full gap-1 overflow-hidden rounded-full bg-white/40 p-0.5" aria-hidden="true">
+        ${['hay', 'pocas', 'no', 'nd'].filter(k => cnt(k)).map((k, i) => `<span class="growbar rounded-full ${SM[k].dot}" style="width:${cnt(k) / BR.length * 100}%;animation-delay:${250 + i * 120}ms"></span>`).join('')}
+      </div>
+      <div class="relative mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] font-bold">
+        ${['hay', 'pocas', 'no', 'nd'].map(k => `<span class="inline-flex items-center gap-1.5"><span class="h-2 w-2 rounded-full ${SM[k].dot}"></span>${cnt(k)} ${SM[k].label.toLowerCase()}</span>`).join('')}
+      </div>
+    </section>
+
+    <div class="rise mt-6 flex flex-wrap items-end justify-between gap-3" style="--d:2">
+      <div>
+        <h2 class="h-section">¿Dónde hay?</h2>
+        <div class="mt-3 flex flex-wrap gap-2">
+          <button data-filter="only" class="chip ${state.only ? 'chip-on' : ''}" aria-pressed="${state.only}">${icon('check', 'w-4 h-4')}Solo con existencia</button>
+          <button data-filter="fresh" class="chip ${state.fresh ? 'chip-on' : ''}" aria-pressed="${state.fresh}">${icon('clock', 'w-4 h-4')}Confirmado en 24 h</button>
+        </div>
+      </div>
+      <div class="inline-flex rounded-full bg-surface p-1 text-sm font-bold shadow-soft" role="group" aria-label="Ordenar por">
+        ${[['dist', 'Cercanía'], ['price', 'Precio'], ['recent', 'Reciente']].map(([k, l]) => `<button data-sort="${k}" aria-pressed="${state.sort === k}" class="rounded-full px-3.5 py-1.5 transition ${state.sort === k ? 'bg-lime text-limeink' : 'text-muted hover:text-ink'}">${l}</button>`).join('')}
+      </div>
+    </div>
+
+    <div class="mt-5 grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+      <div id="list" class="order-2 flex flex-col gap-3 lg:order-1">
+        ${rows.length ? rows.map(cardHTML).join('') : `<div class="rounded-2xl border-2 border-dashed border-line p-8 text-center text-muted">Ninguna sucursal cumple esos filtros. <button data-filter="reset" class="font-bold text-brand underline">Quitar filtros</button></div>`}
+        <a href="#alertas" class="rise-card group relative mt-2 overflow-hidden rounded-[1.4rem] bg-sun p-5 text-[#2b2000] transition hover:-translate-y-1 hover:shadow-lift" style="--d:${rows.length + 2}">
+          <span class="inline-flex items-center gap-1.5 rounded-full bg-[#2b2000] px-3 py-1 text-[11px] font-extrabold text-sun">${icon('bell', 'w-3.5 h-3.5')}Alertas</span>
+          <span class="mt-2 block max-w-[16rem] font-display text-2xl font-extrabold leading-tight">¿No te queda cerca? Te avisamos.</span>
+          <span class="mt-1 block max-w-[18rem] text-sm font-medium opacity-80">Cuando alguien reporte ${med.name.toLowerCase()} ${med.dose} en tu zona.</span>
+          <span class="tile-ic absolute -bottom-3 -right-2 text-[#2b2000]/85">${icon('bell', 'w-24 h-24')}</span>
+        </a>
+      </div>
+      <div class="rise order-1 lg:sticky lg:top-28 lg:order-2" style="--d:2">
+        ${mapHTML(all, rows)}
+        <p class="mt-3 flex items-start gap-2 text-xs text-muted">${icon('alert', 'w-4 h-4 shrink-0')}La existencia cambia durante el día. Llama a la sucursal antes de ir.</p>
+      </div>
+    </div>
+  </div>`, anim);
+}
+
+/* ---------- sheet ---------- */
+function sheetHTML(bid) {
+  const b = B(bid), s = stock(state.med)[bid], m = SM[s.status], med = M(state.med);
+  return `
+  <div class="flex justify-center pt-3 md:hidden"><span class="h-1.5 w-10 rounded-full bg-line"></span></div>
+  <div class="p-6 pt-4 md:pt-8">
+    <div class="flex items-start justify-between gap-4">
+      <div class="flex min-w-0 items-start gap-3">${chainBadge(b)}<div class="min-w-0"><div class="text-xs font-bold text-muted">${b.chain}</div><h2 id="sheetTitle" class="font-display text-3xl font-black leading-tight tracking-tight">${b.area}</h2><p class="mt-1 text-sm text-muted">${b.addr}</p></div></div>
+      <button data-close class="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-surface2 transition hover:bg-line" aria-label="Cerrar">${icon('x')}</button>
+    </div>
+    <div class="pop mt-5 rounded-2xl p-5 ${m.panel}">
+      <div class="text-xs font-extrabold uppercase tracking-[.14em] ${m.text}">${med.name} ${med.dose}</div>
+      <div class="mt-1 flex items-end justify-between gap-4">
+        <div class="font-display text-3xl font-bold ${m.text}">${m.label}</div>
+        <div class="font-mono text-2xl font-semibold tabular">${s.price && avail(s) ? money(s.price) : ''}</div>
+      </div>
+      <div class="mt-2 text-sm text-muted">${s.ago != null ? `Confirmado ${ago(s.ago)} · ${s.votes} ${s.votes === 1 ? 'persona' : 'personas'}` : 'Todavía nadie ha reportado esta sucursal.'}</div>
+    </div>
+    <div class="mt-4 text-sm font-bold">¿Estuviste aquí hoy?</div>
+    <div class="mt-2 grid grid-cols-2 gap-2">
+      <button data-vote="yes" class="btn-ghost">${icon('check', 'w-4 h-4 text-ok')}Sí había</button>
+      <button data-vote="no" class="btn-ghost">${icon('x', 'w-4 h-4 text-bad')}No había</button>
+    </div>
+    <dl class="mt-6 divide-y divide-line border-y border-line text-sm">
+      <div class="flex justify-between gap-4 py-3"><dt class="text-muted">Horario</dt><dd class="text-right font-semibold">${b.hours}</dd></div>
+      <div class="flex justify-between gap-4 py-3"><dt class="text-muted">Distancia</dt><dd class="font-semibold tabular">${b.km.toFixed(1)} km de ${ME.area}</dd></div>
+      <div class="flex items-center justify-between gap-4 py-3"><dt class="text-muted">Teléfono</dt><dd class="flex items-center gap-2"><span id="phoneTxt" class="select-all font-mono font-semibold">${b.phone}</span><button data-copy="${b.phone}" class="grid h-8 w-8 place-items-center rounded-lg text-muted transition hover:bg-surface2 hover:text-ink" aria-label="Copiar teléfono">${icon('copy', 'w-4 h-4')}</button></dd></div>
+    </dl>
+    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(b.area + ', Ciudad de Panamá')}" target="_blank" rel="noopener" class="btn-primary mt-5 w-full justify-center py-3.5">${icon('nav', 'w-4 h-4')}Cómo llegar</a>
+    <h3 class="mt-8 font-display text-lg font-semibold">Historial de reportes</h3>
+    ${s.reports.length ? `<ol class="relative ml-2 mt-4 flex flex-col gap-5 border-l-2 border-line">
+      ${s.reports.map((r, i) => `<li class="rise relative pl-5" style="--d:${i + 1}"><span class="absolute -left-[7px] top-1.5 h-3 w-3 rounded-full ring-4 ring-surface ${SM[r.status].dot}"></span>
+        <div class="text-sm"><b>${r.who}</b> · <span class="font-semibold ${SM[r.status].text}">${SM[r.status].label}</span>${r.price && avail(r) ? ` · <span class="font-mono">${money(r.price)}</span>` : ''}</div>
+        <div class="text-xs text-muted">${ago(r.ago)}</div></li>`).join('')}
+    </ol>` : `<p class="mt-3 text-sm text-muted">Sé la primera persona en reportar esta sucursal.</p>`}
+    <p class="mt-8 text-xs text-muted">Sucursal y reportes de ejemplo.</p>
+  </div>`;
+}
+function openSheet(bid) {
+  state.sheet = bid;
+  const sh = $('#sheet'); sh.innerHTML = sheetHTML(bid); sh.scrollTop = 0;
+  sh.classList.add('open'); $('#backdrop').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => $('[data-close]', sh)?.focus({ preventScroll: true }), 300);
+}
+function closeSheet() {
+  if (!state.sheet) return;
+  const last = state.sheet; state.sheet = null;
+  $('#sheet').classList.remove('open'); $('#backdrop').classList.remove('open');
+  document.body.style.overflow = '';
+  $(`#list [data-branch="${last}"]`)?.focus({ preventScroll: true });
+}
+
+/* ---------- report ---------- */
+function selectHTML(id, opts) {
+  return `<div class="relative mt-2"><select id="${id}" class="input appearance-none pr-10">${opts}</select><span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-muted">${icon('chev', 'w-4 h-4')}</span></div>`;
+}
+function reportForm() {
+  return `<form id="reportForm" class="flex flex-col gap-7" novalidate>
+    <div><label for="rMed" class="flabel"><span class="stepn">1</span>Medicamento</label>
+      ${selectHTML('rMed', MEDS.map(m => `<option value="${m.id}" ${m.id === state.med ? 'selected' : ''}>${m.name} ${m.dose} · ${m.form}</option>`).join(''))}</div>
+    <div><label for="rBr" class="flabel"><span class="stepn">2</span>Farmacia y sucursal</label>
+      ${selectHTML('rBr', '<option value="">Elige la sucursal donde estuviste</option>' + BR.map(b => `<option value="${b.id}">${b.chain} · ${b.area}</option>`).join(''))}
+      <p id="rBrErr" class="mt-2 flex items-center gap-1.5 text-sm font-semibold text-bad" hidden>${icon('alert', 'w-4 h-4')}Elige la sucursal para que otros sepan a dónde ir.</p></div>
+    <fieldset><legend class="flabel"><span class="stepn">3</span>¿Qué encontraste?</legend>
+      <div class="mt-3 grid grid-cols-3 gap-2 sm:gap-3">
+        ${['hay', 'pocas', 'no'].map(k => `<label for="rS-${k}" class="cursor-pointer">
+          <input type="radio" name="rStatus" id="rS-${k}" value="${k}" class="peer sr-only" ${k === 'hay' ? 'checked' : ''}>
+          <span class="group flex flex-col items-center gap-2.5 rounded-2xl border-2 border-line bg-surface px-2 py-5 text-center text-sm font-extrabold text-ink transition duration-300 hover:border-ink/30 peer-focus-visible:ring-2 peer-focus-visible:ring-brand ${SM[k].opt}">
+            <span class="opt-ic grid h-12 w-12 place-items-center rounded-full transition ${SM[k].tint}">${icon(SM[k].icon, 'w-6 h-6')}</span>${SM[k].label}</span></label>`).join('')}
+      </div></fieldset>
+    <div id="priceField"><label for="rPrice" class="flabel"><span class="stepn">4</span>Precio <span class="font-medium text-muted">(opcional)</span></label>
+      <div class="input mt-2 flex items-center gap-2"><span class="font-mono font-semibold text-muted">B/.</span><input id="rPrice" inputmode="decimal" placeholder="15.20" class="min-w-0 flex-1 bg-transparent font-mono outline-none placeholder:text-muted/60"></div></div>
+    <div><div class="flabel"><span id="photoN" class="stepn">5</span>Foto del anaquel o del recibo <span class="font-medium text-muted">(opcional)</span></div>
+      <label for="rPhoto" class="mt-2 flex cursor-pointer items-center gap-4 rounded-2xl border-2 border-dashed border-tblue bg-tblue/15 p-4 transition hover:bg-tblue/30">
+        <span id="dropIcon" class="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-xl bg-tblue text-tileink">${icon('camera')}</span>
+        <span class="min-w-0"><span id="dropName" class="block truncate text-sm font-bold">Agregar foto</span><span class="block text-xs text-muted">Ayuda a que otros confíen en tu reporte. Tapa tus datos personales.</span></span>
+      </label>
+      <input id="rPhoto" type="file" accept="image/*" class="sr-only"></div>
+    <button type="submit" class="btn-primary justify-center py-4 text-base">${icon('check', 'w-5 h-5')}Publicar reporte</button>
+  </form>`;
+}
+function readReport() {
+  const st = $('input[name="rStatus"]:checked')?.value || 'hay';
+  const p = parseFloat(($('#rPrice')?.value || '').replace(',', '.'));
+  return { med: $('#rMed').value, br: $('#rBr').value, status: st, price: st !== 'no' && p > 0 ? p : null };
+}
+function previewHTML() {
+  const r = $('#rMed') ? readReport() : { med: state.med, br: '', status: 'hay', price: null };
+  const m = M(r.med), b = r.br ? B(r.br) : null, s = SM[r.status];
+  return `<div class="rounded-[1.4rem] bg-surface p-3 text-ink shadow-lift sm:p-4">
+    <div class="flex items-start gap-3">
+      ${b ? chainBadge(b) : `<span class="grid h-14 w-14 shrink-0 place-items-center rounded-2xl border-2 border-dashed border-line text-muted">${icon('pin')}</span>`}
+      <div class="min-w-0 flex-1">
+        <div class="flex items-start justify-between gap-2">
+          <div class="min-w-0"><div class="text-[11px] font-bold text-muted">${b ? b.chain : 'Farmacia'}</div>
+            <div class="truncate font-display text-xl font-extrabold leading-tight">${b ? b.area : 'Elige la sucursal'}</div></div>
+          <span class="pill shrink-0 ${s.pill}">${icon(s.icon, 'w-3.5 h-3.5')}${s.label}</span>
+        </div>
+        <div class="mt-1 text-xs font-medium text-muted">${m.name} ${m.dose} · ${m.form}</div>
+      </div>
+    </div>
+    <div class="mt-3 flex items-center justify-between gap-3 rounded-xl bg-surface2 px-3 py-2.5 text-xs text-muted">
+      <span class="inline-flex items-center gap-2"><span class="relative h-2 w-2 rounded-full bg-ok text-ok pulse"></span>Confirmado justo ahora · por ti</span>
+      <span class="font-mono text-base font-semibold text-ink">${r.price ? money(r.price) : '—'}</span>
+    </div>
+  </div>`;
+}
+function renderReport() {
+  view(`<div class="mx-auto max-w-6xl pt-5">
+    <section class="rise relative overflow-hidden rounded-[2rem] bg-tsalmon p-6 text-tileink sm:p-10" style="--d:0">
+      <span class="tile-ic pointer-events-none absolute -bottom-10 -right-6 opacity-90 sm:right-6" aria-hidden="true">${icon('chat', 'w-48 h-48 sm:w-64 sm:h-64')}</span>
+      <div class="relative max-w-3xl">
+        <span class="inline-flex items-center gap-1.5 rounded-full bg-tileink px-3 py-1.5 text-xs font-extrabold text-tsalmon">${icon('plus', 'w-3.5 h-3.5')}Reportar</span>
+        <h1 class="mt-4 font-display text-[clamp(2.6rem,9vw,6.4rem)] font-black leading-[.9] tracking-[-0.05em]">Cuéntalo.</h1>
+        <p class="mt-4 max-w-md text-[13px] font-extrabold uppercase leading-snug tracking-wide">¿Fuiste a una farmacia? Tu reporte toma 20 segundos y le ahorra el recorrido al siguiente paciente.</p>
+        <div class="mt-5 flex flex-wrap gap-2 text-xs font-bold">
+          <span class="inline-flex items-center gap-1.5 rounded-full bg-white/55 px-3 py-1.5">${icon('clock', 'w-3.5 h-3.5')}20 segundos</span>
+          <span class="inline-flex items-center gap-1.5 rounded-full bg-white/55 px-3 py-1.5">${icon('bell', 'w-3.5 h-3.5')}Avisa a quien tiene alerta</span>
+          <span class="inline-flex items-center gap-1.5 rounded-full bg-white/55 px-3 py-1.5">${icon('shield', 'w-3.5 h-3.5')}Sin datos de tu receta</span>
+        </div>
+      </div>
+    </section>
+    <div class="mt-6 grid items-start gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,.8fr)]">
+      <div id="reportCard" class="rise rounded-[2rem] bg-surface p-5 shadow-soft sm:p-8" style="--d:1">${reportForm()}</div>
+      <aside class="rise flex flex-col gap-4 lg:sticky lg:top-28" style="--d:2">
+        <div class="rounded-[2rem] bg-lime p-4 text-limeink sm:p-5">
+          <div class="mb-3 flex items-center justify-between px-1 text-xs font-extrabold uppercase tracking-[.14em]"><span>Así se verá tu reporte</span><span class="relative h-2 w-2 rounded-full bg-limeink text-limeink pulse"></span></div>
+          <div id="preview">${previewHTML()}</div>
+        </div>
+        <div class="relative overflow-hidden rounded-[2rem] bg-tteal p-6 text-sm text-tileink">
+          <span class="tile-ic absolute -bottom-5 -right-4 opacity-80">${icon('shield', 'w-28 h-28')}</span>
+          <div class="relative font-display text-2xl font-extrabold leading-tight">Reportes que ayudan</div>
+          <ul class="relative mt-3 flex max-w-[22rem] flex-col gap-2.5 font-medium">
+            ${['Reporta solo lo que viste hoy, con la concentración exacta.', 'Si quedaban pocas cajas, márcalo. Ayuda a decidir si vale la pena ir ya.', 'No subas fotos de tu receta ni de tu cédula.'].map(t => `<li class="flex gap-2"><span class="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-tileink text-tteal">${icon('check', 'w-3 h-3')}</span>${t}</li>`).join('')}
+          </ul>
+        </div>
+      </aside>
+    </div></div>`);
+  bindReport();
+}
+function bindReport() {
+  const form = $('#reportForm'); if (!form) return;
+  const upd = () => {
+    const st = $('input[name="rStatus"]:checked').value;
+    $('#priceField').hidden = st === 'no'; $('#photoN').textContent = st === 'no' ? '4' : '5';
+    $('#preview').innerHTML = previewHTML();
+    if ($('#rBr').value) $('#rBrErr').hidden = true;
+  };
+  form.addEventListener('input', upd); form.addEventListener('change', upd);
+  $('#rPhoto').addEventListener('change', e => {
+    const f = e.target.files[0]; if (!f) return;
+    $('#dropName').textContent = f.name;
+    const rd = new FileReader(); rd.onload = () => { $('#dropIcon').innerHTML = `<img src="${rd.result}" alt="Foto seleccionada" class="h-full w-full object-cover">`; }; rd.readAsDataURL(f);
+  });
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const r = readReport();
+    if (!r.br) { $('#rBrErr').hidden = false; $('#rBr').focus(); return; }
+    const s = stock(r.med)[r.br];
+    s.status = r.status; s.price = r.status === 'no' ? null : (r.price ?? s.price); s.ago = 0; s.votes = (s.votes || 0) + 1;
+    s.reports.unshift({ who: 'Tú', status: r.status, price: s.price, ago: 0 });
+    FEED.unshift({ who: 'Tú', med: r.med, br: r.br, status: r.status, ago: 0 });
+    state.med = r.med;
+    $('#reportCard').innerHTML = successHTML(r);
+  });
+}
+function successHTML(r) {
+  const m = M(r.med), b = B(r.br);
+  const cols = ['bg-sun', 'bg-tteal', 'bg-tsalmon', 'bg-lime', 'bg-tpink', 'bg-tblue'];
+  const bits = Array.from({ length: 14 }, (_, i) => { const a = i / 14 * Math.PI * 2, d = 62 + (i % 3) * 18;
+    return `<span class="burst ${cols[i % cols.length]}" style="width:${i % 2 ? 8 : 12}px;height:${i % 2 ? 8 : 6}px;--tx:${Math.round(Math.cos(a) * d)}px;--ty:${Math.round(Math.sin(a) * d)}px;--r:${i * 47}deg"></span>`; }).join('');
+  return `<div class="flex flex-col items-center py-8 text-center">
+    <div class="relative h-24 w-24">${bits}
+      <div class="pop grid h-24 w-24 place-items-center rounded-full bg-lime text-limeink shadow-lift">
+        <svg viewBox="0 0 24 24" class="h-11 w-11" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="draw" d="M20 6 9 17l-5-5"/></svg>
+      </div></div>
+    <h2 class="mt-7 font-display text-5xl font-black tracking-[-0.04em]">¡Gracias!</h2>
+    <p class="mt-1 font-display text-xl font-extrabold">Reporte publicado</p>
+    <p class="mt-2 max-w-sm text-muted">Avisamos a <b class="text-ink">23 personas</b> con alerta de ${m.name.toLowerCase()} ${m.dose} cerca de ${b.area}. Gracias por ayudar.</p>
+    <div class="mt-7 flex flex-wrap justify-center gap-3">
+      <a href="#resultados" class="btn-primary">Ver ${m.name.toLowerCase()} ${m.dose}</a>
+      <button data-again class="btn-ghost">Hacer otro reporte</button>
+    </div></div>`;
+}
+
+/* ---------- alerts ---------- */
+const CH = [ ['chMail', 'Correo', 'mail', 'Recibes la sucursal, el precio y cómo llegar.', true, false], ['chPush', 'Celular', 'phone', 'Notificación al instante en tu teléfono.', true, false], ['chWa', 'WhatsApp', 'chat', 'Un mensaje directo a tu chat.', false, true] ];
+function alertItem(a, i, isNew) {
+  const m = M(a.med), st = stock(a.med);
+  const near = BR.filter(b => b.km <= a.rad && avail(st[b.id])).length;
+  return `<li class="${isNew ? 'feed-new ' : ''}rounded-[1.4rem] bg-surface p-3 shadow-soft transition sm:p-4 ${a.on ? '' : 'opacity-60 grayscale'}">
+    <div class="flex items-start gap-3">
+      <span class="relative grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-2xl ${TILE_OF[a.med]} text-tileink"><span class="absolute -bottom-3 -right-3 h-8 w-8 rounded-full bg-white/35"></span><span class="relative">${icon('bell', 'w-6 h-6')}</span></span>
+      <div class="min-w-0 flex-1">
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0"><div class="font-display text-lg font-extrabold leading-tight">${m.name} <span class="font-mono text-sm font-semibold text-muted">${m.dose}</span></div>
+            <div class="mt-0.5 text-xs font-medium text-muted">${a.rad} km alrededor de ${ME.area} · ${a.ch.join(', ')}</div></div>
+          <label for="al-${i}" class="flex cursor-pointer items-center"><span class="sr-only">Alerta activa</span><input id="al-${i}" type="checkbox" data-toggle-alert="${i}" class="peer sr-only" ${a.on ? 'checked' : ''}><span class="switch"></span></label>
+        </div>
+      </div>
+    </div>
+    <div class="mt-3 flex items-center justify-between gap-3 rounded-xl bg-surface2 px-3 py-2 text-xs">
+      <span class="inline-flex items-center gap-2 ${near ? 'font-bold text-ok' : 'text-muted'}"><span class="relative h-2 w-2 rounded-full ${near ? 'bg-ok text-ok pulse' : 'bg-muted/40'}"></span>${near ? `Hoy hay en ${near} ${near === 1 ? 'sucursal' : 'sucursales'} dentro de tu radio` : 'Sin existencia en tu radio por ahora'}</span>
+      <button data-del-alert="${i}" class="grid h-8 w-8 place-items-center rounded-full text-muted transition hover:bg-bad/10 hover:text-bad" aria-label="Eliminar alerta">${icon('trash', 'w-4 h-4')}</button>
+    </div></li>`;
+}
+function renderAlertList(newIdx) {
+  $('#alertList').innerHTML = state.alerts.length ? state.alerts.map((a, i) => alertItem(a, i, i === newIdx)).join('') : '<li class="rounded-2xl border border-dashed border-line p-6 text-center text-sm text-muted">No tienes alertas. Crea una con el formulario.</li>';
+  const on = state.alerts.filter(a => a.on).length;
+  $('#alertCount').textContent = `${on} ${on === 1 ? 'activa' : 'activas'}`;
+}
+function renderAlerts() {
+  const chTile = { chMail: 'bg-tsalmon', chPush: 'bg-tblue', chWa: 'bg-lime' };
+  view(`<div class="mx-auto max-w-6xl pt-5">
+    <section class="rise relative overflow-hidden rounded-[2rem] bg-sun p-6 text-[#2b2000] sm:p-10" style="--d:0">
+      <span class="tile-ic pointer-events-none absolute -bottom-10 -right-6 opacity-90 sm:right-6" aria-hidden="true">${icon('bell', 'w-48 h-48 sm:w-64 sm:h-64')}</span>
+      <div class="relative max-w-3xl">
+        <span class="inline-flex items-center gap-1.5 rounded-full bg-[#2b2000] px-3 py-1.5 text-xs font-extrabold text-sun">${icon('bell', 'w-3.5 h-3.5')}Alertas</span>
+        <h1 class="mt-4 font-display text-[clamp(2.6rem,9vw,6.4rem)] font-black leading-[.9] tracking-[-0.05em]">Avísame.</h1>
+        <p class="mt-4 max-w-md text-[13px] font-extrabold uppercase leading-snug tracking-wide">Que el medicamento te encuentre a ti. Te avisamos en cuanto alguien reporte existencia cerca de donde vives o trabajas.</p>
+      </div>
+    </section>
+    <div class="mt-6 grid items-start gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,.9fr)]">
+      <form id="alertForm" class="rise flex flex-col gap-7 rounded-[2rem] bg-surface p-5 shadow-soft sm:p-8" style="--d:1" novalidate>
+        <div><label for="aMed" class="flabel"><span class="stepn">1</span>Medicamento</label>
+          ${selectHTML('aMed', MEDS.map(m => `<option value="${m.id}" ${m.id === state.med ? 'selected' : ''}>${m.name} ${m.dose} · ${m.form}</option>`).join(''))}</div>
+        <div>
+          <div class="flex items-center justify-between gap-3"><label for="aRad" class="flabel"><span class="stepn">2</span>Distancia máxima</label><output id="aRadOut" for="aRad" class="rounded-full bg-limeink px-3 py-1 font-mono text-sm font-semibold text-lime">4 km</output></div>
+          <div class="mt-3 rounded-[1.6rem] bg-tteal p-4 text-tileink sm:p-5">
+            <div class="relative mx-auto aspect-square w-full max-w-[280px]" id="radar" aria-hidden="true">
+              ${[100, 75, 50, 25].map(p => `<span class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white/50" style="width:${p}%;height:${p}%"></span>`).join('')}
+              <span id="radCircle" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-tileink/40 bg-white/35 transition-all duration-500" style="width:40%;height:40%"></span>
+              <span class="sweep absolute inset-0"></span>
+              <span id="radarDots"></span>
+              <span class="absolute left-1/2 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-tileink ring-4 ring-white/70"></span>
+            </div>
+            <input id="aRad" type="range" min="1" max="10" step="0.5" value="4" class="mt-4 w-full">
+            <div class="mt-1 flex justify-between font-mono text-[11px] font-semibold opacity-70"><span>1 km</span><span>10 km</span></div>
+            <p id="radarTxt" class="mt-2 text-center text-sm font-semibold"></p>
+          </div>
+        </div>
+        <fieldset><legend class="flabel"><span class="stepn">3</span>Cómo quieres que te avisemos</legend>
+          <div class="mt-3 flex flex-col gap-2">
+            ${CH.map(([id, l, ic, d, on, soon]) => `<label for="${id}" class="flex items-center justify-between gap-4 rounded-2xl bg-surface2 p-3 transition ${soon ? 'cursor-not-allowed' : 'cursor-pointer hover:bg-line/60'}">
+              <span class="flex min-w-0 items-center gap-3"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl ${chTile[id]} text-tileink">${icon(ic)}</span>
+                <span class="min-w-0"><span class="flex items-center gap-2 text-sm font-extrabold">${l}${soon ? '<span class="pill bg-sun text-[#2b2000]">Pronto</span>' : ''}</span><span class="block text-xs text-muted">${d}</span></span></span>
+              <input id="${id}" type="checkbox" class="peer sr-only" ${on ? 'checked' : ''} ${soon ? 'disabled' : ''}><span class="switch"></span></label>`).join('')}
+          </div></fieldset>
+        <button class="btn-primary justify-center py-4 text-base">${icon('bell', 'w-5 h-5')}Activar alerta</button>
+      </form>
+      <aside class="rise lg:sticky lg:top-28" style="--d:2">
+        <div class="flex items-end justify-between gap-3"><h2 class="h-section">Tus alertas</h2><span id="alertCount" class="pill bg-lime text-limeink"></span></div>
+        <ul id="alertList" class="mt-4 flex flex-col gap-3"></ul>
+        <p class="mt-4 text-xs text-muted">Alertas de ejemplo para mostrar cómo se ven.</p>
+      </aside>
+    </div></div>`);
+  renderAlertList();
+  const upd = () => {
+    const rad = +$('#aRad').value, med = $('#aMed').value, st = stock(med);
+    $('#aRadOut').textContent = rad + ' km';
+    $('#radCircle').style.width = $('#radCircle').style.height = (rad / 10 * 100) + '%';
+    let inside = 0, withStock = 0;
+    $('#radarDots').innerHTML = BR.map(b => {
+      const a = Math.atan2(b.y - ME.y, b.x - ME.x), d = b.km / 10 * 50, isIn = b.km <= rad, has = avail(st[b.id]);
+      if (isIn) { inside++; if (has) withStock++; }
+      const cls = isIn ? (has ? 'bg-ok ring-2 ring-white scale-125' : 'bg-tileink/60') : 'bg-white/60';
+      return `<span class="absolute h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-500 ${cls}" style="left:${50 + Math.cos(a) * d}%;top:${50 + Math.sin(a) * d}%"></span>`;
+    }).join('');
+    $('#radarTxt').innerHTML = `<b>${inside}</b> sucursales en tu radio · <b>${withStock}</b> con existencia hoy`;
+  };
+  $('#aRad').addEventListener('input', upd); $('#aMed').addEventListener('change', upd); upd();
+  $('#alertForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const ch = CH.filter(c => $('#' + c[0]).checked).map(c => c[1]);
+    if (!ch.length) { toast('Elige al menos un canal para avisarte'); return; }
+    state.alerts.unshift({ med: $('#aMed').value, rad: +$('#aRad').value, ch, on: true });
+    renderAlertList(0);
+    toast(`Alerta activada. Te avisaremos por ${ch.join(' y ').toLowerCase()}.`);
+  });
+}
+
+/* ---------- routing + events ---------- */
+const ROUTES = { inicio: renderHome, resultados: renderResults, reportar: renderReport, alertas: renderAlerts };
+const current = () => (ROUTES[location.hash.slice(1)] ? location.hash.slice(1) : 'inicio');
+function route() {
+  clearTimers(); closeSheet();
+  const k = current(); renderNav(k); ROUTES[k]();
+  window.scrollTo({ top: 0 });
+}
+function go(k) { if (location.hash === '#' + k) route(); else location.hash = k; }
+addEventListener('hashchange', route);
+
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-med],[data-feed],[data-branch],[data-filter],[data-sort],[data-close],[data-vote],[data-copy],[data-again],[data-del-alert]');
+  if (!t) { if (e.target.id === 'backdrop') closeSheet(); return; }
+  const d = t.dataset;
+  if (d.feed) { const [med, br] = d.feed.split('|'); state.med = med; go('resultados'); setTimeout(() => openSheet(br), 380); return; }
+  if (d.med) { state.med = d.med; current() === 'resultados' ? renderResults(false) : go('resultados'); return; }
+  if (d.branch) { openSheet(d.branch); return; }
+  if (d.filter) { if (d.filter === 'reset') { state.only = state.fresh = false; } else state[d.filter] = !state[d.filter]; renderResults(false); return; }
+  if (d.sort) { state.sort = d.sort; renderResults(false); return; }
+  if ('close' in d) { closeSheet(); return; }
+  if (d.vote) {
+    const s = stock(state.med)[state.sheet];
+    if (d.vote === 'yes') { if (!avail(s)) s.status = 'hay'; s.ago = 0; s.votes++; toast('Gracias. Confirmaste que había.'); }
+    else { s.status = 'no'; s.price = null; s.ago = 0; s.votes = 1; toast('Gracias. Marcamos que ya no hay.'); }
+    s.reports.unshift({ who: 'Tú', status: s.status, price: s.price, ago: 0 });
+    $('#sheet').innerHTML = sheetHTML(state.sheet);
+    if (current() === 'resultados') renderResults(false);
+    return;
+  }
+  if (d.copy) {
+    const ok = () => toast('Número copiado');
+    const fallback = () => { const r = document.createRange(); r.selectNodeContents($('#phoneTxt')); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); };
+    try { navigator.clipboard.writeText(d.copy).then(ok, fallback); } catch { fallback(); }
+    return;
+  }
+  if ('again' in d) { $('#reportCard').innerHTML = reportForm(); bindReport(); $('#preview').innerHTML = previewHTML(); return; }
+  if (d.delAlert) { state.alerts.splice(+d.delAlert, 1); renderAlertList(); toast('Alerta eliminada'); return; }
+});
+document.addEventListener('change', e => {
+  const i = e.target.dataset?.toggleAlert; if (i == null) return;
+  state.alerts[+i].on = e.target.checked; renderAlertList();
+  toast(e.target.checked ? 'Alerta activada' : 'Alerta en pausa');
+});
+document.addEventListener('mouseover', e => {
+  const c = e.target.closest('#list [data-branch]');
+  $$('.pin.is-hot').forEach(p => { if (!c || p.dataset.pin !== c.dataset.branch) p.classList.remove('is-hot'); });
+  if (c) $(`.pin[data-pin="${c.dataset.branch}"]`)?.classList.add('is-hot');
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
+
+route();
+</script>

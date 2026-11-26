@@ -1,0 +1,109 @@
+@import "tailwindcss";
+
+/*
+ * Tokens de MyFarma (mismos valores que prototype/index.html).
+ * Paleta: bloques lima, títulos azul marino, acciones verde bosque y cuadros pastel por categoría.
+ * Los valores son tripletas RGB para poder usar opacidad: bg-lime/40, text-ink/70…
+ */
+:root {
+  --bg: 240 243 246;
+  --surface: 255 255 255;
+  --surface2: 236 240 244;
+  --ink: 22 30 66;
+  --muted: 98 106 132;
+  --line: 221 227 235;
+  --brand: 14 79 32;
+  --brandink: 255 255 255;
+  --brandsoft: 224 245 208;
+  --lime: 160 228 104;
+  --limeink: 9 44 17;
+  --forest: 10 42 18;
+  --sun: 255 212 72;
+  --sunink: 122 86 0;
+  --t-teal: 142 215 214;
+  --t-yellow: 255 215 80;
+  --t-salmon: 255 180 138;
+  --t-pink: 248 200 224;
+  --t-blue: 162 198 255;
+  --tileink: 16 26 52;
+  --ok: 22 140 62;
+  --warn: 194 118 0;
+  --bad: 212 60 50;
+  --onstat: 255 255 255;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: 10 15 30;
+    --surface: 18 25 44;
+    --surface2: 26 35 58;
+    --ink: 236 240 250;
+    --muted: 152 162 188;
+    --line: 40 52 80;
+    --brand: 160 228 104;
+    --brandink: 9 44 17;
+    --brandsoft: 30 58 36;
+    --forest: 8 30 14;
+    --sunink: 255 222 120;
+    --t-teal: 118 196 196;
+    --t-yellow: 238 200 74;
+    --t-salmon: 238 162 122;
+    --t-pink: 228 176 204;
+    --t-blue: 136 174 238;
+    --ok: 96 222 132;
+    --warn: 246 182 72;
+    --bad: 250 122 108;
+    --onstat: 8 22 12;
+    color-scheme: dark;
+  }
+}
+
+@theme inline {
+  --color-bg: rgb(var(--bg));
+  --color-surface: rgb(var(--surface));
+  --color-surface2: rgb(var(--surface2));
+  --color-ink: rgb(var(--ink));
+  --color-muted: rgb(var(--muted));
+  --color-line: rgb(var(--line));
+  --color-brand: rgb(var(--brand));
+  --color-brandink: rgb(var(--brandink));
+  --color-brandsoft: rgb(var(--brandsoft));
+  --color-lime: rgb(var(--lime));
+  --color-limeink: rgb(var(--limeink));
+  --color-forest: rgb(var(--forest));
+  --color-sun: rgb(var(--sun));
+  --color-sunink: rgb(var(--sunink));
+  --color-tteal: rgb(var(--t-teal));
+  --color-tyellow: rgb(var(--t-yellow));
+  --color-tsalmon: rgb(var(--t-salmon));
+  --color-tpink: rgb(var(--t-pink));
+  --color-tblue: rgb(var(--t-blue));
+  --color-tileink: rgb(var(--tileink));
+  --color-ok: rgb(var(--ok));
+  --color-warn: rgb(var(--warn));
+  --color-bad: rgb(var(--bad));
+  --color-onstat: rgb(var(--onstat));
+
+  --font-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --shadow-soft: 0 1px 2px rgb(var(--ink) / 0.04), 0 8px 24px -14px rgb(var(--ink) / 0.22);
+  --shadow-lift: 0 2px 6px rgb(var(--ink) / 0.05), 0 22px 44px -18px rgb(var(--ink) / 0.32);
+}
+
+:focus-visible {
+  outline: 2px solid rgb(var(--brand));
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

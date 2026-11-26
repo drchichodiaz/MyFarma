@@ -1,0 +1,11 @@
+// Esquema de MyFarma. Los modelos de dominio llegan en la F1 (ver PLAN.md).
+// Las extensiones (postgis, pg_trgm, unaccent) se activan en la migración 0000_extensions.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
