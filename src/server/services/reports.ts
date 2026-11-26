@@ -4,7 +4,7 @@ import type { Prisma } from "@/generated/prisma/client";
 import { computeAvailability, type AvailabilityEvent } from "@/lib/availability-rules";
 import type { Status } from "@/lib/status";
 import { db } from "@/server/db";
-import { enqueuePhoto } from "@/server/queue";
+import { enqueueAlerts, enqueuePhoto } from "@/server/queue";
 import { limit, release } from "@/server/rate-limit";
 import { BUCKETS, deleteObject, headObject, photosEnabled } from "@/server/storage";
 import { PHOTO_WIDTHS } from "@/lib/photos";
@@ -119,7 +119,7 @@ export async function createReport(userId: string, input: ReportInput): Promise<
     return { ok: false, error: photoSize === null ? "bad_photo" : "not_found" };
   }
 
-  const report = await db.$transaction(async (tx) => {
+  const { report, next } = await db.$transaction(async (tx) => {
     const r = await tx.report.create({
       data: {
         userId,
@@ -131,12 +131,16 @@ export async function createReport(userId: string, input: ReportInput): Promise<
       },
       select: { id: true },
     });
-    await recomputeAvailability(tx, input.branchId, input.medicationId);
-    return r;
+    const n = await recomputeAvailability(tx, input.branchId, input.medicationId);
+    return { report: r, next: n };
   });
 
   // Si Redis falla, el barrido del worker la encola en unos minutos.
   if (photoKey) await enqueuePhoto(report.id).catch((e) => console.warn("enqueuePhoto:", e));
+  // Hay o Quedan pocas → avisar a quienes tienen alerta cerca (el worker decide a quién).
+  if (next && next.status !== "OUT") {
+    await enqueueAlerts(report.id).catch((e) => console.warn("enqueueAlerts:", e));
+  }
 
   return { ok: true, reportId: report.id, medicationId: input.medicationId };
 }
@@ -172,14 +176,18 @@ export async function confirmReport(
   const rl = await limit(`confirm:user:${userId}`, LIMITS.confirmationsPerHour, 60 * 60);
   if (!rl.ok) return { ok: false, error: "rate_hour" };
 
-  await db.$transaction(async (tx) => {
+  const next = await db.$transaction(async (tx) => {
     await tx.confirmation.upsert({
       where: { reportId_userId: { reportId, userId } },
       create: { reportId, userId, agrees },
       update: { agrees, createdAt: new Date() },
     });
-    await recomputeAvailability(tx, report.branchId, report.medicationId);
+    return recomputeAvailability(tx, report.branchId, report.medicationId);
   });
+  // "Sí había" sobre un No hay vuelve a poner existencia: también avisa.
+  if (next && next.status !== "OUT") {
+    await enqueueAlerts(reportId).catch((e) => console.warn("enqueueAlerts:", e));
+  }
   return { ok: true, medicationId: report.medicationId };
 }
 

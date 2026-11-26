@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Archivo, JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import { BottomNav } from "@/components/site/nav-links";
+import { RegisterServiceWorker } from "@/components/site/register-sw";
 import { SiteFooter } from "@/components/site/site-footer";
 import { SiteHeader } from "@/components/site/site-header";
 import "./globals.css";
@@ -20,6 +21,7 @@ export const metadata: Metadata = {
   description:
     "Encuentra en qué farmacia de Panamá hay tu medicamento, a qué precio y cuándo se confirmó. Reportes de pacientes.",
   applicationName: "MyFarma",
+  appleWebApp: { capable: true, title: "MyFarma", statusBarStyle: "default" },
 };
 
 export const viewport: Viewport = {
@@ -38,6 +40,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <main>{children}</main>
         <SiteFooter />
         <BottomNav />
+        <RegisterServiceWorker />
       </body>
     </html>
   );

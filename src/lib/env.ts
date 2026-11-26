@@ -11,6 +11,8 @@ const schema = z.object({
   SMTP_USER: z.string().optional(),
   SMTP_PASS: z.string().optional(),
   EMAIL_FROM: z.string().default("MyFarma <no-reply@myfarma.local>"),
+  /** Lo usa Auth.js; aquí además firma los enlaces de baja de las alertas. */
+  AUTH_SECRET: z.string().optional(),
   /** Sin estas dos, el botón de Google no aparece (desarrollo y CI sin credenciales). */
   AUTH_GOOGLE_ID: z.string().optional(),
   AUTH_GOOGLE_SECRET: z.string().optional(),
@@ -23,6 +25,12 @@ const schema = z.object({
   PHOTOS_PUBLIC_URL: z.url().default("https://img.myfarma.net"),
   /** Secreto compartido entre el worker y la app (POST /api/internal/revalidate). */
   INTERNAL_SECRET: z.string().min(16).optional(),
+  /** URL pública del sitio, para los enlaces de los correos y las notificaciones. */
+  PUBLIC_URL: z.url().default("https://myfarma.net"),
+  /** Web Push (F3). Sin estas, el canal "Celular" no aparece. */
+  VAPID_PUBLIC_KEY: z.string().optional(),
+  VAPID_PRIVATE_KEY: z.string().optional(),
+  VAPID_SUBJECT: z.string().default("mailto:hola@myfarma.net"),
   /** Dónde el worker encuentra la app (red interna de Docker en producción). */
   APP_INTERNAL_URL: z.url().default("http://localhost:3000"),
 });

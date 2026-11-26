@@ -35,3 +35,27 @@ export async function enqueuePhoto(reportId: string) {
     },
   );
 }
+
+/** Trabajo de la cola "alerts": avisar a quienes esperan este medicamento cerca. */
+export type AlertJob = { reportId: string };
+export const ALERT_QUEUE = "alerts";
+
+let alertQueue: Queue<AlertJob> | null = null;
+
+/**
+ * Sin jobId fijo: una confirmación posterior sobre el mismo reporte tiene que poder
+ * volver a disparar. Los duplicados no importan: el worker toma cada alerta de forma atómica.
+ */
+export async function enqueueAlerts(reportId: string) {
+  alertQueue ??= new Queue<AlertJob>(ALERT_QUEUE, { connection: queueConnection() });
+  await alertQueue.add(
+    "dispatch",
+    { reportId },
+    {
+      attempts: 3,
+      backoff: { type: "exponential", delay: 10_000 },
+      removeOnComplete: 1000,
+      removeOnFail: 1000,
+    },
+  );
+}

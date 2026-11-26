@@ -15,7 +15,7 @@ pnpm check          # lint + tipos + formato (lo mismo que el CI)
 pnpm build          # debe funcionar SIN base de datos (lo exige el build de Docker)
 pnpm test           # Vitest (reglas puras en src/lib)
 pnpm test:e2e       # Playwright contra pnpm dev + Mailpit (entrar → reportar → confirmar)
-pnpm worker         # cola de fotos (BullMQ + sharp); E2E_PHOTOS=1 pnpm test:e2e prueba la subida real
+pnpm worker         # alertas y fotos (BullMQ); los e2e de alertas lo necesitan corriendo
 pnpm db:migrate     # nueva migración; después correr `pnpm db:generate` (Prisma 7 no regenera solo)
 pnpm db:seed        # catálogo + reportes de ejemplo si no hay reportes
 ```
@@ -30,6 +30,7 @@ pnpm db:seed        # catálogo + reportes de ejemplo si no hay reportes
 - **Sesión:** `currentUser()` de `src/server/auth.ts`, siempre dentro de `<Suspense>`. Auth.js v5 con sesiones en DB; Google solo aparece si hay `AUTH_GOOGLE_*`.
 - **Reportes:** `src/server/services/reports.ts` (límites en Redis + transacción + `recomputeAvailability`). Las reglas viven en `src/lib/availability-rules.ts` y tienen tests.
 - **Fotos:** el navegador sube directo a R2 (`myfarma-uploads`, privado); el worker (`src/worker`) publica las variantes en `img.myfarma.net`. Nunca mostrar una foto que no esté `READY`.
+- **Worker:** lo que importa `src/worker` no puede depender de Next (su imagen no lo trae). Lo compartido va en módulos sin `next/*`, como `src/server/alert-links.ts`.
 - **Textos en español**, voz activa, sin datos personales en público (nombre + inicial).
 
 ## Deploy

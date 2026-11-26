@@ -151,6 +151,46 @@ input.input:focus-visible,
 .input input:focus-visible {
   outline: none;
 }
+input[type="range"] {
+  accent-color: rgb(var(--brand));
+}
+
+/* interruptor (checkbox con clase peer + span.switch) */
+.switch {
+  position: relative;
+  flex-shrink: 0;
+  width: 44px;
+  height: 26px;
+  border-radius: 999px;
+  background: rgb(var(--line));
+  transition: background 0.25s;
+}
+.switch::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: rgb(var(--surface));
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.25);
+  transition: transform 0.3s cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+.peer:checked ~ .switch {
+  background: rgb(var(--brand));
+}
+.peer:checked ~ .switch::after {
+  transform: translateX(18px);
+}
+.peer:focus-visible ~ .switch {
+  outline: 2px solid rgb(var(--brand));
+  outline-offset: 2px;
+}
+.peer:disabled ~ .switch {
+  opacity: 0.45;
+}
+
 .peer:checked + span .opt-ic {
   background: rgb(255 255 255 / 0.25);
   color: inherit;
@@ -219,6 +259,28 @@ input.input:focus-visible,
     transform: scaleX(0);
   }
 }
+/* radar de alertas */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.sweep {
+  border-radius: 999px;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    rgb(var(--brand) / 0.22) 55deg,
+    transparent 56deg
+  );
+  animation: spin 5s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sweep {
+    display: none;
+  }
+}
+
 /* éxito del reporte: palomita que se dibuja + confeti */
 @keyframes draw {
   to {

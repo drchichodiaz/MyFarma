@@ -296,7 +296,7 @@ async function Results({
             </div>
           )}
           <Link
-            href="/alertas"
+            href={`/alertas?med=${slug}`}
             className="group relative mt-2 overflow-hidden rounded-[1.4rem] bg-sun p-5 text-[#2b2000] transition hover:-translate-y-1 hover:shadow-lift"
           >
             <span className="inline-flex items-center gap-1.5 rounded-full bg-[#2b2000] px-3 py-1 text-[11px] font-extrabold text-sun">

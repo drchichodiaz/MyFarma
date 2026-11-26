@@ -26,6 +26,12 @@ enum PhotoStatus {
   HIDDEN // ocultada por un admin
 }
 
+/// Por dónde avisar una alerta.
+enum Channel {
+  EMAIL
+  PUSH
+}
+
 enum Role {
   USER
   ADMIN
@@ -42,10 +48,12 @@ model User {
   role          Role      @default(USER)
   createdAt     DateTime  @default(now()) @map("created_at")
 
-  accounts      Account[]
-  sessions      Session[]
-  reports       Report[]
-  confirmations Confirmation[]
+  accounts          Account[]
+  sessions          Session[]
+  reports           Report[]
+  confirmations     Confirmation[]
+  alerts            Alert[]
+  pushSubscriptions PushSubscription[]
 
   @@map("users")
 }
@@ -129,6 +137,7 @@ model Medication {
   conditions   MedicationCondition[]
   availability Availability[]
   reports      Report[]
+  alerts       Alert[]
 
   @@index([searchText(ops: raw("gin_trgm_ops"))], type: Gin, map: "medications_search_trgm")
   @@index([scarceInCss])
@@ -206,10 +215,11 @@ model Report {
   hidden       Boolean      @default(false)
   createdAt    DateTime     @default(now()) @map("created_at")
 
-  user          User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
-  medication    Medication     @relation(fields: [medicationId], references: [id], onDelete: Cascade)
-  branch        Branch         @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  user          User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
+  medication    Medication      @relation(fields: [medicationId], references: [id], onDelete: Cascade)
+  branch        Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
   confirmations Confirmation[]
+  deliveries    AlertDelivery[]
 
   @@index([branchId, medicationId, createdAt(sort: Desc)])
   @@index([medicationId, createdAt(sort: Desc)])
@@ -252,4 +262,65 @@ model Availability {
   @@id([branchId, medicationId])
   @@index([medicationId, status])
   @@map("availability")
+}
+
+/// "Avísame cuando haya X a menos de N km de aquí".
+/// `center` (geography) la llena un trigger desde lat/lng, igual que en branches.
+model Alert {
+  id             String                                @id @default(cuid())
+  userId         String                                @map("user_id")
+  medicationId   Int                                   @map("medication_id")
+  lat            Float
+  lng            Float
+  center         Unsupported("geography(Point,4326)")?
+  /// Cómo se muestra el centro: "tu ubicación", "Los Pueblos"…
+  placeLabel     String                                @map("place_label")
+  radiusKm       Float                                 @map("radius_km")
+  channels       Channel[]
+  active         Boolean                               @default(true)
+  /// Máximo un aviso cada 12 h por alerta.
+  lastNotifiedAt DateTime?                             @map("last_notified_at")
+  createdAt      DateTime                              @default(now()) @map("created_at")
+
+  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  medication Medication      @relation(fields: [medicationId], references: [id], onDelete: Cascade)
+  deliveries AlertDelivery[]
+
+  @@index([center], type: Gist)
+  @@index([medicationId, active])
+  @@index([userId])
+  @@map("alerts")
+}
+
+/// Un aviso enviado (o intentado). Único por alerta y reporte: los reintentos no duplican.
+model AlertDelivery {
+  id        String    @id @default(cuid())
+  alertId   String    @map("alert_id")
+  reportId  String    @map("report_id")
+  /// Canales que sí salieron.
+  sent      Channel[]
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  alert  Alert  @relation(fields: [alertId], references: [id], onDelete: Cascade)
+  report Report @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  @@unique([alertId, reportId])
+  @@index([reportId])
+  @@map("alert_deliveries")
+}
+
+/// Suscripción Web Push de un navegador (un usuario puede tener varias: celular y computadora).
+model PushSubscription {
+  id         String   @id @default(cuid())
+  userId     String   @map("user_id")
+  endpoint   String   @unique
+  p256dh     String
+  auth       String
+  createdAt  DateTime @default(now()) @map("created_at")
+  lastUsedAt DateTime @default(now()) @map("last_used_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("push_subscriptions")
 }

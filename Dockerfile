@@ -45,7 +45,12 @@ CMD ["sh", "-c", "npx prisma migrate deploy && npx tsx prisma/seed/index.ts"]
 FROM node:22-alpine AS worker
 ENV NODE_ENV=production
 WORKDIR /app
-RUN npm init -y >/dev/null  && npm install --no-audit --no-fund --omit=dev       sharp@0.35 bullmq@6 aws4fetch@1 ioredis@6 zod@4 server-only tsx@4       @prisma/client@7.10.1 @prisma/adapter-pg@7.10.1 pg@8  && npm cache clean --force
+RUN npm init -y >/dev/null \
+ && npm install --no-audit --no-fund --omit=dev \
+      sharp@0.35 bullmq@6 aws4fetch@1 ioredis@6 zod@4 server-only tsx@4 \
+      nodemailer@8 web-push@3 \
+      @prisma/client@7.10.1 @prisma/adapter-pg@7.10.1 pg@8 \
+ && npm cache clean --force
 COPY tsconfig.json ./
 COPY src ./src
 # Cliente de Prisma ya generado en la etapa deps (src/generated no entra al contexto).

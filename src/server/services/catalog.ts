@@ -13,6 +13,7 @@ export const TAGS = {
   overview: "availability:overview",
   reports: "reports",
   userReports: (userId: string) => `reports:user:${userId}`,
+  userAlerts: (userId: string) => `alerts:user:${userId}`,
 } as const;
 
 export type MedicationSummary = {

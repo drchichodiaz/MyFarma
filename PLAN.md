@@ -154,8 +154,8 @@ La ubicación del usuario se obtiene con la geolocalización del navegador, con 
 | ✅     | **F1 · Catálogo y búsqueda** | Schema + seed, inicio, autocompletar, resultados con mapa real, ficha de sucursal (solo lectura)                                       | Busco "metotrexato" y veo las sucursales del seed ordenadas por distancia                          |
 | ✅     | **Deploy temprano**          | Droplet NYC1 aprovisionado, imágenes en GHCR, Caddy + Cloudflare, pipeline push → producción                                           | https://myfarma.net en línea; cada push a `main` despliega en ~2 min                               |
 | ✅     | **F2a · Cuentas y reportes** | Backups a R2, Auth.js (Google + correo), formulario de reporte, confirmaciones, recálculo de disponibilidad                            | Un usuario logueado reporta y el resultado cambia al instante para todos                           |
-| 🧪     | **F2b · Fotos**              | Subida directa a R2, worker BullMQ + `sharp` (sin EXIF), variantes AVIF/WebP, moderación                                               | Un reporte con foto se ve sin datos GPS y en el formato adecuado                                   |
-| ⏳     | **F3 · Alertas**             | CRUD de alertas con radar, correo y Web Push, PWA instalable                                                                           | Al reportar "Hay", llega un correo o push a quien tiene alerta en el radio                         |
+| ✅     | **F2b · Fotos**              | Subida directa a R2, worker BullMQ + `sharp` (sin EXIF), variantes AVIF/WebP, moderación                                               | Un reporte con foto se ve sin datos GPS y en el formato adecuado                                   |
+| 🧪     | **F3 · Alertas**             | CRUD de alertas con radar, correo y Web Push, PWA instalable                                                                           | Al reportar "Hay", llega un correo o push a quien tiene alerta en el radio                         |
 | ⏳     | **F4 · Moderación y pulido** | Panel admin, página de privacidad, SEO/OG (404 reales, abrir `robots.txt`), agrupar marcadores del mapa, estados de error, modo oscuro | Checklist de lanzamiento completa                                                                  |
 | ⏳     | **F5 · Beta y lanzamiento**  | Mapa propio (PMTiles en R2), Umami, Sentry, Lighthouse CI, sucursales reales verificadas                                               | En línea con un grupo pequeño de pacientes (tu hermana primero)                                    |
 | ⏳     | **Después**                  | Bot de WhatsApp (reutiliza `server/services`), lectura de webs de farmacias, acuerdos con cadenas                                      | —                                                                                                  |
@@ -223,7 +223,7 @@ La ubicación del usuario se obtiene con la geolocalización del navegador, con 
 - [x] Playwright (`pnpm test:e2e`): entrar con correo (Mailpit) → reportar → otra persona confirma → el estado cambia para todos
 - [x] Job `e2e` en el CI con Postgres/PostGIS, Redis y Mailpit; el deploy espera a que pase
 
-### F2b · Fotos 🧪
+### F2b · Fotos ✅
 
 Dos buckets: `myfarma-uploads` (privado, originales, se borran solos al día) y `myfarma-photos` (público en `img.myfarma.net`, solo variantes limpias).
 
@@ -233,6 +233,16 @@ Dos buckets: `myfarma-uploads` (privado, originales, se borran solos al día) y 
 - [x] Estados `PENDING → READY | FAILED | HIDDEN`; barrido cada 5 min de las pendientes (Redis no guarda la cola en disco); botón "Ocultar foto" para ADMIN que borra las variantes
 - [x] `img.myfarma.net` con `Cache-Control: immutable`; `<picture>` con AVIF + WebP y `srcset` (en vez de un loader de `next/image`)
 - [x] Prueba: Vitest confirma que una foto con GPS sale sin EXIF; Playwright (`E2E_PHOTOS=1`, no corre en el CI) sube una foto real y verifica la variante pública
+
+### F3 · Alertas 🧪
+
+- [x] Modelos `Alert` (centro PostGIS por trigger, radio 1–10 km, canales, activa, `lastNotifiedAt`), `AlertDelivery` (una por alerta y reporte) y `PushSubscription`
+- [x] `/alertas` con el diseño del prototipo: medicamento, "Mi ubicación" o barrio, radar con las sucursales del radio y cuántas tienen hoy, canales Correo/Celular; lista con pausar, borrar y "Probar aviso al celular". Máximo 10 alertas por persona; el punto se guarda redondeado a ~100 m
+- [x] Disparo: un reporte o confirmación que deja "Hay"/"Quedan pocas" encola un trabajo; el worker toma las alertas con `UPDATE … RETURNING` (`ST_DWithin`, nunca a quien reportó, máximo 1 aviso cada 12 h) y manda correo y/o push
+- [x] Correo con "Ver detalle", "Cómo llegar" y baja: página con botón (los filtros de correo abren enlaces solos) + `List-Unsubscribe` de un clic (RFC 8058)
+- [x] Web Push con VAPID (`web-push`); se borran las suscripciones que el navegador dio de baja (404/410)
+- [x] PWA: `manifest.ts`, íconos normal/maskable/badge, `public/sw.js` (solo push, sin caché). En iPhone el push requiere instalar la app (la página lo explica)
+- [x] Pruebas: Vitest (firmas, radar) y Playwright (alerta → reporte en el radio → correo en Mailpit → baja). El push real no se puede probar sin interfaz: se prueba a mano con "Probar aviso al celular"
 
 ## Rendimiento (checklist obligatorio)
 

@@ -56,6 +56,7 @@ jobs:
       SMTP_PORT: "1025"
       AUTH_SECRET: solo-para-ci-no-es-un-secreto-real-0123456789
       AUTH_URL: http://localhost:3000
+      PUBLIC_URL: http://localhost:3000
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -68,7 +69,13 @@ jobs:
       - run: pnpm db:deploy
       - run: pnpm db:seed
       - run: pnpm build
+      # El worker manda las alertas (sin R2: no procesa fotos).
+      - name: Worker en segundo plano
+        run: nohup pnpm worker > worker.log 2>&1 &
       - run: pnpm test:e2e
+      - name: Log del worker
+        if: always()
+        run: cat worker.log || true
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

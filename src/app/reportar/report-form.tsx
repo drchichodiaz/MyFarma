@@ -347,8 +347,8 @@ function Success({ med, branch, onAgain }: { med: Med; branch: Branch; onAgain: 
       <h2 className="mt-7 font-display text-5xl font-black tracking-[-0.04em]">¡Gracias!</h2>
       <p className="mt-1 font-display text-xl font-extrabold">Reporte publicado</p>
       <p className="mt-2 max-w-sm text-muted">
-        Ya se ve en {branch.chainName} {branch.name}. Le ahorraste el recorrido al siguiente
-        paciente que busque {med.activeIngredient.toLowerCase()} {med.strength}.
+        Ya se ve en {branch.chainName} {branch.name}. Si alguien tiene una alerta de{" "}
+        {med.activeIngredient.toLowerCase()} {med.strength} cerca, le estamos avisando.
       </p>
       <div className="mt-7 flex flex-wrap justify-center gap-3">
         <Link href={`/m/${med.slug}/${branch.slug}`} className="btn-primary">
