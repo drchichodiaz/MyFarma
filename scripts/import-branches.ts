@@ -7,6 +7,7 @@
  *   pnpm branches:import <archivo.xlsx> --todas    → también las no confirmadas, con verified=false
  *   pnpm branches:import <archivo.xlsx> --dry      → muestra qué haría, sin escribir
  *   pnpm branches:import <archivo.xlsx> --sin-osm  → no consulta OpenStreetMap
+ *   pnpm branches:import <archivo.xlsx> --solo-cadenas → solo sucursales de cadenas conocidas
  *
  * De Google solo se guarda el place_id. Las coordenadas se toman de la farmacia más cercana
  * en OpenStreetMap (a menos de 120 m); si no hay, quedan las de la hoja y se avisa para
@@ -56,7 +57,7 @@ const colorFor = (slug: string) =>
 
 /** Fichas de Google que no son una farmacia de mostrador. */
 const NOT_A_STORE =
-  /oficinas?|bodega|centro de distribuci|administraci|veterinari|animal|agropecuari|mascota|\bpet\b/i;
+  /oficinas?|bodega|centro de distribuci|administraci|veterinari|animal|agropecuari|mascota|\bpet\b|^(al lado|frente|cerca|detr[aá]s)\b/i;
 
 const YES = /^(s[ií]|x|ok|1|true|confirmad[ao])$/i;
 
@@ -212,11 +213,14 @@ async function main() {
   const args = process.argv.slice(2);
   const file = args.find((a) => !a.startsWith("--"));
   if (!file) {
-    console.error("Uso: pnpm branches:import <archivo.xlsx> [--todas] [--dry] [--sin-osm]");
+    console.error(
+      "Uso: pnpm branches:import <archivo.xlsx> [--todas] [--solo-cadenas] [--dry] [--sin-osm]",
+    );
     process.exit(1);
   }
   const all = args.includes("--todas");
   const dry = args.includes("--dry");
+  const onlyChains = args.includes("--solo-cadenas");
 
   const sheet = await readSheet(file);
   const skipped = {
@@ -224,6 +228,7 @@ async function main() {
     "no está abierta": 0,
     "mayorista u oficina": 0,
     "sin coordenadas": 0,
+    independiente: 0,
   };
   const picked = sheet.filter((r) => {
     if (r.chain === "mayorista?" || NOT_A_STORE.test(r.name))
@@ -231,6 +236,7 @@ async function main() {
     if (r.status !== "abierta") return (void skipped["no está abierta"]++, false);
     if (!Number.isFinite(r.lat) || !Number.isFinite(r.lng))
       return (void skipped["sin coordenadas"]++, false);
+    if (onlyChains && !KNOWN[r.chain]) return (void skipped["independiente"]++, false);
     if (!r.confirmed && !all) return (void skipped["sin confirmar"]++, false);
     return true;
   });
@@ -258,7 +264,7 @@ async function main() {
   for (const r of picked) {
     // Las filas de búsquedas por cadena no tienen zona: se usa el primer tramo de la dirección.
     const zone = r.zone.startsWith("(")
-      ? cleanAddress(r.address, "Sucursal").split(",")[0]!.trim()
+      ? cleanAddress(r.address, "").split(",")[0]!.trim() || "Ciudad de Panamá"
       : r.zone;
 
     // Cadena y nombre corto
@@ -316,7 +322,7 @@ async function main() {
       slug,
       chain: chainSlug,
       name: branchName.slice(0, 80),
-      address: cleanAddress(r.address, zone),
+      address: cleanAddress(r.address, branchName),
       phone,
       hours,
       lat: Math.round(point.lat * 1e6) / 1e6,

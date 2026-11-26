@@ -1,9 +1,10 @@
 /**
  * Seed de MyFarma: catálogo (condiciones, medicamentos, cadenas, sucursales) desde CSV
- * y, en desarrollo, reportes de ejemplo para ver la app con datos.
+ * y, en desarrollo, sucursales y reportes de ejemplo (`data/demo/`) para ver la app con datos.
  *
- *   pnpm db:seed               → catálogo + reportes de ejemplo
- *   SEED_DEMO=0 pnpm db:seed   → solo catálogo (lo que se usará en producción)
+ *   pnpm db:seed               → catálogo real + sucursales y reportes de ejemplo
+ *   SEED_DEMO=0 pnpm db:seed   → solo catálogo real, y borra lo de ejemplo si quedó (producción;
+ *                                la imagen de migraciones trae SEED_DEMO=0 por defecto)
  *   SEED_DEMO=force pnpm db:seed → regenera los reportes de ejemplo aunque ya haya reportes
  *
  * Por defecto los reportes de ejemplo solo se crean si la tabla está vacía:
@@ -97,22 +98,31 @@ async function seedCatalog() {
       }),
     });
   }
+}
 
-  // Cadenas y sucursales se validan completas antes de escribir nada.
-  const chainRows = readCsv<unknown>("chains.csv").map((row, i) => {
+/** Lee y valida un par chains/branches completo antes de escribir nada. */
+function readBranchCatalog(dir: string) {
+  const chains = readCsv<unknown>(join(dir, "chains.csv")).map((row, i) => {
     const parsed = chainRowSchema.safeParse(row);
-    if (!parsed.success) throw new Error(`chains.csv fila ${i + 2}: ${parsed.error.message}`);
+    if (!parsed.success)
+      throw new Error(`${dir}/chains.csv fila ${i + 2}: ${parsed.error.message}`);
     return parsed.data;
   });
-  const branchRaw = readCsv<unknown>("branches.csv");
+  const raw = readCsv<unknown>(join(dir, "branches.csv"));
   const errors = validateBranchRows(
-    branchRaw,
-    chainRows.map((c) => c.slug),
+    raw,
+    chains.map((c) => c.slug),
   );
-  if (errors.length) throw new Error(`branches.csv tiene errores:\n  ${errors.join("\n  ")}`);
-  const branchRows = branchRaw.map((row) => branchRowSchema.parse(row));
+  if (errors.length) {
+    throw new Error(`${dir}/branches.csv tiene errores:\n  ${errors.join("\n  ")}`);
+  }
+  return { chains, branches: raw.map((row) => branchRowSchema.parse(row)) };
+}
 
-  for (const c of chainRows) {
+/** Cadenas y sucursales de un directorio ("." = reales, "demo" = de ejemplo). */
+async function seedBranches(dir: string) {
+  const { chains, branches } = readBranchCatalog(dir);
+  for (const c of chains) {
     const data = { name: c.name, website: c.website || null, color: c.color };
     await db.chain.upsert({
       where: { slug: c.slug },
@@ -123,8 +133,7 @@ async function seedCatalog() {
   const chainIds = new Map(
     (await db.chain.findMany({ select: { id: true, slug: true } })).map((c) => [c.slug, c.id]),
   );
-
-  for (const b of branchRows) {
+  for (const b of branches) {
     const chainId = chainIds.get(b.chain);
     if (!chainId) throw new Error(`Cadena desconocida "${b.chain}" en ${b.slug}`);
     const data = {
@@ -143,6 +152,28 @@ async function seedCatalog() {
       create: { slug: b.slug, ...data },
       update: data,
     });
+  }
+}
+
+const demoEmail = (i: number) => `demo${i + 1}@myfarma.local`;
+
+/**
+ * Producción (SEED_DEMO=0): borra lo de ejemplo si quedó de antes. Al borrar las sucursales
+ * de ejemplo se van en cascada sus reportes, confirmaciones y disponibilidad.
+ */
+async function pruneDemo() {
+  const { chains, branches } = readBranchCatalog("demo");
+  const b = await db.branch.deleteMany({ where: { slug: { in: branches.map((r) => r.slug) } } });
+  const c = await db.chain.deleteMany({
+    where: { slug: { in: chains.map((r) => r.slug) }, branches: { none: {} } },
+  });
+  const u = await db.user.deleteMany({
+    where: { email: { in: DEMO_NAMES.map((_, i) => demoEmail(i)) } },
+  });
+  if (b.count || c.count || u.count) {
+    console.log(
+      `Ejemplo: borradas ${b.count} sucursales, ${c.count} cadenas y ${u.count} usuarios`,
+    );
   }
 }
 
@@ -187,7 +218,7 @@ const BASE_PRICE: Record<string, number> = {
 async function seedDemoReports() {
   const users = [];
   for (const [i, name] of DEMO_NAMES.entries()) {
-    const email = `demo${i + 1}@myfarma.local`;
+    const email = demoEmail(i);
     users.push(
       await db.user.upsert({ where: { email }, create: { email, name }, update: { name } }),
     );
@@ -199,7 +230,11 @@ async function seedDemoReports() {
   const meds = await db.medication.findMany({
     select: { id: true, slug: true, activeIngredient: true, form: true },
   });
-  const branches = await db.branch.findMany({ select: { id: true } });
+  // Los reportes de ejemplo van solo en las sucursales de ejemplo, nunca en las reales.
+  const branches = await db.branch.findMany({
+    where: { slug: { in: readBranchCatalog("demo").branches.map((b) => b.slug) } },
+    select: { id: true },
+  });
   const now = Date.now();
   const reports: {
     userId: string;
@@ -262,7 +297,11 @@ async function seedDemoReports() {
 }
 
 async function main() {
+  const demo = process.env.SEED_DEMO ?? "1";
   await seedCatalog();
+  await seedBranches(".");
+  if (demo === "0") await pruneDemo();
+  else await seedBranches("demo");
   const counts = await Promise.all([
     db.condition.count(),
     db.medication.count(),
@@ -272,7 +311,6 @@ async function main() {
   console.log(
     `Catálogo: ${counts[0]} condiciones, ${counts[1]} medicamentos, ${counts[2]} cadenas, ${counts[3]} sucursales`,
   );
-  const demo = process.env.SEED_DEMO ?? "1";
   if (demo === "0") return;
   if (demo !== "force" && (await db.report.count()) > 0) {
     console.log("Ejemplo: ya hay reportes, no se tocan (SEED_DEMO=force para regenerar)");

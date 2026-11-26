@@ -10,7 +10,10 @@ const COLUMNS = [
     "Qué no es",
     "MyFarma no vende medicamentos: informa dónde hay. Los medicamentos con receta se compran con receta.",
   ],
-  ["Datos", "Mientras estemos en desarrollo, farmacias, precios y reportes son de ejemplo."],
+  [
+    "De dónde salen los datos",
+    "Las farmacias, de fuentes públicas; los reportes, de pacientes. Antes de ir, llama para confirmar.",
+  ],
 ] as const;
 
 export function SiteFooter() {

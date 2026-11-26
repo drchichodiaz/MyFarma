@@ -179,12 +179,13 @@ F0 a F4 están en producción (último deploy: `c5f0903`). **Sigue la F5.**
 - [x] `branches.place_id` + "Cómo llegar" abre la ficha exacta de Google Maps (`src/lib/maps.ts`)
 - [x] `pnpm branches:import <xlsx>`: confirmadas → `branches.csv`/`chains.csv` con `verified`, coordenadas de OSM si hay una farmacia a menos de 120 m; el seed valida todo el CSV (`src/lib/branch-import.ts`, con tests)
 - [ ] Pin en `/admin` para corregir coordenadas: ~60 % de las sucursales no tienen punto en OSM y quedan con las de la hoja
-- [ ] Al lanzar: quitar del CSV las 12 sucursales y 4 cadenas de ejemplo
+- [x] 227 sucursales de 12 cadenas en `branches.csv` (sin confirmar); lo de ejemplo pasó a `prisma/seed/data/demo/` y solo se carga en desarrollo y CI. En producción `SEED_DEMO=0` (fijo en el compose) borra sucursales, reportes y usuarios de ejemplo
 - [ ] Mapa propio (PMTiles en R2) para no depender de las teselas de OpenStreetMap
 - [ ] Umami (analítica sin cookies) y Web Vitals de usuarios reales
 - [ ] Sentry (errores y peticiones lentas); pide crear una cuenta
 - [ ] Lighthouse CI con presupuesto de rendimiento
-- [ ] Lanzamiento: `SEED_DEMO=0` y borrar reportes de ejemplo, quitar la etiqueta "Datos de ejemplo" y el texto "Datos" del pie, `INDEXING=1` y `ROBOTS_TAG=all` en el `.env` del servidor
+- [x] Etiqueta "Beta" en lugar de "Datos de ejemplo" y nuevo texto del pie
+- [ ] Lanzamiento: `INDEXING=1` y `ROBOTS_TAG=all` en el `.env` del servidor cuando haya reportes reales
 
 **Para la próxima sesión (trucos del entorno)**
 

@@ -142,7 +142,7 @@ async function BranchDetail({
         {!branch.verified && (
           <div className="flex items-center gap-2 py-3.5 text-xs text-muted">
             <Icon name="alert" className="size-4 shrink-0 text-warn" />
-            Sucursal de ejemplo: los datos todavía no están verificados.
+            Todavía no confirmamos el teléfono ni el horario de esta sucursal: llama antes de ir.
           </div>
         )}
       </dl>

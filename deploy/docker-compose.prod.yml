@@ -77,6 +77,8 @@ services:
     env_file: .env
     environment:
       DATABASE_URL: postgresql://myfarma:${POSTGRES_PASSWORD}@db:5432/myfarma?schema=public
+      # Producción nunca carga datos de ejemplo y borra los que queden (gana sobre el .env).
+      SEED_DEMO: "0"
     depends_on:
       db:
         condition: service_healthy

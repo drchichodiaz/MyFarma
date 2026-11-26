@@ -38,6 +38,8 @@ COPY prisma.config.ts ./
 COPY prisma ./prisma
 COPY src/lib/text.ts src/lib/branch-import.ts ./src/lib/
 RUN npx prisma generate
+# Producción nunca carga datos de ejemplo (y borra los que hayan quedado); el compose también lo fija.
+ENV SEED_DEMO=0
 CMD ["sh", "-c", "npx prisma migrate deploy && npx tsx prisma/seed/index.ts"]
 
 # ── Worker de fotos (mismo código de src/server, ejecutado con tsx) ─────

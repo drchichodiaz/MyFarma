@@ -1,13 +1,228 @@
 slug,chain,name,address,phone,hours,lat,lng,verified,place_id
-bi-los-pueblos,botica-del-istmo,Los Pueblos,"Centro comercial Los Pueblos, local 14",+507 000-0101,Lun–Dom 8:00–22:00,9.0352,-79.4655,false,
-bi-el-dorado,botica-del-istmo,El Dorado,"Centro comercial El Dorado, local 3",+507 000-0105,Lun–Dom 8:00–22:00,9.0122,-79.5368,false,
-bi-bella-vista,botica-del-istmo,Bella Vista,"Calle 50 y Vía Argentina",+507 000-0109,Lun–Sáb 7:00–21:00,8.9829,-79.5262,false,
-fp-via-espana,farmacia-puente,Vía España,"Vía España, frente a la parada de El Carmen",+507 000-0102,Abierta 24 horas,8.9897,-79.5287,false,
-fp-costa-del-este,farmacia-puente,Costa del Este,"Av. Centenario, Plaza Costa",+507 000-0106,Lun–Dom 8:00–23:00,9.0103,-79.4604,false,
-fp-condado-del-rey,farmacia-puente,Condado del Rey,"Vía Ricardo J. Alfaro, Plaza Condado",+507 000-0110,Lun–Dom 8:00–22:00,9.0256,-79.5297,false,
-fn-brisas-del-golf,farmanorte,Brisas del Golf,"Plaza Brisas, planta baja",+507 000-0103,Lun–Dom 8:00–21:00,9.0624,-79.4436,false,
-fn-villa-lucre,farmanorte,Villa Lucre,"Plaza Villa Lucre, local 8",+507 000-0107,Lun–Sáb 8:00–20:00,9.0530,-79.4882,false,
-fn-transistmica,farmanorte,Transístmica,"Vía Transístmica, Los Ángeles",+507 000-0111,Lun–Dom 7:00–22:00,9.0190,-79.5160,false,
-dc-albrook,drogueria-canal,Albrook,"Albrook Mall, pasillo del Canguro",+507 000-0104,Lun–Dom 10:00–21:00,8.9727,-79.5508,false,
-dc-san-francisco,drogueria-canal,San Francisco,"Calle 74, San Francisco",+507 000-0108,Lun–Dom 8:00–22:00,8.9935,-79.5110,false,
-dc-paitilla,drogueria-canal,Paitilla,"Av. Balboa, Punta Paitilla",+507 000-0112,Lun–Dom 7:00–23:00,8.9787,-79.5133,false,
+arrocha-12-de-octubre,arrocha,12 de Octubre,C. 77A Oeste,+507 360-4000,Lun–Dom 7:00–22:00,9.011874,-79.511167,false,ChIJUUuOdLSprI8RB0OOXgT8L44
+arrocha-albrook-mall,arrocha,Albrook Mall,"Albrook Mall, Av. de la Amistad",+507 360-4477,Lun–Dom 7:00–22:00,8.970494,-79.553078,false,ChIJe8TKl6OorI8RJinwq68Em7g
+arrocha-av-central-espana,arrocha,Av. Central España,Av. Central España,+507 349-8464,Lun–Sáb 9:00–17:00,8.959045,-79.541177,false,ChIJa4hwjraorI8RVjzJS-ZuYdQ
+arrocha-bosque,arrocha,Bosque,Sector 4 15,,Lun–Dom 7:00–22:00,9.032681,-79.513688,false,ChIJYSaazmSprI8Rth6IK7waynE
+arrocha-brisas-del-golf,arrocha,Brisas del Golf,San Miguelito,,Lun–Dom 7:00–22:00,9.069687,-79.459853,false,ChIJt5CnM0VVq48RaBWlsQ8q2-o
+arrocha-calle-50,arrocha,Calle 50,C. 50,+507 360-4124,Lun–Dom 7:00–23:00,8.992014,-79.507397,false,ChIJfaouVQaprI8R16BfEiPUwW8
+arrocha-centennial,arrocha,Centennial,"Centennial Mall, Vía Centenario",+507 360-4521,Lun–Dom 7:00–22:00,9.031682,-79.533067,false,ChIJBYZFnCOorI8RKcwafEQQifI
+arrocha-clayton,arrocha,Clayton,Av Clayton-Curundú,+507 315-4805,Lun–Dom 7:00–21:30,8.994851,-79.558626,false,ChIJB9MaRoCorI8R-7nUJa7uh_A
+arrocha-costa-del-este,arrocha,Costa del Este,Av. Centenario,+507 360-4327,Lun–Dom 7:00–22:00,9.01672,-79.462834,false,ChIJWXzIkhiqrI8R0Tr01l79hc8
+arrocha-dorado,arrocha,Dorado,Vía Ricardo J. Alfaro 8384,+507 360-4051,Lun–Dom 7:00–23:00,9.004361,-79.532634,false,ChIJS4DEhlyorI8RzwG8xBHa5l4
+arrocha-fc-plaza,arrocha,FC Plaza,Madera de Santos 7112,,,9.003173,-79.51953,false,ChIJH55RLACprI8R8JedMp91bsc
+arrocha-los-andes,arrocha,Los Andes,Los Andes,+507 360-4255,Lun–Dom 7:00–22:00,9.046796,-79.506212,false,ChIJ-e3fBy9Wq48R40ToLb-RyrQ
+arrocha-los-pueblos,arrocha,Los Pueblos,Av. Domingo Díaz,+507 360-4201,Lun–Dom 7:00–22:00,9.049837,-79.451943,false,ChIJWeuN6-1Vq48RDkYInTpRLHM
+arrocha-marbella,arrocha,Marbella,Marbella,+507 360-4291,Lun–Dom 7:00–21:00,8.977385,-79.521671,false,ChIJG3dvxeaorI8RKHyELn86Tcg
+arrocha-obarrio,arrocha,Obarrio,Av. Ernestina Sucre Tapia,+507 360-4341,Lun–Dom 7:00–22:00,8.991108,-79.520853,false,ChIJ1T-UtP6orI8RZYUqzlMDSQ0
+arrocha-paitilla,arrocha,Paitilla,Avenida Balboa,+507 360-4151,Lun–Dom 7:00–23:00,8.976094,-79.515905,false,ChIJhSXdLeCorI8RT1HCS5n-CfU
+arrocha-panama-pacifico,arrocha,Panamá Pacífico,"Blvd. Panamá Pacífico, Arraiján",+507 360-4369,Lun–Dom 7:00–19:30,8.916891,-79.591407,false,ChIJ_UODzaWlrI8Rvt78rNpTlJU
+arrocha-panama-pacifico-2,arrocha,Panamá Pacifico 2,Parque Internacional de Negocios,,,8.927655,-79.5925,false,ChIJb9JGdAClrI8Rfo1jv9NooH0
+arrocha-parque-indistrial-milla-8,arrocha,Parque Indistrial Milla 8,San Miguelito,+507 279-9000,,9.06641,-79.518245,false,ChIJSf7ma7RXq48RjrBWCup-xu4
+arrocha-plaza-58,arrocha,Plaza 58,Calle 57 Este,+507 249-6484,Lun–Dom 7:00–22:00,8.985906,-79.517853,false,ChIJCyBA7fyorI8RDQyrm3n-o1U
+arrocha-plaza-albrook,arrocha,Plaza Albrook,Av. Canfield,+507 360-4000,Lun–Dom 7:00–21:30,8.974944,-79.558265,false,ChIJfd5XL6CorI8Rv8PB8ti_ExQ
+arrocha-plaza-las-americas,arrocha,Plaza Las Américas,Plaza Las Américas,+507 360-4000,Lun–Dom 7:00–21:30,9.079529,-79.399395,false,ChIJ44ZcgyBVq48RJkgCFF3zqsM
+arrocha-punta-pacifica,arrocha,Punta Pacífica,"Torre Aqualina, Cl. Punta Colón",+507 360-4195,Lun–Dom 7:00–22:00,8.976108,-79.508328,false,ChIJqd0-4BiprI8RJPX_XeeuoRE
+arrocha-santa-maria-plaza,arrocha,Santa María Plaza,Santa María Plaza,+507 360-4124,Lun–Dom 7:00–22:00,9.026783,-79.468645,false,ChIJxbLQ0AKqrI8R9H_ktpG_7Rg
+arrocha-time-square-plaza,arrocha,Time Square Plaza,frente al Hotel Casino Sortis,+507 214-9924,Lun–Sáb 7:00–22:00,8.986949,-79.5194,false,ChIJLe74Y_yorI8RT6JTI3ewHbs
+arrocha-town-center-costa-del-este,arrocha,Town Center Costa del Este,Town Center Costa del Este,+507 831-7513,Lun–Dom 10:00–22:00,9.012966,-79.464332,false,ChIJxzem1yOqrI8Rrwp2Tl-ggEU
+arrocha-transistmica,arrocha,Transístmica,Av. Simón Bolívar,+507 360-4241,Lun–Dom 7:00–22:00,8.997609,-79.526057,false,ChIJo5IQj1eorI8RlykBLWjTaSM
+arrocha-versalles,arrocha,Versalles,Avenida Don Bosco,+507 279-9000,Lun–Dom 7:00–21:00,9.043291,-79.41471,false,ChIJ-zMsCQxVq48RHkbhHAGl2Sc
+arrocha-via-argentina,arrocha,Vía Argentina,Vía Argentina,+507 360-4391,Lun–Dom 7:00–21:00,8.988241,-79.528703,false,ChIJUb_n5vCorI8RDVJfpVB1Gxs
+arrocha-via-espana,arrocha,Vía España,C. Aquilino de la Guardia,+507 360-4343,Lun–Dom 7:00–21:30,8.981745,-79.526613,false,ChIJka7jhuWorI8RTA65I_GJHQA
+arrocha-villa-lucre,arrocha,Villa Lucre,"Villa Lucre Mall, Av. Domingo Díaz, San Miguelito",+507 360-4555,Lun–Dom 7:00–22:00,9.040764,-79.479438,false,ChIJ5xhHxgJWq48R3uQnr-rpn2U
+arrocha-villa-zaita,arrocha,Villa Zaíta,Villa Zaíta,+507 360-4782,Lun–Dom 7:00–22:00,9.07988,-79.526487,false,ChIJnXrT9pJXq48Rylv8-ipr1eo
+el-javillo-5-de-mayo,el-javillo,5 de Mayo,Av. Justo Arosemena,+507 301-4044,Lun–Sáb 6:00–21:30 · Dom 8:00–16:30,8.961726,-79.540515,false,ChIJqRJASWSprI8RuyZHopkL3-M
+el-javillo-albrook,el-javillo,Albrook,Albrook,+507 309-6499,Lun–Sáb 6:00–21:30 · Dom 8:00–16:30,8.972311,-79.564181,false,ChIJd1W-JJmnrI8RQt-bSIfkTr4
+el-javillo-altos-de-panama,el-javillo,Altos de Panamá,Altos de Panamá,+507 6758-4300,Lun–Vie 6:00–21:30 · Sáb 6:30–21:30 · Dom 8:00–16:30,9.036111,-79.528304,false,ChIJRbDuFBKprI8RMyVZhZCIefo
+el-javillo-brisas-del-golf,el-javillo,Brisas del Golf,San Miguelito,+507 301-4066,Lun–Sáb 6:00–21:30 · Dom 9:00–16:30,9.07024,-79.452667,false,ChIJWU85v7xVq48R3Eae5OxWxo8
+el-javillo-cangrejo,el-javillo,Cangrejo,"Edif Deveux 16, Calle 55 y",+507 301-4014,Lun–Sáb 6:00–21:30,8.984858,-79.528342,false,ChIJ5fe62O-orI8RNjFakmRdqvc
+el-javillo-ciudad-bolivar,el-javillo,Ciudad Bolívar,Calle Entrada de Ciudad Bolivar 7104,+507 309-6489,Lun–Sáb 6:00–21:30 · Dom 8:00–16:30,9.109795,-79.541917,false,ChIJk2FhA5pXq48RJAZ0M1zbqQE
+el-javillo-consultorios-america,el-javillo,Consultorios América,Vía España,+507 301-4024,Abierta 24 horas,9.000926,-79.516605,false,ChIJvTJ2T4uprI8RLmNTChM6a-s
+el-javillo-consultorios-medico-paitilla,el-javillo,Consultorios Médico Paitilla,"Ave. José de la Cruz Herrera |, Calle 53 Este",+507 392-0101,Abierta 24 horas,8.977876,-79.517803,false,ChIJg6XDdU2prI8R1N_qVrOJWdg
+el-javillo-costa-del-este,el-javillo,Costa del Este,Av. Centenario,+507 301-4025,Lun–Sáb 7:00–22:30 · Dom 8:00–16:30,9.016813,-79.464062,false,ChIJBUFmqaqrrI8RpZ3kjATb85E
+el-javillo-crisol,el-javillo,Crisol,"entrada de la Urbanización, Av. Domingo Díaz 2",+507 301-4034,Lun–Sáb 6:00–21:30 · Dom 8:00–16:30,9.043512,-79.472826,false,ChIJPx-ZOQdWq48RvKU3-20zMtY
+el-javillo-don-bosco,el-javillo,Don Bosco,"Edificio Aeropuerto Comercial Park, Av. Domingo Díaz",+507 301-4086,Lun–Sáb 6:00–21:30 · Dom 8:00–16:30,9.06286,-79.419474,false,ChIJeUkZBgxVq48RN3Q7hPt6b_o
+el-javillo-dona,el-javillo,Doña,Centro Comercial La Doña,+507 301-4063,Lun–Sáb 6:00–21:30 · Dom 8:00–16:30,9.103746,-79.369254,false,ChIJ5_nn3NmrVI4R3KJrYon-Iuk
+el-javillo-dorado,el-javillo,Dorado,Dorado,+507 301-4067,Lun–Sáb 6:00–21:30 · Dom 8:00–16:30,9.009605,-79.53502,false,ChIJpa8oR_KprI8R6Id3Oc815Ak
+el-javillo-javillo,el-javillo,javillo,javillo,,,8.977585,-79.557484,false,ChIJ8-LKKgCprI8RaJvESRPRrnw
+el-javillo-las-cumbres,el-javillo,Las Cumbres,Carr Transístmica 19,+507 301-4078,Lun–Sáb 6:00–21:30,9.098314,-79.532171,false,ChIJFX00kFRXq48RdMrd_CCLoDA
+el-javillo-los-pueblos,el-javillo,Los Pueblos,"Centro Comercial Los Pueblos, Av. Domingo Díaz",+507 301-4075,Lun–Sáb 6:00–21:30 · Dom 8:00–16:30,9.045818,-79.449719,false,ChIJfav_MVJVq48Rr2TZF_VNSPE
+el-javillo-marbella,el-javillo,Marbella,Royal Center,+507 301-4088,Lun–Vie 6:00–21:30 · Sáb 8:00–16:30,8.978294,-79.518786,false,ChIJ3yTLceGorI8RzoD78iZNlB0
+el-javillo-megamall,el-javillo,Megamall,Megamall,+507 301-4045,Lun–Sáb 10:00–20:00 · Dom 10:00–19:00,9.100556,-79.350759,false,ChIJgQHdVtmrVI4Rh4sPAG4tJhI
+el-javillo-obarrio,el-javillo,Obarrio,Vía España,+507 301-4021,Lun–Sáb 6:00–21:30 · Dom 8:00–16:30,8.988099,-79.523332,false,ChIJAVHOoTGprI8R8nFAZdKXWdQ
+el-javillo-paitilla,el-javillo,Paitilla,C. Ramon H. Jurado,+507 301-4076,Lun–Sáb 6:00–21:30 · Dom 8:00–16:30,8.977832,-79.512685,false,ChIJ7-cl0giprI8RS6fIxLA7lOk
+el-javillo-paraiso-san-miguelito,el-javillo,Paraiso San Miguelito,"Frente a la Policlínica de la Caja del Seguro Social, Manuel María Valdés",+507 392-0101,Lun–Sáb 6:30–21:30,9.03749,-79.49603,false,ChIJlWBwAuWprI8RxJdIF8loep0
+el-javillo-rio-abajo-auto-rapido,el-javillo,Río Abajo Auto Rápido,C. 93 Este,+507 301-4098,Lun–Sáb 6:00–21:30 · Dom 8:00–16:30,9.014899,-79.498141,false,ChIJH_U_xzmprI8R3Cs_3ii6hEM
+el-javillo-san-fernando,el-javillo,San Fernando,"Edificio Pediátrico del Hospital San Fernando, Vía España",+507 301-4028,Lun–Vie 6:00–21:30 · Sáb 8:00–16:30,9.002001,-79.516645,false,ChIJ66Cy3q2prI8RRFEGAt28TWQ
+el-javillo-siesta,el-javillo,Siesta,Siesta,+507 309-6441,Lun–Sáb 6:00–21:30 · Dom 8:00–16:30,9.074616,-79.364829,false,ChIJt2hS7n6rVI4RZsJETc6ejcs
+el-javillo-via-israel,el-javillo,Vía Israel,Vía Israel,+507 301-4019,Lun–Sáb 6:00–21:30 · Dom 8:00–16:30,8.987887,-79.505333,false,ChIJ4XQO_LOprI8R9LPWyt4ZYLQ
+el-javillo-via-porras,el-javillo,Vía Porras,"Vía Porras, frente a la Clínica, CSS, Calle Carlos N Brin",+507 301-4087,Lun 6:00–21:30 · Mar 9:00–21:30 · Mié–Sáb 6:00–21:30,8.996304,-79.51097,false,ChIJ0Sw_u3KprI8Rvsbn0pOdDm0
+el-javillo-villa-lucre,el-javillo,Villa Lucre,"Frente al almacén La Onda, San Miguelito",+507 6962-1612,Lun–Vie 6:30–21:30 · Sáb 6:00–21:30 · Dom 8:00–16:30,9.038192,-79.482454,false,ChIJJcwAdgBXq48RXydlptvIsr4
+farma-ahorro-5-de-mayo,farma-ahorro,5 de mayo,PH Villa Carmel,+507 6554-9374,Lun–Sáb 6:00–20:00 · Dom 9:00–18:00,8.96262,-79.538605,false,ChIJhVHdDaWprI8RzJjGsCn-dc4
+farma-ahorro-betania,farma-ahorro,Betania,Av. La Paz 2001,+507 6554-9374,Lun–Sáb 6:00–20:00 · Dom 9:00–18:00,9.021395,-79.525295,false,ChIJl0X7a2-prI8RDqsRK19SXnw
+farma-ahorro-calidonia,farma-ahorro,Calidonia,"Avenida Cuba, y, frente al Banco Nacional, Edificio Poli, C. 26 Este",+507 270-5535,Lun–Sáb 6:00–20:00 · Dom 9:00–18:00,8.964937,-79.538039,false,ChIJy86XhM2prI8Rfxt20HYfKg4
+farma-ahorro-cantabria,farma-ahorro,Cantabria,"local # 35, Centro Comercial Cantabria, Av. Domingo Díaz",+507 6554-9374,Lun–Sáb 7:00–21:00 · Dom 9:00–18:00,9.059139,-79.427606,false,ChIJX7lxJDtVq48R9Num7Ix6VII
+farma-ahorro-central,farma-ahorro,Central,Av. Central España,+507 270-5535,Lun–Sáb 7:00–19:00 · Dom 9:00–18:00,8.956098,-79.539755,false,ChIJA2b7ab-prI8RJ1sHgRtCOzs
+farma-ahorro-cerro-viento,farma-ahorro,Cerro Viento,altos de,+507 6554-9374,Lun–Sáb 6:30–20:00 · Dom 9:00–18:00,9.057977,-79.453889,false,ChIJQ5fBUtBVq48RXMyHcvTQww8
+farma-ahorro-ciudad-radial,farma-ahorro,Ciudad Radial,"local #5, Radiant Tower PB, Avenida principal",+507 6554-9374,Lun–Sáb 7:00–21:00 · Dom 9:00–18:00,9.045732,-79.432711,false,ChIJI9zHn2ZVq48R3g69lFrA25o
+farma-ahorro-felipillo,farma-ahorro,Felipillo,C. los Cocos,+507 6554-9374,Lun–Sáb 6:00–20:00 · Dom 9:00–18:00,9.099958,-79.326882,false,ChIJF6-C3yirVI4RVV7tVJwv7vs
+farma-ahorro-ladona,farma-ahorro,LaDoña,Centro comercial La Doña Local 1 F,+507 6554-9374,Lun–Sáb 7:00–20:30 · Dom 9:00–18:00,9.104703,-79.370425,false,ChIJPwa8UcurVI4RJwU2YXNe4Qo
+farma-ahorro-las-cumbres,farma-ahorro,Las Cumbres,Plaza,+507 6554-9374,Lun–Sáb 6:00–20:00 · Dom 9:00–18:00,9.097844,-79.531671,false,ChIJ4azceQdXq48RxToiIfyHPKA
+farma-ahorro-los-andes-2,farma-ahorro,Los Andes 2,C. 3era,+507 6554-9374,Lun–Sáb 6:30–20:00 · Dom 9:00–18:00,9.050451,-79.511009,false,ChIJGxIlQBhXq48RdpsCYKgA2Rw
+farma-ahorro-los-libertadores,farma-ahorro,Los Libertadores,C. Cartago,,,9.02469,-79.523002,false,ChIJ0yl6SwCprI8R20rkHdSKVSQ
+farma-ahorro-mananitas,farma-ahorro,Mañanitas,Ave a 2-75,+507 6554-9374,Lun–Sáb 6:00–20:00 · Dom 9:00–18:00,9.093207,-79.407244,false,ChIJG1NBUMtVq48Rw-KyWIFWl4o
+farma-ahorro-nuevo-tocumen,farma-ahorro,Nuevo Tocumen,Av. Zafiro,+507 6554-9374,Lun–Sáb 6:00–20:00 · Dom 9:00–18:00,9.097181,-79.349067,false,ChIJgXGtgaqrVI4Ryf66XPOwUMc
+farma-ahorro-nuevo-veranillo,farma-ahorro,Nuevo Veranillo,San Miguelito,+507 6554-9374,Lun–Sáb 6:00–20:00 · Dom 9:00–18:00,9.047046,-79.499576,false,ChIJu0h5RxBXq48R_JoHI9UdMVA
+farma-ahorro-obarrio,farma-ahorro,Obarrio,Calle 57 Este 8808,+507 6554-9374,Lun–Sáb 6:00–20:00 · Dom 9:00–18:00,8.989394,-79.521435,false,ChIJBbZh_giprI8R3WzsWFArdnA
+farma-ahorro-paitilla,farma-ahorro,Paitilla,"Local Comercial N° 7, ubicado en Planta Baja del Centro Médico Paitilla",+507 270-5535,Lun–Sáb 6:00–20:00 · Dom 9:00–18:00,8.977876,-79.517803,false,ChIJyzQqq52prI8R593Ag7e6Xd8
+farma-ahorro-paraiso-san-miguelito,farma-ahorro,Paraíso San Miguelito,"diagonal a, Via La Circunvalación, San Miguelito",+507 6554-9374,Lun–Sáb 7:00–21:00 · Dom 9:00–18:00,9.032299,-79.500046,false,ChIJj2XM5xKprI8RUy4WAaaqDSw
+farma-ahorro-parque-lefevre,farma-ahorro,Parque Lefevre,Calle 15,+507 6554-9374,Lun–Sáb 7:00–20:30,9.018305,-79.492777,false,ChIJ8VVy_GiprI8RU6qwU3US7_w
+farma-ahorro-plaza-belen,farma-ahorro,Plaza Belén,"Av. Jose Agustin Arango, Belén",+507 6554-9374,Lun–Sáb 6:00–20:00 · Dom 9:00–18:00,9.086224,-79.384565,false,ChIJ53pzmBtVq48RjAwa95-Q4MI
+farma-ahorro-rio-abajo,farma-ahorro,Río Abajo,"edificio 2204, Vía España",+507 6554-9374,Lun–Sáb 6:00–21:00 · Dom 9:00–18:00,9.014054,-79.50034,false,ChIJST6fWtKprI8RoEKclpUwC5M
+farma-ahorro-san-antonio,farma-ahorro,San Antonio,Av. Pedro J. Ameglio,+507 6554-9374,Lun–Sáb 6:30–20:00 · Dom 9:00–18:00,9.053111,-79.444,false,ChIJc6s9f2pVq48RkXMcqKpXewQ
+farma-ahorro-san-isidro,farma-ahorro,San Isidro,Farma Ahorro,+507 6554-9374,Lun–Sáb 6:00–20:00 · Dom 9:00–18:00,9.064464,-79.510881,false,ChIJx9wwloJXq48Rnhz4BKB11WA
+farma-ahorro-san-miguelito,farma-ahorro,San Miguelito,"San Miguelito Gran estación de, Centro comercial, San Miguelito",+507 6554-9374,Lun–Sáb 8:00–20:00 · Dom 9:00–18:00,9.029733,-79.505944,false,ChIJIXP_4eyprI8Rlxl7bKs9vFA
+farma-ahorro-san-miguelito-calle-l,farma-ahorro,"San Miguelito, Calle L","San Miguelito, C. L",+507 6554-9374,Lun–Sáb 6:00–20:00 · Dom 9:00–18:00,9.03818,-79.496206,false,ChIJI6zvqdiprI8R_NVvROz41KA
+farma-ahorro-santo-tomas,farma-ahorro,Santo Tomás,Santo Tomás,+507 6554-9374,Lun–Sáb 6:00–20:00 · Dom 9:00–18:00,8.969672,-79.534328,false,ChIJa2b63yWprI8R-uQUfJpxXno
+farma-ahorro-via-argentina,farma-ahorro,Vía Argentina,Vía Argentina 7001,+507 6554-9374,Lun–Sáb 7:00–21:00 · Dom 9:00–18:00,8.987748,-79.530356,false,ChIJp1r1nX2prI8RZVuvo7pRbn4
+farma-ahorro-via-brasil,farma-ahorro,Vía Brasil,"Av Ramón Arias, Edificio Ana Capri, planta baja",+507 6554-9374,Lun–Sáb 6:00–20:00 · Dom 9:00–18:00,8.993733,-79.524122,false,ChIJzVG4RvKprI8ReSqvgjAs3o4
+farma-ahorro-via-espana-plaza-marquez,farma-ahorro,"Vía España, Plaza Marquez","Plaza Marquez , Vía España, Local N° 4",+507 270-5535,Lun–Sáb 6:00–20:00 · Dom 9:00–18:00,9.002001,-79.516645,false,ChIJebXGfwKprI8R2UbvYqdep4k
+farma-ahorro-via-veneto,farma-ahorro,Vía Veneto,Vía Veneto,+507 6554-9374,Lun–Sáb 7:00–20:00 · Dom 9:00–18:00,8.985898,-79.529142,false,ChIJk_dJENOprI8Rh7kW4ASdtEU
+farma-ahorro-villa-zaita,farma-ahorro,Villa Zaita,Villa Zaita,+507 6554-9374,Lun–Sáb 7:00–21:30 · Dom 9:00–18:00,9.082166,-79.514815,false,ChIJobJepk9Xq48R2ivwTMbrNS0
+farmas-ciudad-del-saber,farmas,Ciudad del Saber,C. Alberto Tejada,+507 6679-2995,Lun–Sáb 7:00–19:30 · Dom 9:00–17:00,9.002478,-79.582296,false,ChIJIcrX4rWnrI8Ro0PKgXIcoGo
+farmas-coco-del-mar,farmas,Coco del Mar,"Calle 79 Este, Edif. Le Mare, diagonal a la Iglesia San Francisco de La Caleta",+507 6730-6679,Lun–Sáb 7:00–20:30 · Dom 9:00–17:00,8.992234,-79.497944,false,ChIJE0UiCeKprI8RCU1meAfLmjk
+farmas-costa-del-este,farmas,Costa Del Este,Costa Del Este,+507 385-3600,Lun–Vie 7:00–20:30 · Sáb 7:00–20:00 · Dom 9:00–17:00,9.011093,-79.464838,false,ChIJg9IUWCGqrI8RX2xWK9URF8k
+farmas-el-dorado,farmas,El Dorado,El Dorado,+507 236-3181,Lun–Sáb 7:00–20:30 · Dom 9:00–17:00,9.005801,-79.540117,false,ChIJ8Y6w8UWprI8RGEiHJpYwo7c
+farmas-metromall,farmas,Metromall,"Tercer Nivel, Av. Domingo Díaz",+507 6982-8610,Lun–Sáb 10:00–20:00 · Dom 11:00–19:00,9.053698,-79.450627,false,ChIJmabKuu9Vq48R6-yC_cwei7o
+farmas-multiplaza-mall,farmas,Multiplaza Mall,"tercer nivel, Multiplaza",+507 6349-0976,Lun–Sáb 9:00–20:00 · Dom 11:00–19:00,8.986347,-79.511326,false,ChIJ8YOiCwOprI8R_oO81SbGv9E
+farmas-santa-maria,farmas,Santa María,"Local 105, Village Center",+507 6982-8660,Lun–Sáb 7:00–20:30 · Dom 9:00–17:00,9.027041,-79.452492,false,ChIJp49gD4errI8R2g2A-p-l2YY
+farmavalue-12-de-octubre,farmavalue,12 de Octubre,"Liberty Plaza, local 1, planta baja. Ubicada antes de Delta, al costado del Banco Nacional",+507 306-0101,Lun–Dom 7:00–21:00,9.014041,-79.512114,false,ChIJhwGFeACprI8Ru1hOCKGLjF4
+farmavalue-albrook,farmavalue,Albrook,"Corregimiento de Ancon , Calle principal, edif Terrazas de Albrook, Local A14",+507 306-0101,Lun–Dom 7:00–21:00,8.97466,-79.565436,false,ChIJ3WAc2z-nrI8RRR09oGmD2FU
+farmavalue-bella-vista,farmavalue,Bella Vista,Av. Justo Arosemena 32,+507 306-0101,Lun–Vie 7:00–22:00 · Sáb–Dom 7:00–21:00,8.97514,-79.53187,false,ChIJa9wy8emorI8RUEk2VzlAA_I
+farmavalue-betania,farmavalue,Betania,"Camino Real de Betania y, entre Excel Automotriz y Clínica y Laboratorio Express, Transístmica",+507 306-0101,Lun–Dom 7:00–21:00,9.002936,-79.52316,false,ChIJ_Q_tx_WprI8RPBfaqVIk0z8
+farmavalue-brisas-del-golf,farmavalue,Brisas del Golf,"Calle principal, plaza PH point plaza, frente a Cochez, Brisas del Golf, Brisas del golf",+507 203-5610,Lun–Dom 8:00–21:00,9.070917,-79.455059,false,ChIJC5VNac9Vq48RWx_ZU3_Xd7Q
+farmavalue-calle-50,farmavalue,Calle 50,"Calle 50, plaza Sonoma, a la par de la Iglesia de Guadalupe",+507 306-0101,Lun–Dom 7:00–22:00,8.991907,-79.508951,false,ChIJpeGQSQeprI8R0qPiM9CdRqs
+farmavalue-cangrejo,farmavalue,Cangrejo,Av 1a B Nte,+507 306-0101,Lun–Dom 7:00–21:00,8.989762,-79.524129,false,ChIJLcv-K_qorI8R6IrWUIYKphM
+farmavalue-condado-del-rey,farmavalue,Condado del Rey,Condado del Rey,+507 306-0101,Lun–Sáb 7:00–22:00 · Dom 7:00–21:00,9.028821,-79.524732,false,ChIJhcCX2S-orI8RynFaLPPpl6c
+farmavalue-costa-del-este,farmavalue,Costa del Este,Costa del Este,+507 306-0101,Lun–Dom 7:00–21:30,9.014583,-79.484464,false,ChIJSdUy45KprI8RCfKYwLk05pY
+farmavalue-costa-del-este2,farmavalue,Costa del Este2,"Costa del Este2 Calle Avenida Centenario, PH Emporio del Este",+507 306-0101,Lun–Dom 7:00–22:00,9.016184,-79.467945,false,ChIJ55gK9sarrI8RuWjsuDZ9dXc
+farmavalue-dona,farmavalue,Doña,"Centro comercial la Doña, a lado de Instacredit. Antiguo Quesos Chela, 24 de diciembre",+507 306-0101,Lun–Dom 7:00–21:00,9.104872,-79.371129,false,ChIJP5_K8pmrVI4Ri3PBtOXzogg
+farmavalue-dorado-boulevard,farmavalue,Dorado Boulevard,Av. Miguel A. Brostella,+507 203-5580,Lun–Dom 7:00–22:00,9.006375,-79.539618,false,ChIJVU6yxGeorI8RwG5qgQmCksI
+farmavalue-dorado-pricesmart,farmavalue,Dorado Pricesmart,Vía Ricardo J. Alfaro,+507 302-0063,Lun–Dom 7:00–21:00,9.01567,-79.536017,false,ChIJ-ZEFciyprI8R1ZnvoVsibS4
+farmavalue-juan-diaz,farmavalue,Juan Díaz,"C. V 984, San Miguelito",,,9.059357,-79.454295,false,ChIJIxh2AwBVq48RvlIrpsq8hCU
+farmavalue-la-cabima,farmavalue,La Cabima,"Local 10, Centro Comercial La Cabima, Carr Transístmica",+507 306-0101,Lun–Dom 7:00–21:00,9.108982,-79.536576,false,ChIJnwcNPmRXq48Rq6-oF5Gvozg
+farmavalue-los-andes-mall,farmavalue,Los Andes Mall,"San Miguelito, Los Andes Mall, Local 104 E",+507 306-0101,Lun–Dom 7:00–21:00,9.051049,-79.508941,false,ChIJV6fP2chXq48RKvoD6nq5lDU
+farmavalue-los-pueblos,farmavalue,Los Pueblos,"Vía Domingo Díaz, Centro comercial Los Pueblos, Local #3",+507 306-0101,Lun–Dom 7:00–21:00,9.050218,-79.448873,false,ChIJxfJky3VVq48RUkxVN2R-Or0
+farmavalue-mananitas,farmavalue,Mañanitas,"Plaza Galerías Panamericana, junto a Momi y diagonal a Leonardo Pizza, Mañanitas, Av. Domingo Díaz",+507 306-0101,Lun–Dom 7:00–21:00,9.076528,-79.400914,false,ChIJDcGlv8JVq48RdWuRk2jhdmU
+farmavalue-obarrio,farmavalue,Obarrio,"diagonal al Santuario Nacional del corazón de María, Plaza Isora, Av. Samuel Lewis",+507 306-0101,Lun–Dom 7:00–21:00,8.985194,-79.522166,false,ChIJy0ot68iprI8Rz_nqRzWtrx8
+farmavalue-paitilla-ave-balboa,farmavalue,Paitilla Ave. Balboa,"Calle Ave. Balboa y Via Italia, edificio P.H. Bahia Balboa, local 7",+507 306-0101,Lun–Vie 8:00–21:00 · Sáb–Dom 7:00–21:00,8.975928,-79.517527,false,ChIJAQDMZ-CorI8RdAuEU6BkEVM
+farmavalue-punta-pacifica,farmavalue,Punta Pacifica,"Plaza Pacìfica, detràs del Super 99 y frente a, Pacific Center",+507 306-0101,Lun–Dom 7:00–21:00,8.978253,-79.511217,false,ChIJdRhZCgCprI8RCxhnjBiEVWg
+farmavalue-transistmica,farmavalue,Transistmica,Transístmica,+507 306-0101,Lun–Dom 7:00–21:00,9.013616,-79.517793,false,ChIJ4SO1SZqprI8RGxNo4uxjGp8
+farmavalue-versalles,farmavalue,Versalles,Av. Costanera,+507 306-0101,Lun–Dom 7:00–22:00,9.042084,-79.419271,false,ChIJO1Px9kxVq48RINTibMuhsXo
+farmavalue-via-espana,farmavalue,Vía España,"Locales 2-3, Correg. de, PH Park Square, Vía España",+507 306-0101,Lun–Dom 7:00–21:00,8.999606,-79.518047,false,ChIJizirzjOprI8Rw2jRif_9Nh8
+farmavalue-villa-lucre,farmavalue,Villa Lucre,C. al Centro Comercial Villa Lucre,+507 306-0101,Lun–Dom 7:00–22:00,9.038192,-79.482454,false,ChIJl4yxUiVXq48Rtlc_mk7v5ZY
+farmavalue-villa-zaita,farmavalue,Villa Zaita,Villa Zaita Mall,+507 309-0260,Lun–Dom 7:00–21:00,9.074053,-79.523182,false,ChIJqSCf361Xq48RyDPaaRkxPko
+machetazo-bella-vista,machetazo,Bella Vista,Bella Vista,+507 227-3059,,8.966543,-79.540004,false,ChIJczOH6riorI8RYviBscruUNI
+machetazo-transistmica,machetazo,Transístmica,Transístmica,+507 6688-4312,Lun–Sáb 8:00–21:00 · Dom 8:00–20:00,9.029808,-79.507055,false,ChIJb2HYTNCprI8RrfT-PTmexhM
+metro-plus-12-de-octubre,metro-plus,12 de Octubre,"Calle Primera de Parque Lefevre Edificio Plaza Sak Planta Baja, Local C",+507 6554-9374,Lun–Sáb 6:30–21:30 · Dom 8:00–20:00,9.008242,-79.507243,false,ChIJlaLlvVCprI8RLP2rzOSPVMA
+metro-plus-albrook-mall,metro-plus,Albrook Mall,"Av. de la Amistad, Albrook Mall Pasillo del Kanguro, al lado de Everlast Entrando por el pasillo del Kanguro, tomar a la izquierda",+507 6554-9374,Lun–Sáb 9:00–20:00 · Dom 11:00–19:00,8.972396,-79.553112,false,ChIJT5vkhtWprI8RFS-XnUIa3Ao
+metro-plus-altaplaza-mall,metro-plus,Altaplaza Mall,Altaplaza mall,+507 6554-9374,Lun–Sáb 10:00–20:30 · Dom 11:00–19:00,9.029057,-79.534493,false,ChIJt1BOew6prI8RR_MAUI7YJj0
+metro-plus-altos-de-panama,metro-plus,Altos de Panamá,Avenue Pederico Guardia,+507 230-3238,Lun–Vie 8:00–21:30 · Sáb 7:00–22:50 · Dom 8:00–22:30,9.038324,-79.529972,false,ChIJhRaVcSeorI8RJtDrQRKfAnk
+metro-plus-altos-de-panama-2,metro-plus,Altos de Panamá,"Edificio Centro Comercial Country Plaza, Calle Altos de Panamá, Panama City, Panamá Province",+507 230-3238,Lun–Sáb 7:00–21:30 · Dom 8:00–20:00,9.038023,-79.528026,false,ChIJkVsXg_uprI8Rs2A_cATHdiY
+metro-plus-bella-vista,metro-plus,Bella Vista,"Local #3, Park Plaza Mall, Calle Colombia",+507 830-7652,Lun–Sáb 6:30–21:30 · Dom 8:00–20:00,8.974491,-79.529297,false,ChIJW7SoLuiorI8RsJfGv-AZBwE
+metro-plus-bethania,metro-plus,Bethania,"Bethania , Urbanizacion Altos de Bethania , casa # 40",+507 261-7518,Lun–Sáb 7:00–21:30 · Dom 8:00–20:00,9.013448,-79.52532,false,ChIJoZnbv0iorI8R01-LLJP_sH4
+metro-plus-brisas-del-golf,metro-plus,Brisas del Golf,"Centro Comercial, Avenida Principal",+507 220-9163,Lun–Sáb 6:30–21:30 · Dom 8:00–20:00,9.068095,-79.452362,false,ChIJJyxFaMZVq48ReScEfKyJpeE
+metro-plus-business-park,metro-plus,Business Park,"Costa del Este , Plaza Business V a un costado del edificio BladeX",+507 301-9176,Lun–Sáb 6:30–21:30 · Dom 8:00–20:00,9.010627,-79.473774,false,ChIJdYl114uprI8RVimiuSPNqSY
+metro-plus-chanis,metro-plus,Chanis,"Parque lefevre , Urbanizacion Chanis calle A Y, calle H",+507 395-3449,Lun–Sáb 6:00–21:30,9.018802,-79.483669,false,ChIJnc96BO2prI8Rgn3dB-VOizY
+metro-plus-costa-del-este,metro-plus,Costa del Este,"Avenida Centenario, Centro Comercial Sky Plaza , Local 7-8 y 9",+507 392-5102,Lun–Sáb 6:30–21:30 · Dom 8:00–20:00,9.016316,-79.473077,false,ChIJyZBZKvWprI8RvxTRWS9g6AE
+metro-plus-dorado,metro-plus,Dorado,Vía Ricardo J. Alfaro,+507 395-3491,Lun–Sáb 6:30–21:30 · Dom 8:00–20:00,9.006486,-79.534052,false,ChIJXWO6zlyorI8R6K-lX_PspFw
+metro-plus-marbella,metro-plus,Marbella,Av. 5a B. Sur,+507 263-6179,Lun–Sáb 6:30–21:30 · Dom 8:00–20:00,8.97572,-79.526965,false,ChIJb1wPgkmprI8R4V75x_Ihzv0
+metro-plus-marbella-2,metro-plus,Marbella,Av. 5a B. Sur,+507 263-5743,Lun–Sáb 6:30–21:30 · Dom 8:00–20:00,8.978724,-79.520533,false,ChIJuxEpUuGorI8RGGOVVbiJLNU
+metro-plus-obarrio,metro-plus,Obarrio,Calle 57 Este,+507 265-8174,Lun–Sáb 6:30–21:30 · Dom 8:00–20:00,8.986949,-79.5194,false,ChIJBdjk8vyorI8RXkl-NX-uSis
+metro-plus-paitilla,metro-plus,Paitilla,"local 1, Edificio de Farmacias Metro Plus, C. República de China 714",+507 395-3632,Lun–Sáb 6:30–21:30 · Dom 8:00–20:00,8.976574,-79.514079,false,ChIJ0Qa4NR6prI8RDaWjt7BLx9s
+metro-plus-plaza-galapagos,metro-plus,Plaza Galápagos,Plaza Galapagos Via Tocumen Frente a,+507 233-0040,Lun–Sáb 6:30–21:30 · Dom 11:00–20:00,9.037872,-79.479068,false,ChIJSXC_Zf2prI8RYiypIBAX62k
+metro-plus-punta-pacifica,metro-plus,Punta Pacífica,"Cl. Punta Colón, Rotonda de Punta Pacífica PH Plaza Comercial Pacific Village Loc. 8-9",+507 6554-9374,Lun–Sáb 6:30–24:00 · Dom 8:00–22:00,8.976247,-79.507785,false,ChIJSZ5dzB6prI8REn19arbBDRo
+metro-plus-san-francisco,metro-plus,San Francisco,"San Francisco, Edificio Plaza San Francisco Way, Local 4, 5 y 6, C. 74 Este",+507 396-0910,Lun–Sáb 6:30–21:30 · Dom 8:00–20:00,8.989773,-79.504765,false,ChIJ1R6-BwaprI8RvGTroTMWWfw
+metro-plus-tocumen,metro-plus,Tocumen,"Juan Diaz, Centro comercial Plaza Tocumen , Local A, Av. Domingo Díaz",+507 266-1341,Lun–Sáb 6:30–21:30 · Dom 8:00–20:00,9.061144,-79.423475,false,ChIJdXH-WApVq48RJJ3bryRRQEQ
+metro-plus-transistmica,metro-plus,Transistmica,"Bethania , Urbanizacion Simon Bolivar , Calle Transistmica , Edificio Atiguo TVN",+507 395-3664,Lun–Sáb 6:00–21:00 · Dom 8:00–20:00,8.999428,-79.525799,false,ChIJV_TkbleorI8Rjg59xzNGxVs
+metro-plus-vallarino,metro-plus,Vallarino,"Ubicado en, Edificio Vallarino, C. 52 Este",+507 277-8629,Lun–Sáb 6:30–21:00 · Dom 8:00–20:00,8.982277,-79.524706,false,ChIJB2-d4raprI8R8MkRJHeyyU0
+metro-plus-versalles,metro-plus,Versalles,"Versalles, Via Costa Negra Avenida la Rambla , Local 3",+507 302-1023,Lun–Sáb 6:30–21:30 · Dom 8:00–20:00,9.042693,-79.416668,false,ChIJJZEJc3tVq48R4KINL5x6RSM
+metro-plus-villa-lucre,metro-plus,Villa Lucre,"Centro Comercial de, Av. Domingo Díaz",+507 395-3472,Lun–Sáb 6:30–21:30 · Dom 8:00–20:00,9.038192,-79.482454,false,ChIJJW6uWR1Wq48RKYKJrrPS6sE
+revilla-12-de-octubre,revilla,12 de Octubre,Av. 12 de Octubre,+507 207-1800,Lun–Sáb 7:00–20:30 · Dom 10:00–18:00,9.01001,-79.50911,false,ChIJiW4-ZrGprI8RebEsdGJWTlc
+revilla-casco-antiguo,revilla,Casco Antiguo,C. 1a Oeste,+507 207-1839,Lun–Sáb 7:30–20:00,8.951199,-79.532424,false,ChIJm0aooTSvrI8RKPfy2ZSb_Os
+revilla-clayton-mall,revilla,Clayton Mall,"PH Clayton Mall, C. al Hospital",+507 207-1845,Lun–Sáb 7:00–21:00 · Dom 10:00–18:00,9.003872,-79.57293,false,ChIJKfPias6nrI8RO81mY3veoEc
+revilla-dorado,revilla,Dorado,Dorado City Center,+507 207-1842,Lun–Sáb 7:00–20:00,9.015637,-79.534869,false,ChIJdfCX-UCorI8RW-M2WDq1tVY
+revilla-los-angeles,revilla,Los Angeles,"Plaza Los Angeles, Vía Ricardo J. Alfaro",+507 207-1860,Lun–Sáb 8:00–20:00,8.998234,-79.533004,false,ChIJh5pCGqWprI8RkVLKlyle2sQ
+revilla-marbella,revilla,Marbella,"Plaza La Riviera, Calle 54 Este 54",+507 207-1840,Lun–Sáb 7:30–20:00,8.979937,-79.518288,false,ChIJm6C7ipWprI8Rf1S_nfB5jvs
+revilla-parque-urraca,revilla,Parque Urracá,"P.H. Parque Urracá, A un lado de Parque Urracá Frente a Miramar, Av. Vasco Nuñez de Balboa",+507 207-1835,Lun–Sáb 6:30–20:30 · Dom 10:00–18:00,8.97572,-79.526965,false,ChIJu_cFdeiorI8R8joka_qljC4
+revilla-san-francisco,revilla,San Francisco,Plaza San Francisco,+507 207-1838,Lun–Sáb 7:00–20:30,8.992366,-79.501275,false,ChIJPU7MqYCprI8R0VBXVdkWc98
+rey-dorado,rey,Dorado,Carr. Panamericana 8a,+507 260-6047,Lun 6:00–23:00 · Mar 6:00–22:00 · Mié–Dom 6:00–23:00,9.009605,-79.53502,false,ChIJjTSeVEKorI8RXygxXCPYkyU
+saba-12-de-octubre,saba,12 de Octubre,"Liberty Plaza, Av. 12 de Octubre",+507 381-1744,Lun–Sáb 7:00–22:00 · Dom 7:00–21:00,9.013522,-79.511954,false,ChIJP2BbcEuprI8RDoNV0XwdWyw
+saba-arraijan-town-center,saba,", Arraiján Town Center",Burunga,+507 830-3116,Lun–Dom 7:00–21:00,8.958946,-79.652776,false,ChIJU74APQChrI8R31VqYUDL_8E
+saba-avenida-cuba,saba,Avenida Cuba,Av. Cuba,+507 322-7330,Lun–Sáb 7:00–21:00 · Dom 7:00–18:00,8.972372,-79.534361,false,ChIJfwG8VwCprI8R3jGDXWLGd1c
+saba-bella-vista,saba,Bella Vista,"Edificio Angel, Justo Arosemena Ave, Panama City, Panamá Province",+507 208-0050,Lun–Dom 7:00–21:00,8.975158,-79.531573,false,ChIJ95xX_YGprI8R3_gTlT9C5TU
+saba-betania,saba,Betania,Cam. Real de Betania,+507 830-6002,Lun–Sáb 7:00–21:00 · Dom 7:00–18:00,9.002936,-79.52316,false,ChIJv4myvWGprI8RgDGiMEFj6lw
+saba-brisas-de-golf,saba,Brisas de Golf,San Miguelito,+507 375-3035,Lun–Sáb 7:00–22:00 · Dom 7:00–21:00,9.069599,-79.45046,false,ChIJofachGZVq48RSW3e4mfEPRw
+saba-calidonia,saba,Calidonia,frente al supermercado Machetazo,+507 323-0974,Lun–Sáb 6:00–21:00 · Dom 9:00–18:00,8.967586,-79.53971,false,ChIJHfThNRqprI8RL4War5daKd8
+saba-calle-50,saba,Calle 50,Calle 50,+507 831-7533,Lun–Dom 7:00–24:00,8.99174,-79.510398,false,ChIJJUjBjhGprI8RLHNe_SrkP9A
+saba-campo-lindbergh,saba,Campo Lindbergh,"local 2, Plaza Toledano",+507 235-3633,Lun–Sáb 7:00–21:00 · Dom 9:00–20:00,9.03158,-79.47482,false,ChIJCZO9jMOprI8RadF8xT9ruMw
+saba-clayton,saba,Clayton,C. Arnoldo Cano Arosemena,+507 375-7535,Lun–Sáb 7:00–21:00 · Dom 9:00–18:00,9.003872,-79.57293,false,ChIJnV1qDACnrI8RASRWTa3c2q4
+saba-condado-del-rey,saba,Condado del Rey,Estamos en Country Plaza II,+507 375-4595,Lun–Dom 7:00–21:00,9.036827,-79.528936,false,ChIJXYMOtLqprI8RAHvm74M-OYY
+saba-costa-del-este,saba,Costa del Este,"al lado de BAC Credomatic, Plaza 507",+507 374-2134,Lun–Sáb 7:00–22:00 · Dom 7:00–21:00,9.016689,-79.464616,false,ChIJ3-bauD6rrI8RGFwx5gdGrAQ
+saba-el-bosque,saba,El Bosque,Entrada de El Bosque en Midtown Plaza,+507 282-0028,Lun–Sáb 7:00–22:00 · Dom 9:00–20:00,9.032489,-79.512545,false,ChIJJXwl-LyprI8RmXToqv25qvA
+saba-el-dorado,saba,El Dorado,"PH Don Manuel, local #2, en el Boulevard, frente a, T.G I Friday´s",+507 375-3985,Lun–Dom 7:00–22:00,9.006395,-79.539556,false,ChIJta04nyuprI8Rwokz4XmiiLM
+saba-la-cabima,saba,La Cabima,Vía Principal la Cabima,+507 375-4665,Lun–Dom 7:00–21:00,9.110023,-79.535995,false,ChIJy4fWXwBXq48R-kPVBkVcxtY
+saba-la-dona,saba,La Doña,"Centro Comercial La Doña, local 5h, al lado de Banco Delta, 24 de Diciembre",+507 375-3765,Lun–Dom 7:00–21:00,9.105183,-79.371373,false,ChIJj_i_UHSrVI4RQo4_Exm5QrY
+saba-la-siesta,saba,La Siesta,La Siesta,+507 830-6273,Lun–Sáb 7:00–21:00 · Dom 8:00–18:00,9.078597,-79.367191,false,ChIJ_x5cmierVI4R4cmpGwO1ntQ
+saba-las-acacias,saba,Las Acacias,Las Acacias,+507 292-9332,Lun–Sáb 7:00–22:00 · Dom 7:00–21:00,9.059139,-79.427606,false,ChIJG5hoTgBVq48RxmhvYN8hXF4
+saba-los-andes,saba,Los Andes,San Miguelito,+507 204-1664,Lun–Dom 7:00–21:00,9.051384,-79.509097,false,ChIJTSDyDwBXq48RVmjlGsPEH-8
+saba-los-pinos,saba,Los Pinos,Los Pinos,+507 830-5881,Lun–Sáb 7:00–20:00 · Dom 8:00–17:00,9.083065,-79.397643,false,ChIJoS9vDQBVq48RySQZ0PumP5M
+saba-los-pueblos,saba,Los Pueblos,"Los Pueblos 2000, local frente a Melo, Centro Comercial Los Pueblos",+507 375-3823,Lun–Dom 7:00–21:00,9.048897,-79.449972,false,ChIJxwtJxbZVq48RyamFm7K1puI
+saba-mananitas-plaza-sur,saba,Mañanitas Plaza Sur,Mañanitas Plaza Sur,+507 238-0952,Lun–Sáb 7:00–20:00 · Dom 8:00–18:00,9.079763,-79.406439,false,ChIJ2eX-AABVq48RgtGBEN7GAy0
+saba-marbella,saba,Marbella,Calle 53 Este,+507 204-6295,Lun–Sáb 6:00–21:00,8.978028,-79.518865,false,ChIJLd6HLACprI8R7vkN8d5Nv20
+saba-nuevo-chorrillo,saba,Nuevo Chorrillo,Nuevo Chorrillo,+507 830-4988,Lun–Sáb 7:00–21:00 · Dom 9:00–18:00,8.945685,-79.680819,false,ChIJg-8QQwCjrI8RrKxrOIy4O6s
+saba-p-h-galeria-arraijan-cabecera,saba,P.H. Galeria Arraiján Cabecera,Arraiján,+507 830-3989,Lun–Dom 7:00–21:00,8.95226,-79.657805,false,ChIJ6_DBIwCjrI8RUPPUxkSFQEs
+saba-parque-lefevre,saba,Parque Lefevre,"al lado de Little Caesars, Av. Ernesto T. Lefevre",+507 315-8803,Lun–Sáb 7:00–21:00 · Dom 7:00–20:00,9.007322,-79.503893,false,ChIJEUvSfIOprI8Ru2dPkTkS2bk
+saba-plaza-albrook-fields,saba,Plaza Albrook Fields,Plaza Albrook Fields,+507 301-0499,Lun–Sáb 7:00–21:00 · Dom 9:00–19:00,8.96979,-79.56198,false,ChIJl-PoPgCnrI8RIlE2QGfL9Ec
+saba-plaza-belen,saba,Plaza Belén,"Plaza Belén, Morelos",+507 315-8886,Lun–Sáb 6:00–21:00 · Dom 9:00–20:00,9.086224,-79.384565,false,ChIJ44VFXDNVq48R05pOCbkDDWc
+saba-punta-paitilla,saba,Punta Paitilla,Frente al Hospital Panama Clinic,+507 382-6524,Lun–Sáb 7:00–21:00 · Dom 9:00–18:00,8.978253,-79.511217,false,ChIJgblqiqOprI8RdFguzG1PdbI
+saba-san-fernando,saba,San Fernando,Av. Central España,+507 223-6392,Lun–Sáb 6:00–22:00 · Dom 7:00–20:00,9.002001,-79.516645,false,ChIJL6IdDQCprI8RrUFK6ia40FA
+saba-versalles,saba,Versalles,"Papá John's, Plaza Versalles, contiguo a",+507 315-8817,Lun–Sáb 7:00–22:00 · Dom 7:00–21:00,9.042048,-79.419366,false,ChIJo7AjtthVq48RPsO2IAYm2mg
+saba-via-argentina,saba,Vía Argentina,"antes de la Bomba Puma, Vía Argentina",+507 383-8772,Lun–Sáb 7:00–21:00 · Dom 9:00–19:00,8.987211,-79.531314,false,ChIJnSqsiXCprI8Rg8bI9y_B97A
+saba-via-brasil,saba,Vía Brasil,"Plaza Brasil, frente a la, Ricardo Pérez",+507 374-8174,Lun–Sáb 7:00–21:00 · Dom 9:00–18:00,8.989549,-79.515532,false,ChIJV5ZIQPeprI8RCY7MguozLS8
+saba-via-espana,saba,Vía España,"Vía España, PH Centro Comercial y profesional, Al lado de Hospital y Clínicas San Fernando",+507 375-5405,Lun–Sáb 7:00–21:00 · Dom 9:00–18:00,9.003949,-79.51546,false,ChIJOSwT5FGprI8RGbrTQhRe6AE
+saba-via-espana-2,saba,Vía España 2,Av. Samuel Lewis 5601,+507 223-6039,Lun–Sáb 7:00–21:00 · Dom 8:00–17:00,8.984566,-79.525214,false,ChIJE4PJcgCprI8RSH6J7cvLQ8I
+saba-villa-lucre,saba,Villa Lucre,"frente al Hospital, Villa Lucre",+507 315-8813,Lun–Dom 7:00–22:00,9.038192,-79.482454,false,ChIJ-9heuL5Xq48RpOfvEa-t09M
+saba-villa-zaita,saba,Villa Zaita,Villa Zaita Mall,+507 277-8721,Lun–Dom 7:00–21:00,9.073769,-79.523473,false,ChIJUSVs5dtXq48RCYkCn3OygWQ
+saba-villalobos,saba,Villalobos,Calle Jose M. Torrijos,+507 380-0508,Lun–Sáb 7:00–21:00 · Dom 9:00–18:00,9.070283,-79.429644,false,ChIJMZDzbQBVq48RdC_3XpK-zWY
+super-99-calidonia,super-99,Calidonia,Calidonia,,,8.966543,-79.540004,false,ChIJ08MBRQCprI8RUsVBlnXUv44
+super-99-calle-50,super-99,Calle 50,Av. Dr. Belisario Porras,,,8.992207,-79.500181,false,ChIJMVAMQQCprI8R_kO4_5Kd3Bo
+super-99-el-dorado,super-99,El Dorado,Av. 17B Nte. 9c,+507 260-5117,,9.007855,-79.535463,false,ChIJG-V6wkKorI8RfD97IX1MA-g
+xtra-farma-albrook-mall,xtra-farma,Albrook Mall,Albrook Pasillo de la Orca 507,+507 290-9000,Lun–Vie 6:00–23:00 · Sáb–Dom 6:00–22:00,8.968983,-79.554319,false,ChIJSbshPI6prI8RaieySAipMng
+xtra-farma-arraijan,xtra-farma,Arraiján,"Ctra. Panamericana 507, Burunga",+507 290-9000,Abierta 24 horas,8.956353,-79.653127,false,ChIJTX-odxChrI8RmAZ_RQLhQRw
+xtra-farma-brisas-del-golf,xtra-farma,Brisas del Golf,"Av. Manuel F. Zarate 507, San Miguelito",+507 290-9000,Abierta 24 horas,9.068642,-79.464147,false,ChIJt3XYjq5Vq48RhmdSxYDWoEY
+xtra-farma-chanis,xtra-farma,Chanis,Avenida La Fontana 507,+507 290-9000,Lun–Sáb 6:00–23:00 · Dom 6:00–22:00,9.016818,-79.483474,false,ChIJG49kbAiprI8RVdcU_xaPBww
+xtra-farma-chilibre,xtra-farma,Chilibre,Carr Transístmica 507,+507 290-9000,Lun–Sáb 6:00–22:00 · Dom 6:00–21:00,9.180662,-79.615889,false,ChIJDSyhprRbq48REzdu-4Tjrys
+xtra-farma-chorrillo,xtra-farma,Chorrillo,Av. A 507,+507 290-9000,Lun–Dom 6:00–20:00,8.951186,-79.544752,false,ChIJj_4f6ZevrI8RnvjzNugSIHw
+xtra-farma-condado-del-rey,xtra-farma,Condado del Rey,"San Miguelito Avenue, Vía Ricardo J. Alfaro 507, San Miguelito",+507 290-9000,Lun–Sáb 6:00–24:00 · Dom 6:00–23:00,9.026293,-79.521516,false,ChIJaekieqmprI8RyVFNUz74O5g
+xtra-farma-el-lago,xtra-farma,El Lago,"Ernesto Córdoba Campos, Blvrd El Lago 507",+507 290-9000,Lun–Sáb 6:00–22:00 · Dom 6:00–20:00,9.10292,-79.521363,false,ChIJsfaCYmNXq48RUU10-tHWIQo
+xtra-farma-el-trebol,xtra-farma,El Trébol,"Av. Jose Agustin Arango 507, Pacora",+507 290-9000,Lun–Sáb 6:00–22:30 · Dom 6:00–21:30,9.114494,-79.336572,false,ChIJUU25bFmrVI4RwwReyQXmrBM
+xtra-farma-gran-estacion,xtra-farma,Gran Estación,"Transístmica 507, San Miguelito",+507 290-9000,Lun–Sáb 6:00–22:00 · Dom 6:00–21:00,9.027096,-79.506485,false,ChIJvU-pjO6prI8RRMjw9cbEWj0
+xtra-farma-la-siesta,xtra-farma,La Siesta,C. la Siesta 507,+507 290-9000,Lun–Sáb 6:00–22:00 · Dom 6:00–20:00,9.078597,-79.367191,false,ChIJKYXl0o-rVI4R6ENvaAI031s
+xtra-farma-las-acacias,xtra-farma,Las Acacias,"507, Panamá Xtra",+507 290-9000,Abierta 24 horas,9.059139,-79.427606,false,ChIJr6mms_pVq48Rb4Ak6gyrl-U
+xtra-farma-las-mananitas,xtra-farma,Las Mañanitas,Panamá planta alta. A un lado del Super Extra Feria 507,+507 290-9000,Lun–Dom 6:00–21:00,9.081354,-79.400358,false,ChIJhx1EhVVVq48RJX_mzsvJ0YU
+xtra-farma-los-pueblos,xtra-farma,Los Pueblos,"290-9000, Av. José Agustín Arango 507",+507 290-9000,Lun–Dom 6:00–22:00,9.044528,-79.45114,false,ChIJd9FlZVVVq48R7BrOhCn66bY
+xtra-farma-monterrico,xtra-farma,Monterrico,"24 de Diciembre 507, 24 de Diciembre 9000",+507 290-9000,Abierta 24 horas,9.103437,-79.36686,false,ChIJh6oaROqrVI4Rlni1k5i3Wj8
+xtra-farma-obarrio,xtra-farma,Obarrio,Av. Central España,,,8.988099,-79.523332,false,ChIJ73LObACprI8RNrgu0gZ_5UA
+xtra-farma-ojo-de-agua,xtra-farma,Ojo de Agua,"San Miguelito Centro comercial, Los Andes, Plaza Mayorca, C. Ojo de Agua",+507 290-9000,Abierta 24 horas,9.055704,-79.508706,false,ChIJWYddQgRXq48RYh3QwqsagZs
+xtra-farma-pacora,xtra-farma,Pacora,"Carr. Interamericana 290-9000, Pacora",+507 290-9000,Lun–Sáb 6:00–23:00 · Dom 6:00–21:00,9.099401,-79.284677,false,ChIJP2rE_zipVI4RMzhjaoBkxJs
+xtra-farma-rio-abajo,xtra-farma,Río Abajo,Calle 16 9000,+507 290-9000,Lun–Sáb 6:00–22:00 · Dom 6:00–20:00,9.020412,-79.492071,false,ChIJ_x0HXGmprI8RqxMSwwWDjI4
+xtra-farma-san-fernando,xtra-farma,San Fernando,"PH Plaza comercial San Fernando, Vía España",+507 290-9000,Lun–Sáb 6:00–22:00 · Dom 7:00–21:00,9.002001,-79.516645,false,ChIJPfUqE5OprI8RvsuTz_EiAlE
+xtra-farma-san-isidro,xtra-farma,San Isidro,"Carr Transístmica 507, San Miguelito",+507 290-9000,Abierta 24 horas,9.065637,-79.514293,false,ChIJN0wsA01Xq48RB8YeNehLSM0
+xtra-farma-san-miguelito,xtra-farma,San Miguelito,"290-9000, Transístmica 507, San Miguelito",+507 290-9000,Lun–Sáb 6:00–22:00 · Dom 6:00–20:00,9.035946,-79.505374,false,ChIJ882IH7mprI8R3wYrOg26XXI
+xtra-farma-san-vicente,xtra-farma,San Vicente,Av. Boyd Roosevelt 507,+507 290-9000,Lun–Sáb 6:00–22:00 · Dom 6:00–21:00,9.122582,-79.59382,false,ChIJMfi_eZBZq48R5jBD76C-FjY
+xtra-farma-transistmica,xtra-farma,Transístmica,"Av. Simón Bolívar 507, San Miguelito",+507 290-9000,Lun–Sáb 6:00–24:00 · Dom 6:00–23:00,8.994122,-79.527588,false,ChIJodehhk6prI8RFeg0NI8_krk
+xtra-farma-via-espana,xtra-farma,Vía España,"290-9000, Av. Central España 507",+507 290-9000,Lun–Sáb 6:00–22:00 · Dom 7:00–21:00,8.966543,-79.540004,false,ChIJCdJS1YKprI8REwfSDCKTGqw
+xtra-farma-via-israel,xtra-farma,Vía Israel,Vía Israel 507,+507 290-9000,Lun–Vie 6:00–21:00 · Sáb–Dom 6:00–9:00,8.987502,-79.5024,false,ChIJX-MeldmprI8Rh-xqHvsHfkQ
+xtra-farma-villa-lucre,xtra-farma,Villa Lucre,"C. al Centro Comercial Villa Lucre 507, San Miguelito",+507 290-9000,Lun–Vie 6:00–23:00 · Sáb–Dom 6:00–22:00,9.03962,-79.480934,false,ChIJZ9J8YXRXq48RcgLyaqMCEU4
+xtra-farma-villalobos,xtra-farma,Villalobos,"C. Villalobos 507, Pedregal",+507 290-9000,Lun–Vie 6:00–21:00 · Sáb–Dom 6:00–20:00,9.086158,-79.444322,false,ChIJ6bsoYptVq48RdJyv2glECfY

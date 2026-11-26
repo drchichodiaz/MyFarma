@@ -14,7 +14,7 @@ export function slugify(input: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
-const SEPARATOR = /\s*[|⎮/–—•·]\s*|\s+-\s+/;
+const SEPARATOR = /\s*[|⎮⎥/–—•·]\s*|\s+-\s+/;
 
 /**
  * Nombre corto de la sucursal ("Los Pueblos") a partir del nombre de Google.

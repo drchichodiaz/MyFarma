@@ -47,7 +47,7 @@ export function SiteHeader() {
         <TopNav />
         <div className="flex items-center gap-2">
           <span className="pill hidden border border-sun/50 bg-sun/20 text-sunink sm:inline-flex">
-            Datos de ejemplo
+            Beta
           </span>
           <Link href="/reportar" className="btn-primary hidden py-2.5 lg:inline-flex">
             Reportar
