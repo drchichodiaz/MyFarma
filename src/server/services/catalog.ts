@@ -9,7 +9,10 @@ export const TAGS = {
   catalog: "catalog",
   availability: (medicationId: number) => `availability:${medicationId}`,
   availabilityAll: "availability",
+  /** Resumen de "Escaseando hoy" (portada). */
+  overview: "availability:overview",
   reports: "reports",
+  userReports: (userId: string) => `reports:user:${userId}`,
 } as const;
 
 export type MedicationSummary = {

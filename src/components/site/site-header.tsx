@@ -1,8 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
 import { Icon } from "@/components/ui/icon";
 import { DEFAULT_LOCATION } from "@/lib/geo";
 import { TopNav } from "./nav-links";
+import { UserMenu, UserMenuSkeleton } from "./user-menu";
 
 /** Marca: pin de ubicación con cápsula. Original y variantes en `brand/`. */
 export function Logo({ className = "" }: { className?: string }) {
@@ -44,10 +46,15 @@ export function SiteHeader() {
         </div>
         <TopNav />
         <div className="flex items-center gap-2">
-          <span className="pill border border-sun/50 bg-sun/20 text-sunink">Datos de ejemplo</span>
+          <span className="pill hidden border border-sun/50 bg-sun/20 text-sunink sm:inline-flex">
+            Datos de ejemplo
+          </span>
           <Link href="/reportar" className="btn-primary hidden py-2.5 lg:inline-flex">
             Reportar
           </Link>
+          <Suspense fallback={<UserMenuSkeleton />}>
+            <UserMenu />
+          </Suspense>
         </div>
       </div>
     </header>

@@ -6,3 +6,5 @@ prototype/
 .agents/
 .windsurf/
 skills-lock.json
+test-results
+playwright-report

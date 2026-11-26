@@ -13,6 +13,8 @@ pnpm services:up    # Postgres/PostGIS :5433, Redis :6380, Mailpit :8025
 pnpm dev            # http://localhost:3000
 pnpm check          # lint + tipos + formato (lo mismo que el CI)
 pnpm build          # debe funcionar SIN base de datos (lo exige el build de Docker)
+pnpm test           # Vitest (reglas puras en src/lib)
+pnpm test:e2e       # Playwright contra pnpm dev + Mailpit (entrar → reportar → confirmar)
 pnpm db:migrate     # nueva migración; después correr `pnpm db:generate` (Prisma 7 no regenera solo)
 pnpm db:seed        # catálogo + reportes de ejemplo si no hay reportes
 ```
@@ -24,6 +26,8 @@ pnpm db:seed        # catálogo + reportes de ejemplo si no hay reportes
 - **Ubicación:** `branches.location` (geography) la llena un trigger desde `lat`/`lng`. Prisma no escribe PostGIS.
 - **Búsqueda:** texto normalizado en `medications.search_text` + `word_similarity ≥ 0.35` por palabra.
 - **Estilos:** tokens en `src/app/globals.css` (lima, marino, bosque, pasteles) y clases `chip`, `btn-primary`, `pill`, `h-section`. El diseño de referencia es `prototype/index.html`.
+- **Sesión:** `currentUser()` de `src/server/auth.ts`, siempre dentro de `<Suspense>`. Auth.js v5 con sesiones en DB; Google solo aparece si hay `AUTH_GOOGLE_*`.
+- **Reportes:** `src/server/services/reports.ts` (límites en Redis + transacción + `recomputeAvailability`). Las reglas viven en `src/lib/availability-rules.ts` y tienen tests.
 - **Textos en español**, voz activa, sin datos personales en público (nombre + inicial).
 
 ## Deploy

@@ -153,7 +153,7 @@ La ubicación del usuario se obtiene con la geolocalización del navegador, con 
 | ✅     | **F0 · Base**                | Repo git, Next.js + Tailwind con tokens y fuentes, Prisma + PostGIS + Redis + Mailpit en Docker, ESLint/Prettier, CI                   | `pnpm dev` levanta la app con la DB local; `/api/health` responde con PostGIS y Redis; CI en verde |
 | ✅     | **F1 · Catálogo y búsqueda** | Schema + seed, inicio, autocompletar, resultados con mapa real, ficha de sucursal (solo lectura)                                       | Busco "metotrexato" y veo las sucursales del seed ordenadas por distancia                          |
 | ✅     | **Deploy temprano**          | Droplet NYC1 aprovisionado, imágenes en GHCR, Caddy + Cloudflare, pipeline push → producción                                           | https://myfarma.net en línea; cada push a `main` despliega en ~2 min                               |
-| ⏭️     | **F2a · Cuentas y reportes** | Backups a R2, Auth.js (Google + correo), formulario de reporte, confirmaciones, recálculo de disponibilidad                            | Un usuario logueado reporta y el resultado cambia al instante para todos                           |
+| 🧪     | **F2a · Cuentas y reportes** | Backups a R2, Auth.js (Google + correo), formulario de reporte, confirmaciones, recálculo de disponibilidad                            | Un usuario logueado reporta y el resultado cambia al instante para todos                           |
 | ⏳     | **F2b · Fotos**              | Subida directa a R2, worker BullMQ + `sharp` (sin EXIF), variantes AVIF/WebP, moderación                                               | Un reporte con foto se ve sin datos GPS y en el formato adecuado                                   |
 | ⏳     | **F3 · Alertas**             | CRUD de alertas con radar, correo y Web Push, PWA instalable                                                                           | Al reportar "Hay", llega un correo o push a quien tiene alerta en el radio                         |
 | ⏳     | **F4 · Moderación y pulido** | Panel admin, página de privacidad, SEO/OG (404 reales, abrir `robots.txt`), agrupar marcadores del mapa, estados de error, modo oscuro | Checklist de lanzamiento completa                                                                  |
@@ -190,38 +190,38 @@ La ubicación del usuario se obtiene con la geolocalización del navegador, con 
 - [x] `deploy/restore.sh` (prueba en base temporal, `--list`, `--real`) y **prueba real de restauración** hecha el 2026-11-25
 - [x] Alerta por correo (Resend → `ALERT_EMAIL`) si el backup falla; último backup visible en `/api/health`
 
-**1. Login (Auth.js)**
+**1. Login (Auth.js)** ✅
 
-- [ ] Modelos de Auth.js en Prisma (Account, Session, VerificationToken) + migración
-- [ ] Proveedores: Google y Email (nodemailer → Mailpit en local, Resend en producción)
-- [ ] Sesiones en base de datos; `AUTH_SECRET` en el `.env` del servidor
-- [ ] Páginas: `/entrar` (Google o correo), "Revisa tu correo", `/cuenta` con mis reportes
-- [ ] Header: botón "Entrar" o avatar con menú
-- [ ] Nombre público: nombre + inicial ("Mariela G."); nunca el correo
-- [ ] Probar que con Cache Components la sesión se lee dentro de `<Suspense>` y no rompe el shell estático (ver `node_modules/next/dist/docs/01-app/02-guides/authentication-with-cache-components.md`)
+- [x] Modelos de Auth.js en Prisma (Account, Session, VerificationToken) + migración
+- [x] Proveedores: Google y enlace por correo (nodemailer → Mailpit en local, Resend por el puerto 2465 en producción). Máximo 5 enlaces por hora por correo
+- [x] Sesiones en base de datos; `AUTH_SECRET` en el `.env` del servidor
+- [x] Páginas: `/entrar` (Google o correo), `/entrar/revisa`, `/cuenta` (nombre público editable, mis reportes, salir)
+- [x] Header: botón "Entrar" o iniciales (enlace a `/cuenta`)
+- [x] Nombre público: nombre + inicial ("Mariela G."); nunca el correo (`src/lib/people.ts`)
+- [x] Sesión dentro de `<Suspense>` con `currentUser()` (llama a `connection()` antes de `auth()`: Auth.js usa `crypto` y eso no puede pasar en el prerender)
 
-**2. Reportar**
+**2. Reportar** ✅
 
-- [ ] `/reportar` con el diseño del prototipo: medicamento, sucursal, Hay / Quedan pocas / No hay, precio opcional, vista previa en vivo
-- [ ] Atajo desde la ficha de sucursal (medicamento y sucursal ya elegidos)
-- [ ] Server Action con validación Zod y sesión obligatoria
-- [ ] Transacción: crear `Report` → recalcular `Availability` (estado, precio, confirmaciones)
-- [ ] `updateTag("availability:<id>")` + `updateTag("reports")`: el cambio se ve al instante
-- [ ] Límites con Redis: N reportes por hora por usuario; misma sucursal + medicamento cada 30 min
-- [ ] Pantalla de éxito ("¡Gracias!") con confeti, como en el prototipo
+- [x] `/reportar` con el diseño del prototipo: medicamento, sucursal, Hay / Quedan pocas / No hay, precio opcional, vista previa en vivo (la foto llega en la F2b)
+- [x] Atajo desde la ficha de sucursal: `/reportar?med=<slug>&sucursal=<slug>`; sin sesión pide entrar y vuelve con todo elegido
+- [x] Server Action con validación Zod y sesión obligatoria
+- [x] Transacción con candado por (sucursal, medicamento): crear `Report` → recalcular `Availability` (reglas puras en `src/lib/availability-rules.ts`)
+- [x] `updateTag` de disponibilidad, resumen, reportes y "mis reportes": el cambio se ve al instante
+- [x] Límites con Redis: 10 reportes por hora por usuario; misma sucursal + medicamento cada 30 min
+- [x] Pantalla de éxito ("¡Gracias!") con confeti, como en el prototipo
 - [ ] El seed deja de crear reportes de ejemplo en producción (`SEED_DEMO=0`) cuando entren reportes reales
 
-**3. Confirmaciones**
+**3. Confirmaciones** ✅
 
-- [ ] "Sí había / No había" en la ficha de sucursal, con `useOptimistic`
-- [ ] Reglas: un voto por usuario por reporte vigente; "No había" sobre un "Hay" cambia el estado
-- [ ] El historial muestra quién confirmó (nombre público)
+- [x] "Sí había / Ya no había" (o "Tampoco había / Sí había" sobre un No hay) en la ficha, con `useOptimistic`
+- [x] Reglas: un voto por usuario por reporte vigente (se puede cambiar), no se confirma el propio; la observación más nueva gana
+- [x] El historial muestra quién confirmó y quién no coincidió (nombre público)
 
-**4. Pruebas**
+**4. Pruebas** ✅
 
-- [ ] Vitest: recálculo de disponibilidad, límites de uso, nombre público
-- [ ] Playwright: entrar con correo (Mailpit) → reportar → ver el cambio en resultados
-- [ ] Pasos de las pruebas en el CI (con servicios Postgres/Redis en GitHub Actions)
+- [x] Vitest (`pnpm test`): reglas de disponibilidad, precio, nombre público, redirección segura. Falta: límites de uso contra Redis
+- [x] Playwright (`pnpm test:e2e`): entrar con correo (Mailpit) → reportar → otra persona confirma → el estado cambia para todos
+- [x] Job `e2e` en el CI con Postgres/PostGIS, Redis y Mailpit; el deploy espera a que pase
 
 ### F2b · Fotos
 

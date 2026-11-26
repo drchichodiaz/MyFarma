@@ -23,18 +23,66 @@ enum Role {
   ADMIN
 }
 
-/// Usuario. En la F2 se completa con los modelos de Auth.js (Account, Session, VerificationToken).
+/// Usuario. Lo crea Auth.js al entrar con Google o con enlace por correo.
+/// En público solo se muestra el nombre + inicial del apellido (ver src/lib/people.ts).
 model User {
-  id        String   @id @default(cuid())
-  name      String?
-  email     String?  @unique
-  image     String?
-  role      Role     @default(USER)
-  createdAt DateTime @default(now()) @map("created_at")
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime? @map("email_verified")
+  image         String?
+  role          Role      @default(USER)
+  createdAt     DateTime  @default(now()) @map("created_at")
 
-  reports Report[]
+  accounts      Account[]
+  sessions      Session[]
+  reports       Report[]
+  confirmations Confirmation[]
 
   @@map("users")
+}
+
+/// Cuenta de un proveedor externo (Google). Modelo de Auth.js.
+model Account {
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+/// Sesión guardada en la base de datos (la cookie solo lleva el token). Modelo de Auth.js.
+model Session {
+  sessionToken String   @id @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+/// Token del enlace mágico por correo. Modelo de Auth.js.
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+  @@map("verification_tokens")
 }
 
 /// Condición o enfermedad para navegar por categorías (Artritis reumatoide, Diabetes…).
@@ -56,19 +104,19 @@ model Condition {
 /// Un medicamento es principio activo + concentración + presentación.
 /// "Metotrexato 2.5 mg tabletas" y "Metotrexato 25 mg/mL inyectable" son registros distintos.
 model Medication {
-  id               Int     @id @default(autoincrement())
-  slug             String  @unique
-  activeIngredient String  @map("active_ingredient")
+  id               Int      @id @default(autoincrement())
+  slug             String   @unique
+  activeIngredient String   @map("active_ingredient")
   strength         String
   form             String
   pack             String?
-  requiresRx       Boolean @default(true) @map("requires_rx")
-  scarceInCss      Boolean @default(false) @map("scarce_in_css")
+  requiresRx       Boolean  @default(true) @map("requires_rx")
+  scarceInCss      Boolean  @default(false) @map("scarce_in_css")
   /// Marcas comerciales y nombres alternativos, para la búsqueda.
   aliases          String[]
   /// Texto normalizado (sin acentos, minúsculas) con nombre, concentración, alias y condiciones.
   /// Índice GIN trigram para búsqueda difusa.
-  searchText       String  @map("search_text")
+  searchText       String   @map("search_text")
 
   conditions   MedicationCondition[]
   availability Availability[]
@@ -107,9 +155,9 @@ model Chain {
 
 /// Sucursal de una cadena, con su ubicación.
 model Branch {
-  id       Int     @id @default(autoincrement())
-  slug     String  @unique
-  chainId  Int     @map("chain_id")
+  id       Int                                   @id @default(autoincrement())
+  slug     String                                @unique
+  chainId  Int                                   @map("chain_id")
   /// Barrio o nombre corto ("Los Pueblos").
   name     String
   address  String
@@ -121,7 +169,7 @@ model Branch {
   /// geography(Point,4326) calculada por trigger desde lat/lng. Índice GIST.
   location Unsupported("geography(Point,4326)")?
   /// false = dato de ejemplo o sin confirmar.
-  verified Boolean @default(false)
+  verified Boolean                               @default(false)
 
   chain        Chain          @relation(fields: [chainId], references: [id])
   availability Availability[]
@@ -144,14 +192,31 @@ model Report {
   hidden       Boolean     @default(false)
   createdAt    DateTime    @default(now()) @map("created_at")
 
-  user       User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
-  medication Medication @relation(fields: [medicationId], references: [id], onDelete: Cascade)
-  branch     Branch     @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  user          User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  medication    Medication     @relation(fields: [medicationId], references: [id], onDelete: Cascade)
+  branch        Branch         @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  confirmations Confirmation[]
 
   @@index([branchId, medicationId, createdAt(sort: Desc)])
   @@index([medicationId, createdAt(sort: Desc)])
   @@index([userId, createdAt(sort: Desc)])
   @@map("reports")
+}
+
+/// "Sí había / No había" de otra persona sobre un reporte. Un voto por usuario por reporte.
+model Confirmation {
+  id        String   @id @default(cuid())
+  reportId  String   @map("report_id")
+  userId    String   @map("user_id")
+  agrees    Boolean
+  createdAt DateTime @default(now()) @map("created_at")
+
+  report Report @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([reportId, userId])
+  @@index([userId, createdAt(sort: Desc)])
+  @@map("confirmations")
 }
 
 /// Estado actual de un medicamento en una sucursal. Se recalcula con cada reporte,

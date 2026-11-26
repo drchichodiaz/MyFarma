@@ -10,6 +10,10 @@ type Meta = {
   panel: string;
   icon: IconName;
   hint: string;
+  /** Opción elegida en el formulario de reporte (radio con clase `peer`). */
+  opt: string;
+  /** Círculo del ícono de la opción sin elegir. */
+  tint: string;
 };
 
 /** Apariencia de cada estado. Las clases van completas para que Tailwind las detecte. */
@@ -22,6 +26,8 @@ export const STATUS: Record<Status | "NONE", Meta> = {
     panel: "bg-ok/10",
     icon: "check",
     hint: "Disponible para retirar",
+    opt: "peer-checked:border-ok peer-checked:bg-ok peer-checked:text-onstat peer-checked:shadow-lift peer-checked:-translate-y-1",
+    tint: "bg-ok/15 text-ok",
   },
   LOW: {
     label: "Quedan pocas",
@@ -31,6 +37,8 @@ export const STATUS: Record<Status | "NONE", Meta> = {
     panel: "bg-warn/10",
     icon: "alert",
     hint: "Ve pronto, quedan pocas",
+    opt: "peer-checked:border-warn peer-checked:bg-warn peer-checked:text-onstat peer-checked:shadow-lift peer-checked:-translate-y-1",
+    tint: "bg-warn/15 text-warn",
   },
   OUT: {
     label: "No hay",
@@ -40,6 +48,8 @@ export const STATUS: Record<Status | "NONE", Meta> = {
     panel: "bg-bad/10",
     icon: "x",
     hint: "Prueba otra sucursal",
+    opt: "peer-checked:border-bad peer-checked:bg-bad peer-checked:text-onstat peer-checked:shadow-lift peer-checked:-translate-y-1",
+    tint: "bg-bad/15 text-bad",
   },
   NONE: {
     label: "Sin reportes",
@@ -49,6 +59,8 @@ export const STATUS: Record<Status | "NONE", Meta> = {
     panel: "bg-surface2",
     icon: "clock",
     hint: "Si pasas por aquí, repórtalo",
+    opt: "",
+    tint: "bg-surface2 text-muted",
   },
 };
 

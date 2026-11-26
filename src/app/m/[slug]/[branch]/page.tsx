@@ -8,7 +8,10 @@ import { CopyButton } from "@/components/ui/copy-button";
 import { Icon } from "@/components/ui/icon";
 import { money, timeAgo } from "@/lib/format";
 import { isAvailable, statusMeta } from "@/lib/status";
-import { getBranch, getBranchMedication } from "@/server/services/availability";
+import { ConfirmBox } from "@/components/results/confirm-box";
+import type { Status } from "@/lib/status";
+import { currentUser } from "@/server/auth";
+import { getBranch, getBranchMedication, getMyVote } from "@/server/services/availability";
 import { getMedication } from "@/server/services/catalog";
 
 type Params = Promise<{ slug: string; branch: string }>;
@@ -89,6 +92,18 @@ async function BranchDetail({
         </p>
       </section>
 
+      {availability?.lastReportId && (
+        <div className="mt-4">
+          <Suspense fallback={<div className="skeleton h-32" />}>
+            <Confirmation
+              reportId={availability.lastReportId}
+              status={availability.status}
+              next={`/m/${slug}/${branchSlug}`}
+            />
+          </Suspense>
+        </div>
+      )}
+
       <div className="mt-4 grid grid-cols-2 gap-2">
         <a
           href={directions}
@@ -99,7 +114,7 @@ async function BranchDetail({
           <Icon name="nav" className="size-4" />
           Cómo llegar
         </a>
-        <Link href="/reportar" className="btn-ghost py-3.5">
+        <Link href={`/reportar?med=${slug}&sucursal=${branchSlug}`} className="btn-ghost py-3.5">
           <Icon name="plus" className="size-4" />
           Reportar
         </Link>
@@ -151,6 +166,22 @@ async function BranchDetail({
                   )}
                 </div>
                 <div className="text-xs text-muted">{timeAgo(r.createdAt, now)}</div>
+                {(r.agreed.length > 0 || r.disagreed.length > 0) && (
+                  <div className="mt-1 flex flex-col gap-0.5 text-xs text-muted">
+                    {r.agreed.length > 0 && (
+                      <span className="inline-flex items-center gap-1">
+                        <Icon name="check" className="size-3.5 text-ok" />
+                        Lo confirmó {r.agreed.join(", ")}
+                      </span>
+                    )}
+                    {r.disagreed.length > 0 && (
+                      <span className="inline-flex items-center gap-1">
+                        <Icon name="x" className="size-3.5 text-bad" />
+                        No coincidió {r.disagreed.join(", ")}
+                      </span>
+                    )}
+                  </div>
+                )}
               </li>
             );
           })}
@@ -172,6 +203,42 @@ async function BranchDetail({
       </div>
     </article>
   );
+}
+
+/** Botones para confirmar el reporte vigente. Lee la sesión: va dentro de un <Suspense>. */
+async function Confirmation({
+  reportId,
+  status,
+  next,
+}: {
+  reportId: string;
+  status: Status;
+  next: string;
+}) {
+  const user = await currentUser();
+  if (!user) {
+    return (
+      <Link
+        href={`/entrar?next=${encodeURIComponent(next)}`}
+        className="flex items-center justify-between gap-3 rounded-2xl bg-surface p-4 text-sm shadow-soft transition hover:shadow-lift"
+      >
+        <span>
+          <b>¿Pasaste por aquí hace poco?</b>
+          <span className="block text-xs text-muted">Entra para confirmar lo que viste.</span>
+        </span>
+        <Icon name="arrow" className="size-4 shrink-0" />
+      </Link>
+    );
+  }
+  const vote = await getMyVote(user.id, reportId);
+  if (vote.own) {
+    return (
+      <p className="rounded-2xl bg-surface p-4 text-sm text-muted shadow-soft">
+        Este es tu reporte. Cuando otra persona lo confirme, sube la cuenta de confirmaciones.
+      </p>
+    );
+  }
+  return <ConfirmBox reportId={reportId} status={status} myVote={vote.agrees} />;
 }
 
 function BranchSkeleton() {

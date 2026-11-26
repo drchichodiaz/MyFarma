@@ -23,4 +23,55 @@ jobs:
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm format:check
+      - run: pnpm test
       - run: pnpm build
+
+  # Flujos de punta a punta: entrar por correo (Mailpit) → reportar → confirmar.
+  e2e:
+    runs-on: ubuntu-latest
+    services:
+      db:
+        image: postgis/postgis:17-3.5
+        env:
+          POSTGRES_USER: myfarma
+          POSTGRES_PASSWORD: myfarma
+          POSTGRES_DB: myfarma
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U myfarma -d myfarma" --health-interval 5s --health-timeout 3s
+          --health-retries 20
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 3s --health-retries 20
+      mailpit:
+        image: axllent/mailpit:latest
+        ports: ["8025:8025", "1025:1025"]
+    env:
+      CI: "1"
+      DATABASE_URL: postgresql://myfarma:myfarma@localhost:5432/myfarma?schema=public
+      REDIS_URL: redis://localhost:6379
+      SMTP_HOST: localhost
+      SMTP_PORT: "1025"
+      AUTH_SECRET: solo-para-ci-no-es-un-secreto-real-0123456789
+      AUTH_URL: http://localhost:3000
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm db:deploy
+      - run: pnpm db:seed
+      - run: pnpm build
+      - run: pnpm test:e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-trazas
+          path: test-results/
+          retention-days: 7

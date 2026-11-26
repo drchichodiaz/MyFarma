@@ -2,6 +2,7 @@ import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/server/db";
 import { DEFAULT_RADIUS_M } from "@/lib/geo";
+import { publicName } from "@/lib/people";
 import type { Status } from "@/lib/status";
 import { TAGS } from "./catalog";
 
@@ -64,7 +65,7 @@ export type ScarceOverview = {
 export async function getScarceOverview(): Promise<ScarceOverview[]> {
   "use cache";
   cacheLife("minutes");
-  cacheTag(TAGS.availabilityAll);
+  cacheTag(TAGS.overview, TAGS.availabilityAll);
 
   return db.$queryRaw<ScarceOverview[]>`
     SELECT m.id AS "medicationId",
@@ -96,8 +97,8 @@ export async function getRecentReports(limit = 5): Promise<RecentReport[]> {
   cacheLife("seconds");
   cacheTag(TAGS.reports);
 
-  return db.$queryRaw<RecentReport[]>`
-    SELECT r.id, COALESCE(u.name, 'Paciente') AS who, r.status, r.created_at AS "createdAt",
+  const rows = await db.$queryRaw<RecentReport[]>`
+    SELECT r.id, u.name AS who, r.status, r.created_at AS "createdAt",
            m.slug AS "medSlug", m.active_ingredient AS "medName", m.strength,
            b.slug AS "branchSlug", b.name AS "branchName", c.name AS "chainName"
     FROM reports r
@@ -108,6 +109,7 @@ export async function getRecentReports(limit = 5): Promise<RecentReport[]> {
     WHERE NOT r.hidden
     ORDER BY r.created_at DESC
     LIMIT ${limit}`;
+  return rows.map((r) => ({ ...r, who: publicName(r.who) }));
 }
 
 export type BranchDetail = {
@@ -162,7 +164,13 @@ export async function getBranchMedication(
   const [availability, reports] = await Promise.all([
     db.availability.findUnique({
       where: { branchId_medicationId: { branchId, medicationId } },
-      select: { status: true, priceCents: true, confirmedAt: true, confirmations: true },
+      select: {
+        status: true,
+        priceCents: true,
+        confirmedAt: true,
+        confirmations: true,
+        lastReportId: true,
+      },
     }),
     db.report.findMany({
       where: { branchId, medicationId, hidden: false },
@@ -172,6 +180,11 @@ export async function getBranchMedication(
         priceCents: true,
         createdAt: true,
         user: { select: { name: true } },
+        confirmations: {
+          select: { agrees: true, user: { select: { name: true } } },
+          orderBy: { createdAt: "asc" },
+          take: 6,
+        },
       },
       orderBy: { createdAt: "desc" },
       take: take + 1,
@@ -182,7 +195,28 @@ export async function getBranchMedication(
   const hasMore = reports.length > take;
   return {
     availability,
-    reports: reports.slice(0, take).map((r) => ({ ...r, who: r.user?.name ?? "Paciente" })),
+    reports: reports.slice(0, take).map(({ user, confirmations, ...r }) => ({
+      ...r,
+      who: publicName(user?.name),
+      agreed: confirmations.filter((c) => c.agrees).map((c) => publicName(c.user.name)),
+      disagreed: confirmations.filter((c) => !c.agrees).map((c) => publicName(c.user.name)),
+    })),
     nextCursor: hasMore ? reports[take - 1]!.id : null,
   };
+}
+
+export type MyVote = { own: boolean; agrees: boolean | null };
+
+/** Si el reporte es mío y cómo voté. Por usuario: se invalida con sus reportes y votos. */
+export async function getMyVote(userId: string, reportId: string): Promise<MyVote> {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag(TAGS.userReports(userId), `report:${reportId}`);
+
+  const rows = await db.$queryRaw<{ own: boolean; agrees: boolean | null }[]>`
+    SELECT r.user_id IS NOT DISTINCT FROM ${userId} AS own, c.agrees
+    FROM reports r
+    LEFT JOIN confirmations c ON c.report_id = r.id AND c.user_id = ${userId}
+    WHERE r.id = ${reportId}`;
+  return rows[0] ?? { own: false, agrees: null };
 }

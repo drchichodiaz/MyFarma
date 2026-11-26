@@ -8,7 +8,12 @@ const schema = z.object({
   DB_POOL_MAX: z.coerce.number().int().positive().default(10),
   SMTP_HOST: z.string().default("localhost"),
   SMTP_PORT: z.coerce.number().int().default(1025),
+  SMTP_USER: z.string().optional(),
+  SMTP_PASS: z.string().optional(),
   EMAIL_FROM: z.string().default("MyFarma <no-reply@myfarma.local>"),
+  /** Sin estas dos, el botón de Google no aparece (desarrollo y CI sin credenciales). */
+  AUTH_GOOGLE_ID: z.string().optional(),
+  AUTH_GOOGLE_SECRET: z.string().optional(),
 });
 
 export const env = schema.parse(process.env);
