@@ -63,6 +63,8 @@ FROM node:22-alpine AS app
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3000 HOSTNAME=0.0.0.0
 WORKDIR /app
 COPY --from=build --chown=node:node /app/public ./public
+# Fuentes para las imágenes de vista previa (opengraph-image).
+COPY --from=build --chown=node:node /app/assets ./assets
 COPY --from=build --chown=node:node /app/.next/standalone ./
 COPY --from=build --chown=node:node /app/.next/static ./.next/static
 USER node

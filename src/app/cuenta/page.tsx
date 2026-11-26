@@ -9,7 +9,7 @@ import { isAvailable, statusMeta } from "@/lib/status";
 import { currentUser } from "@/server/auth";
 import { getUserReports } from "@/server/services/reports";
 import { requestTime } from "@/server/time";
-import { doSignOut } from "./actions";
+import { deleteAccount, doSignOut } from "./actions";
 import { NameForm } from "./name-form";
 
 export const metadata: Metadata = { title: "Tu cuenta", robots: { index: false } };
@@ -38,13 +38,27 @@ async function Account() {
             Hola, {publicName(user.name).split(" ")[0]}
           </h1>
         </div>
-        <form action={doSignOut}>
-          <button type="submit" className="btn-ghost py-2.5">
-            <Icon name="logout" className="size-4" />
-            Salir
-          </button>
-        </form>
+        <div className="flex gap-2">
+          {user.role === "ADMIN" && (
+            <Link href="/admin" className="btn-ghost py-2.5">
+              <Icon name="shield" className="size-4" />
+              Moderación
+            </Link>
+          )}
+          <form action={doSignOut}>
+            <button type="submit" className="btn-ghost py-2.5">
+              <Icon name="logout" className="size-4" />
+              Salir
+            </button>
+          </form>
+        </div>
       </header>
+      {user.blocked && (
+        <p className="rounded-2xl bg-bad/10 p-4 text-sm font-semibold text-bad">
+          Tu cuenta está suspendida por moderación: puedes buscar, pero no reportar, confirmar ni
+          crear alertas. Si crees que es un error, escríbenos a hola@myfarma.net.
+        </p>
+      )}
 
       <section className="rounded-[1.6rem] bg-surface p-5 shadow-soft sm:p-6">
         <NameForm name={user.name ?? null} />
@@ -97,6 +111,36 @@ async function Account() {
           </p>
         )}
       </section>
+
+      <details className="group rounded-[1.6rem] bg-surface p-5 shadow-soft sm:p-6">
+        <summary className="cursor-pointer list-none text-sm font-extrabold text-muted group-open:text-ink">
+          Borrar mi cuenta
+        </summary>
+        <p className="mt-3 text-sm text-muted">
+          Borramos tu cuenta, tus alertas, tus avisos al celular y tus confirmaciones. Tus reportes
+          se quedan, pero como «Paciente», sin tu nombre, porque siguen ayudando a otros. No se
+          puede deshacer. Más detalles en{" "}
+          <Link href="/privacidad" className="font-bold underline">
+            Privacidad
+          </Link>
+          .
+        </p>
+        <form action={deleteAccount} className="mt-4 flex flex-col gap-2 sm:flex-row">
+          <input
+            name="confirm"
+            required
+            pattern="BORRAR"
+            autoComplete="off"
+            aria-label="Escribe BORRAR para confirmar"
+            placeholder="Escribe BORRAR para confirmar"
+            className="input py-3"
+          />
+          <button type="submit" className="btn-ghost shrink-0 border-bad/40 text-bad">
+            <Icon name="trash" className="size-4" />
+            Borrar mi cuenta
+          </button>
+        </form>
+      </details>
     </div>
   );
 }

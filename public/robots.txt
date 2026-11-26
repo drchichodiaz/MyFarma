@@ -1,3 +1,0 @@
-# Beta con datos de ejemplo: no indexar todavía. Se abre al lanzar (F5).
-User-agent: *
-Disallow: /

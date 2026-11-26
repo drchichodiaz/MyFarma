@@ -2,7 +2,7 @@
 
 import { updateTag } from "next/cache";
 import { z } from "zod";
-import { currentUser } from "@/server/auth";
+import { contributor, currentUser } from "@/server/auth";
 import { limit } from "@/server/rate-limit";
 import { pushToUser } from "@/server/push";
 import {
@@ -32,8 +32,8 @@ export async function createAlertAction(
   _prev: AlertFormState,
   form: FormData,
 ): Promise<AlertFormState> {
-  const user = await currentUser();
-  if (!user) return { status: "error", message: "Tu sesión venció. Vuelve a entrar." };
+  const { user, error: denied } = await contributor();
+  if (!user) return { status: "error", message: denied };
   const parsed = alertSchema.safeParse({
     ...Object.fromEntries(form),
     channels: form.getAll("channels"),

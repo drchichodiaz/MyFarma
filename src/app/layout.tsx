@@ -17,6 +17,8 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  // Base de las URLs absolutas (vistas previas al compartir). El dominio de producción.
+  metadataBase: new URL("https://myfarma.net"),
   title: { default: "MyFarma — Encuentra tu medicamento", template: "%s · MyFarma" },
   description:
     "Encuentra en qué farmacia de Panamá hay tu medicamento, a qué precio y cuándo se confirmó. Reportes de pacientes.",

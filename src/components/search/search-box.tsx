@@ -26,6 +26,8 @@ export function SearchBox({
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
   const [loading, setLoading] = useState(false);
+  /** Última búsqueda que falló por red o servidor (no por cancelación). */
+  const [failed, setFailed] = useState<string | null>(null);
   const [placeholder, setPlaceholder] = useState("Busca un medicamento");
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -43,12 +45,15 @@ export function SearchBox({
         const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`, {
           signal: AbortSignal.any([controller.signal, AbortSignal.timeout(5_000)]),
         });
+        if (!res.ok) throw new Error(String(res.status));
         const data = (await res.json()) as { hits: SearchHit[] };
         memo.set(q, data.hits);
         setLast(data.hits);
         setActive(0);
+        setFailed(null);
       } catch {
-        // cancelada o sin red: se mantiene la lista anterior
+        // Cancelada por otra búsqueda: nada. Sin red o error: se avisa, sin borrar la lista.
+        if (!controller.signal.aborted) setFailed(q);
       } finally {
         setLoading(false);
       }
@@ -164,6 +169,8 @@ export function SearchBox({
             <li className="px-4 py-4 text-sm text-muted">
               {loading ? (
                 "Buscando…"
+              ) : failed === q ? (
+                "No pudimos buscar. Revisa tu conexión e intenta de nuevo."
               ) : (
                 <>
                   No encontramos “{query.trim()}”. Prueba con el principio activo, por ejemplo{" "}

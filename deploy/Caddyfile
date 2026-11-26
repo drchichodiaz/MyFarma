@@ -14,8 +14,8 @@ www.{$DOMAIN} {
 		X-Content-Type-Options "nosniff"
 		Referrer-Policy "strict-origin-when-cross-origin"
 		Permissions-Policy "camera=(), microphone=(), geolocation=(self)"
-		# Beta con datos de ejemplo: que los buscadores no la indexen todavía.
-		X-Robots-Tag "noindex, nofollow"
+		# Beta con datos de ejemplo: no indexar. En el lanzamiento: ROBOTS_TAG=all en el .env.
+		X-Robots-Tag "{$ROBOTS_TAG:noindex, nofollow}"
 		-Server
 	}
 

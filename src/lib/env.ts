@@ -11,6 +11,8 @@ const schema = z.object({
   SMTP_USER: z.string().optional(),
   SMTP_PASS: z.string().optional(),
   EMAIL_FROM: z.string().default("MyFarma <no-reply@myfarma.local>"),
+  /** Correos que quedan como ADMIN al entrar, separados por coma. */
+  ADMIN_EMAILS: z.string().optional(),
   /** Lo usa Auth.js; aquí además firma los enlaces de baja de las alertas. */
   AUTH_SECRET: z.string().optional(),
   /** Sin estas dos, el botón de Google no aparece (desarrollo y CI sin credenciales). */

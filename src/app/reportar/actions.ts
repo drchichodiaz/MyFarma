@@ -4,7 +4,7 @@ import { updateTag } from "next/cache";
 import { z } from "zod";
 import { MAX_UPLOAD_BYTES, UPLOAD_TYPES } from "@/lib/photos";
 import { parsePrice } from "@/lib/price";
-import { currentUser } from "@/server/auth";
+import { contributor, currentUser } from "@/server/auth";
 import { TAGS } from "@/server/services/catalog";
 import { limit } from "@/server/rate-limit";
 import {
@@ -28,9 +28,8 @@ const schema = z.object({
 });
 
 export async function submitReport(_prev: ReportState, form: FormData): Promise<ReportState> {
-  const user = await currentUser();
-  if (!user)
-    return { status: "error", message: "Tu sesión venció. Vuelve a entrar para reportar." };
+  const { user, error: denied } = await contributor();
+  if (!user) return { status: "error", message: denied };
 
   if (!form.get("branchId")) {
     return {
@@ -82,8 +81,8 @@ export async function submitConfirmation(
   _prev: ConfirmState,
   form: FormData,
 ): Promise<ConfirmState> {
-  const user = await currentUser();
-  if (!user) return { error: "Entra para confirmar." };
+  const { user, error: denied } = await contributor();
+  if (!user) return { error: denied };
   const reportId = String(form.get("reportId") ?? "");
   const agrees = form.get("agrees") === "1";
 
@@ -120,8 +119,8 @@ export async function requestPhotoUpload(input: {
   size: number;
 }): Promise<UploadTicket> {
   if (!photosEnabled) return { ok: false, error: "Las fotos todavía no están disponibles." };
-  const user = await currentUser();
-  if (!user) return { ok: false, error: "Tu sesión venció. Vuelve a entrar." };
+  const { user, error: denied } = await contributor();
+  if (!user) return { ok: false, error: denied };
   const parsed = ticketSchema.safeParse(input);
   if (!parsed.success)
     return { ok: false, error: "La foto es demasiado grande o no es una imagen." };

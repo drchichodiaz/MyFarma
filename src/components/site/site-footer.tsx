@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Logo } from "./site-header";
 
 const COLUMNS = [
@@ -26,6 +27,26 @@ export function SiteFooter() {
             </div>
           ))}
         </div>
+        <nav
+          aria-label="Pie de página"
+          className="flex flex-wrap gap-x-5 gap-y-2 px-3 pb-5 text-sm font-semibold text-white/80 sm:px-5"
+        >
+          <Link href="/privacidad" className="hover:text-lime">
+            Privacidad
+          </Link>
+          <Link href="/terminos" className="hover:text-lime">
+            Condiciones de uso
+          </Link>
+          <a href="mailto:hola@myfarma.net" className="hover:text-lime">
+            Contacto: hola@myfarma.net
+          </a>
+          <Link href="/alertas" className="hover:text-lime">
+            Alertas
+          </Link>
+          <Link href="/reportar" className="hover:text-lime">
+            Reportar
+          </Link>
+        </nav>
         <div className="flex items-center gap-3 overflow-hidden rounded-[1.5rem] bg-lime px-5 py-5 text-limeink sm:gap-5 sm:px-8 sm:py-7">
           <Logo className="size-14 shrink-0 rounded-2xl bg-limeink p-2 sm:size-20 sm:p-3" />
           <span className="font-display text-[clamp(2.6rem,11vw,7.5rem)] leading-none font-black tracking-[-0.05em]">

@@ -15,7 +15,7 @@ export default function AlertsPage({ searchParams }: PageProps<"/alertas">) {
     <div className="mx-auto max-w-6xl px-4 pt-5 sm:px-6">
       <section className="rise relative overflow-hidden rounded-[2rem] bg-sun p-6 text-[#2b2000] sm:p-10">
         <span
-          className="tile-ic pointer-events-none absolute -right-6 -bottom-10 opacity-90 sm:right-6"
+          className="tile-ic pointer-events-none absolute -right-6 -bottom-10 opacity-20 sm:right-6 sm:opacity-90"
           aria-hidden="true"
         >
           <Icon name="bell" className="size-48 sm:size-64" />

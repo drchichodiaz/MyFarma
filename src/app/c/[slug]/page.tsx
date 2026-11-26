@@ -41,7 +41,7 @@ async function Condition({ params }: { params: Promise<{ slug: string }> }) {
         className={`rise relative overflow-hidden rounded-[2rem] p-6 text-tileink sm:p-10 ${tile(condition.color)}`}
       >
         <span
-          className="tile-ic pointer-events-none absolute -right-6 -bottom-10 opacity-90 sm:right-6"
+          className="tile-ic pointer-events-none absolute -right-6 -bottom-10 opacity-20 sm:right-6 sm:opacity-90"
           aria-hidden="true"
         >
           <Icon

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Suspense } from "react";
 import { Icon } from "@/components/ui/icon";
 import { safeNext } from "@/lib/redirect";
@@ -97,6 +98,17 @@ async function SignInForms({
         </>
       )}
       <EmailForm next={next} />
+      <p className="text-xs text-muted">
+        Al entrar aceptas las{" "}
+        <Link href="/terminos" className="font-bold underline">
+          condiciones de uso
+        </Link>{" "}
+        y la{" "}
+        <Link href="/privacidad" className="font-bold underline">
+          política de privacidad
+        </Link>
+        .
+      </p>
     </div>
   );
 }

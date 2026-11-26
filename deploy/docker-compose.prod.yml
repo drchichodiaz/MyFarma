@@ -5,16 +5,25 @@
 # ══════════════════════════════════════════════════════════════════════
 name: myfarma
 
+# Logs con rotación: como máximo ~3 × 10 MB por servicio (unos días), no crecen para siempre.
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 services:
   caddy:
     image: caddy:2-alpine
     restart: unless-stopped
+    logging: *logging
     ports:
       - "80:80"
       - "443:443"
       - "443:443/udp" # HTTP/3
     environment:
       DOMAIN: ${DOMAIN:?Falta DOMAIN en .env}
+      ROBOTS_TAG: ${ROBOTS_TAG:-noindex, nofollow}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy-data:/data
@@ -27,6 +36,7 @@ services:
   app:
     image: ghcr.io/drchichodiaz/myfarma:${TAG:-latest}
     restart: unless-stopped
+    logging: *logging
     env_file: .env
     environment:
       DATABASE_URL: postgresql://myfarma:${POSTGRES_PASSWORD}@db:5432/myfarma?schema=public
@@ -46,6 +56,7 @@ services:
   worker:
     image: ghcr.io/drchichodiaz/myfarma-worker:${TAG:-latest}
     restart: unless-stopped
+    logging: *logging
     env_file: .env
     environment:
       DATABASE_URL: postgresql://myfarma:${POSTGRES_PASSWORD}@db:5432/myfarma?schema=public
@@ -74,6 +85,7 @@ services:
   db:
     image: postgis/postgis:17-3.5
     restart: unless-stopped
+    logging: *logging
     environment:
       POSTGRES_USER: myfarma
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -99,6 +111,7 @@ services:
   redis:
     image: redis:7-alpine
     restart: unless-stopped
+    logging: *logging
     # noeviction: BullMQ no tolera que Redis borre claves de la cola para hacer espacio.
     # Sin disco: si se reinicia, el worker re-encola las fotos pendientes desde Postgres.
     command:

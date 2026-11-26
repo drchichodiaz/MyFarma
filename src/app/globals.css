@@ -433,6 +433,40 @@ input[type="range"] {
   color: rgb(var(--muted));
   border: 1px solid rgb(var(--line));
 }
+/* mapa en modo oscuro: las teselas de OSM son claras, se oscurecen con un filtro */
+@media (prefers-color-scheme: dark) {
+  .leaflet-tile-pane {
+    filter: invert(1) hue-rotate(200deg) saturate(0.35) brightness(0.85) contrast(0.9);
+  }
+}
+
+/* grupo de sucursales cercanas (leaflet.markercluster) */
+.mf-cluster {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  background: rgb(var(--surface));
+  color: rgb(var(--ink));
+  border: 3px solid rgb(var(--muted) / 0.5);
+  font:
+    800 13px/1 var(--font-archivo),
+    ui-sans-serif,
+    sans-serif;
+  box-shadow: 0 6px 16px -6px rgb(0 0 0 / 0.45);
+  transition: transform 0.25s cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+.mf-cluster-on {
+  background: rgb(var(--ok));
+  color: rgb(var(--onstat));
+  border-color: rgb(255 255 255 / 0.85);
+}
+.mf-pin:hover .mf-cluster {
+  transform: translate(-50%, -50%) scale(1.12);
+}
+
 .mf-me {
   width: 18px;
   height: 18px;
