@@ -4,6 +4,8 @@ name: Deploy
 on:
   push:
     branches: [main]
+    # Cambios solo de documentación o del prototipo no despliegan.
+    paths-ignore: ["**.md", "prototype/**"]
   workflow_dispatch:
 
 # Un deploy a la vez; si llega otro push, el nuevo espera al anterior.

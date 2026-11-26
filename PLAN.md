@@ -148,15 +148,87 @@ La ubicación del usuario se obtiene con la geolocalización del navegador, con 
 
 ## Fases
 
-| Fase                         | Entregable                                                                                                           | Hecho cuando                                                                                       |
-| ---------------------------- | -------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| **F0 · Base**                | Repo git, Next.js + Tailwind con tokens y fuentes, Prisma + PostGIS + Redis + Mailpit en Docker, ESLint/Prettier, CI | `pnpm dev` levanta la app con la DB local; `/api/health` responde con PostGIS y Redis; CI en verde |
-| **F1 · Catálogo y búsqueda** | Schema + seed, inicio, autocompletar, resultados con mapa real, ficha de sucursal (solo lectura)                     | Busco "metotrexato" y veo las sucursales del seed ordenadas por distancia                          |
-| **F2 · Cuentas y reportes**  | Auth.js (Google + correo), formulario de reporte con foto, confirmaciones, recálculo de disponibilidad               | Un usuario logueado reporta y el resultado cambia al instante                                      |
-| **F3 · Alertas**             | CRUD de alertas con radar, correo y Web Push, PWA instalable                                                         | Al reportar "Hay", llega un correo o push a quien tiene alerta en el radio                         |
-| **F4 · Moderación y pulido** | Panel admin, rate limits, página de privacidad, SEO/OG, estados vacíos y de error, modo oscuro                       | Checklist de lanzamiento completa                                                                  |
-| **F5 · Deploy y beta**       | `docker-compose.prod.yml`, Caddy con HTTPS, backups diarios con `pg_dump`, Umami                                     | En línea con un grupo pequeño de pacientes (tu hermana primero)                                    |
-| **Después**                  | Bot de WhatsApp (reutiliza `server/services`), lectura de webs de farmacias, acuerdos con cadenas                    | —                                                                                                  |
+| Estado | Fase                         | Entregable                                                                                                                             | Hecho cuando                                                                                       |
+| ------ | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| ✅     | **F0 · Base**                | Repo git, Next.js + Tailwind con tokens y fuentes, Prisma + PostGIS + Redis + Mailpit en Docker, ESLint/Prettier, CI                   | `pnpm dev` levanta la app con la DB local; `/api/health` responde con PostGIS y Redis; CI en verde |
+| ✅     | **F1 · Catálogo y búsqueda** | Schema + seed, inicio, autocompletar, resultados con mapa real, ficha de sucursal (solo lectura)                                       | Busco "metotrexato" y veo las sucursales del seed ordenadas por distancia                          |
+| ✅     | **Deploy temprano**          | Droplet NYC1 aprovisionado, imágenes en GHCR, Caddy + Cloudflare, pipeline push → producción                                           | https://myfarma.net en línea; cada push a `main` despliega en ~2 min                               |
+| ⏭️     | **F2a · Cuentas y reportes** | Backups a R2, Auth.js (Google + correo), formulario de reporte, confirmaciones, recálculo de disponibilidad                            | Un usuario logueado reporta y el resultado cambia al instante para todos                           |
+| ⏳     | **F2b · Fotos**              | Subida directa a R2, worker BullMQ + `sharp` (sin EXIF), variantes AVIF/WebP, moderación                                               | Un reporte con foto se ve sin datos GPS y en el formato adecuado                                   |
+| ⏳     | **F3 · Alertas**             | CRUD de alertas con radar, correo y Web Push, PWA instalable                                                                           | Al reportar "Hay", llega un correo o push a quien tiene alerta en el radio                         |
+| ⏳     | **F4 · Moderación y pulido** | Panel admin, página de privacidad, SEO/OG (404 reales, abrir `robots.txt`), agrupar marcadores del mapa, estados de error, modo oscuro | Checklist de lanzamiento completa                                                                  |
+| ⏳     | **F5 · Beta y lanzamiento**  | Mapa propio (PMTiles en R2), Umami, Sentry, Lighthouse CI, sucursales reales verificadas                                               | En línea con un grupo pequeño de pacientes (tu hermana primero)                                    |
+| ⏳     | **Después**                  | Bot de WhatsApp (reutiliza `server/services`), lectura de webs de farmacias, acuerdos con cadenas                                      | —                                                                                                  |
+
+## F2 en detalle (siguiente sesión)
+
+### Antes de empezar: lo que prepara el dueño del proyecto
+
+- [ ] **Google OAuth** (Google Cloud Console → APIs y servicios → Credenciales → ID de cliente OAuth, tipo "Aplicación web").
+  - Orígenes autorizados: `https://myfarma.net` y `http://localhost:3000`
+  - URI de redirección: `https://myfarma.net/api/auth/callback/google` y `http://localhost:3000/api/auth/callback/google`
+  - Pantalla de consentimiento: nombre "MyFarma", correo de soporte, dominio `myfarma.net`
+  - Entregar: `AUTH_GOOGLE_ID` y `AUTH_GOOGLE_SECRET`
+- [ ] **Correo transaccional** para los enlaces mágicos en producción. Recomendado: **Resend** (3,000 correos/mes gratis).
+  - Verificar el dominio `myfarma.net` (registros SPF/DKIM en Cloudflare)
+  - Entregar: API key o credenciales SMTP; remitente `MyFarma <hola@myfarma.net>`
+- [ ] **Cloudflare R2** activado (pide tarjeta; el plan gratis de 10 GB alcanza).
+  - Buckets: `myfarma-backups` (privado) y `myfarma-photos` (F2b)
+  - Token de API con permisos de lectura y escritura solo para esos buckets
+  - Entregar: `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`
+
+> Los secretos de producción se cargan en `/opt/myfarma/.env` del servidor y, si el CI los necesita, con `gh secret set` desde Git Bash (no CMD).
+
+### F2a · Cuentas y reportes
+
+**0. Backups (antes de cualquier dato real)**
+
+- [ ] Servicio `backup` en `docker-compose.prod.yml`: `pg_dump -Fc` diario comprimido → R2 `myfarma-backups/AAAA/MM/DD.dump`
+- [ ] Retención de 30 días (regla de ciclo de vida en el bucket)
+- [ ] `deploy/restore.sh` y **prueba real de restauración** en una base temporal
+- [ ] Alerta si el backup falla (por correo, o como check en `/api/health`)
+
+**1. Login (Auth.js)**
+
+- [ ] Modelos de Auth.js en Prisma (Account, Session, VerificationToken) + migración
+- [ ] Proveedores: Google y Email (nodemailer → Mailpit en local, Resend en producción)
+- [ ] Sesiones en base de datos; `AUTH_SECRET` en el `.env` del servidor
+- [ ] Páginas: `/entrar` (Google o correo), "Revisa tu correo", `/cuenta` con mis reportes
+- [ ] Header: botón "Entrar" o avatar con menú
+- [ ] Nombre público: nombre + inicial ("Mariela G."); nunca el correo
+- [ ] Probar que con Cache Components la sesión se lee dentro de `<Suspense>` y no rompe el shell estático (ver `node_modules/next/dist/docs/01-app/02-guides/authentication-with-cache-components.md`)
+
+**2. Reportar**
+
+- [ ] `/reportar` con el diseño del prototipo: medicamento, sucursal, Hay / Quedan pocas / No hay, precio opcional, vista previa en vivo
+- [ ] Atajo desde la ficha de sucursal (medicamento y sucursal ya elegidos)
+- [ ] Server Action con validación Zod y sesión obligatoria
+- [ ] Transacción: crear `Report` → recalcular `Availability` (estado, precio, confirmaciones)
+- [ ] `updateTag("availability:<id>")` + `updateTag("reports")`: el cambio se ve al instante
+- [ ] Límites con Redis: N reportes por hora por usuario; misma sucursal + medicamento cada 30 min
+- [ ] Pantalla de éxito ("¡Gracias!") con confeti, como en el prototipo
+- [ ] El seed deja de crear reportes de ejemplo en producción (`SEED_DEMO=0`) cuando entren reportes reales
+
+**3. Confirmaciones**
+
+- [ ] "Sí había / No había" en la ficha de sucursal, con `useOptimistic`
+- [ ] Reglas: un voto por usuario por reporte vigente; "No había" sobre un "Hay" cambia el estado
+- [ ] El historial muestra quién confirmó (nombre público)
+
+**4. Pruebas**
+
+- [ ] Vitest: recálculo de disponibilidad, límites de uso, nombre público
+- [ ] Playwright: entrar con correo (Mailpit) → reportar → ver el cambio en resultados
+- [ ] Pasos de las pruebas en el CI (con servicios Postgres/Redis en GitHub Actions)
+
+### F2b · Fotos
+
+- [ ] Endpoint de URL firmada de R2 (corta duración, solo `image/*`, tamaño máximo)
+- [ ] En el cliente: redimensionar a 1600 px y convertir a WebP antes de subir
+- [ ] Contenedor `worker` (mismo código, BullMQ): `sharp` quita EXIF/GPS, genera AVIF y WebP en 400/800/1200 px y borra el original
+- [ ] Estado `pending` → `ready`; el admin puede ocultar
+- [ ] Subdominio `img.myfarma.net` con caché `immutable` y loader propio de `next/image`
+- [ ] Prueba: subir una foto con GPS y verificar que las variantes no lo traen
 
 ## Rendimiento (checklist obligatorio)
 
