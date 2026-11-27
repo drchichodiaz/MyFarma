@@ -123,6 +123,12 @@ export default function PrivacyPage() {
               <b>Resend</b> (envío de correos: enlaces para entrar y alertas).
             </li>
             <li>
+              <b>Umami</b> (estadísticas de uso, sin cookies): qué páginas se visitan, desde qué
+              país y tipo de dispositivo, y cuántas veces se usa cada función. No guarda tu IP ni te
+              identifica, y no recibe la ubicación. Si tu navegador tiene activado «No rastrear», no
+              se cuenta nada.
+            </li>
+            <li>
               <b>Sentry</b> (avisos de errores técnicos, Estados Unidos): cuando algo falla recibe
               la página, el navegador y el error. Nunca tu nombre, tu correo, tu dirección IP ni tu
               ubicación.

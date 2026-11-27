@@ -182,7 +182,7 @@ F0 a F4 en producción; la F5 avanza en producción (ver checklist). **Sigue la 
 - [ ] Pin en `/admin` para corregir coordenadas: ~60 % de las sucursales no tienen punto en OSM y quedan con las de la hoja
 - [x] 227 sucursales de 12 cadenas en `branches.csv` (sin confirmar); lo de ejemplo pasó a `prisma/seed/data/demo/` y solo se carga en desarrollo y CI. En producción `SEED_DEMO=0` (fijo en el compose) borra sucursales, reportes y usuarios de ejemplo
 - [ ] Mapa propio (PMTiles en R2) para no depender de las teselas de OpenStreetMap
-- [ ] Umami (analítica sin cookies) y Web Vitals de usuarios reales
+- [x] Umami Cloud (sin cookies, sin query string, respeta «No rastrear»): visitas + eventos reporte, alerta, ubicacion, como-llegar, llamar, busqueda-sin-resultado. ID del sitio = variable `UMAMI_WEBSITE_ID` del repo. Web Vitals reales: los mide Sentry (10 % de las visitas)
 - [x] Sentry (org `adrian-diaz`, proyecto `myfarma`): web, navegador y worker, sin datos personales (`src/lib/sentry-scrub.ts`). DSN, org y proyecto son variables del repo; `SENTRY_AUTH_TOKEN` (secret) sube los source maps en cada build de la imagen
 - [ ] Lighthouse CI con presupuesto de rendimiento
 - [x] Etiqueta "Beta" en lugar de "Datos de ejemplo" y nuevo texto del pie

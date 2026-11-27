@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Icon } from "@/components/ui/icon";
+import { searchTerm, track } from "@/lib/analytics";
 import type { SearchHit } from "@/server/services/catalog";
 
 const DEBOUNCE_MS = 250;
@@ -48,6 +49,9 @@ export function SearchBox({
         if (!res.ok) throw new Error(String(res.status));
         const data = (await res.json()) as { hits: SearchHit[] };
         memo.set(q, data.hits);
+        // Lo que la gente busca y no está en el catálogo (sin datos personales).
+        if (!data.hits.length && q.length >= 4)
+          track("busqueda-sin-resultado", { q: searchTerm(q) });
         setLast(data.hits);
         setActive(0);
         setFailed(null);

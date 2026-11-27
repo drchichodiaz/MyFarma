@@ -4,6 +4,7 @@
  * Solo para componentes de cliente.
  */
 import { useSyncExternalStore } from "react";
+import { track } from "./analytics";
 import {
   formatLocationCookie,
   LOCATION_COOKIE,
@@ -78,5 +79,6 @@ export async function locateAndSave(): Promise<Point> {
   const point = toPoint(raw.lat, raw.lng);
   if (!point) throw new LocationError("Tu ubicación parece estar fuera de Panamá.");
   saveLocation(point);
+  track("ubicacion");
   return point;
 }

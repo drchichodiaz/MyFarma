@@ -112,6 +112,7 @@ async function BranchDetail({
           href={directions}
           target="_blank"
           rel="noopener"
+          data-umami-event="como-llegar"
           className="btn-primary justify-center py-3.5"
         >
           <Icon name="nav" className="size-4" />
@@ -134,7 +135,14 @@ async function BranchDetail({
           <div className="flex items-center justify-between gap-4 py-3">
             <dt className="text-muted">Teléfono</dt>
             <dd className="flex items-center gap-2">
-              <span className="font-mono font-semibold select-all">{branch.phone}</span>
+              <a
+                href={`tel:${branch.phone.replace(/[^\d+]/g, "")}`}
+                data-umami-event="llamar"
+                className="font-mono font-semibold text-brand underline-offset-4 hover:underline"
+                aria-label={`Llamar al ${branch.phone}`}
+              >
+                {branch.phone}
+              </a>
               <CopyButton text={branch.phone} label="Copiar teléfono" />
             </dd>
           </div>

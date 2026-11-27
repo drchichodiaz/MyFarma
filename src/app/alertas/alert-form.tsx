@@ -3,6 +3,7 @@
 import { useActionState, useMemo, useState, useSyncExternalStore } from "react";
 import { Icon, type IconName } from "@/components/ui/icon";
 import { DEFAULT_LOCATION } from "@/lib/geo";
+import { track } from "@/lib/analytics";
 import { LocationError, locateAndSave, useStoredLocation } from "@/lib/location-client";
 import { distanceKm, radarPosition } from "@/lib/geo-math";
 import { pushSupport, subscribeThisDevice, type PushSupport } from "@/lib/push-client";
@@ -30,9 +31,14 @@ export function AlertForm({
   /** Sin clave, el canal "Celular" no aparece. */
   vapidPublicKey: string | null;
 }) {
-  const [state, action, pending] = useActionState<AlertFormState, FormData>(createAlertAction, {
-    status: "idle",
-  });
+  const [state, action, pending] = useActionState<AlertFormState, FormData>(
+    async (prev, form) => {
+      const result = await createAlertAction(prev, form);
+      if (result.status === "ok") track("alerta");
+      return result;
+    },
+    { status: "idle" },
+  );
   const [medId, setMedId] = useState(defaultMedId ?? medications[0]?.id ?? 0);
   const [radius, setRadius] = useState(4);
   const [picked, setPlace] = useState<Place | null>(null);

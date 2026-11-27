@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Archivo, JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
+import { Analytics } from "@/components/site/analytics";
 import { BottomNav } from "@/components/site/nav-links";
 import { RegisterServiceWorker } from "@/components/site/register-sw";
 import { SiteFooter } from "@/components/site/site-footer";
@@ -43,6 +44,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <SiteFooter />
         <BottomNav />
         <RegisterServiceWorker />
+        <Analytics />
       </body>
     </html>
   );

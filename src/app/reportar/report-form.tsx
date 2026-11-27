@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useActionState, useState } from "react";
 import { ChainBadge } from "@/components/med/chain-badge";
 import { Icon } from "@/components/ui/icon";
+import { track } from "@/lib/analytics";
 import { money } from "@/lib/format";
 import { parsePrice } from "@/lib/price";
 import { STATUS, type Status } from "@/lib/status";
@@ -31,9 +32,14 @@ export function ReportForm({
   /** Si R2 está configurado, aparece el paso de foto. */
   photos: boolean;
 }) {
-  const [state, action, pending] = useActionState<ReportState, FormData>(submitReport, {
-    status: "idle",
-  });
+  const [state, action, pending] = useActionState<ReportState, FormData>(
+    async (prev, form) => {
+      const result = await submitReport(prev, form);
+      if (result.status === "ok") track("reporte", { estado: String(form.get("status") ?? "") });
+      return result;
+    },
+    { status: "idle" },
+  );
   const [medId, setMedId] = useState(defaultMedId ?? medications[0]?.id);
   const [branchId, setBranchId] = useState<number | undefined>(defaultBranchId);
   const [status, setStatus] = useState<Status>("AVAILABLE");

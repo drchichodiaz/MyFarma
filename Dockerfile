@@ -28,10 +28,13 @@ ARG NEXT_PUBLIC_SENTRY_DSN=""
 ARG SENTRY_ORG=""
 ARG SENTRY_PROJECT=""
 ARG SENTRY_RELEASE=""
+# Umami Cloud (analítica sin cookies): el ID del sitio es público. Sin él, no se carga.
+ARG NEXT_PUBLIC_UMAMI_WEBSITE_ID=""
 # El build no se conecta a nada, pero env.ts valida que existan las URLs.
 RUN --mount=type=secret,id=sentry_auth_token,required=false \
     SENTRY_AUTH_TOKEN="$(cat /run/secrets/sentry_auth_token 2>/dev/null || true)" \
     NEXT_PUBLIC_SENTRY_DSN="$NEXT_PUBLIC_SENTRY_DSN" \
+    NEXT_PUBLIC_UMAMI_WEBSITE_ID="$NEXT_PUBLIC_UMAMI_WEBSITE_ID" \
     SENTRY_ORG="$SENTRY_ORG" SENTRY_PROJECT="$SENTRY_PROJECT" SENTRY_RELEASE="$SENTRY_RELEASE" \
     DATABASE_URL=postgresql://build:build@localhost:5432/build \
     REDIS_URL=redis://localhost:6379 \
