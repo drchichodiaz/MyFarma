@@ -40,7 +40,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="es" className={`${display.variable} ${sans.variable} ${mono.variable}`}>
       <body className="min-h-dvh bg-bg font-sans text-ink antialiased">
         <SiteHeader />
-        <main>{children}</main>
+        {/* Al menos una pantalla: mientras las páginas llegan en streaming, el pie queda fuera
+            de la vista y no "salta" cuando aparece el contenido (CLS). */}
+        <main className="min-h-dvh">{children}</main>
         <SiteFooter />
         <BottomNav />
         <RegisterServiceWorker />
