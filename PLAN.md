@@ -162,7 +162,7 @@ La ubicación del usuario se obtiene con la geolocalización del navegador, con 
 
 ## Dónde quedamos (2026-11-26)
 
-F0 a F4 están en producción (último deploy: `c5f0903`). **Sigue la F5.**
+F0 a F4 en producción; la F5 avanza en producción (ver checklist). **Sigue la F5.**
 
 **Pendiente del dueño del proyecto**
 
@@ -183,7 +183,7 @@ F0 a F4 están en producción (último deploy: `c5f0903`). **Sigue la F5.**
 - [x] 227 sucursales de 12 cadenas en `branches.csv` (sin confirmar); lo de ejemplo pasó a `prisma/seed/data/demo/` y solo se carga en desarrollo y CI. En producción `SEED_DEMO=0` (fijo en el compose) borra sucursales, reportes y usuarios de ejemplo
 - [ ] Mapa propio (PMTiles en R2) para no depender de las teselas de OpenStreetMap
 - [ ] Umami (analítica sin cookies) y Web Vitals de usuarios reales
-- [ ] Sentry (errores y peticiones lentas); pide crear una cuenta
+- [x] Sentry (org `adrian-diaz`, proyecto `myfarma`): web, navegador y worker, sin datos personales (`src/lib/sentry-scrub.ts`). DSN, org y proyecto son variables del repo; `SENTRY_AUTH_TOKEN` (secret) sube los source maps en cada build de la imagen
 - [ ] Lighthouse CI con presupuesto de rendimiento
 - [x] Etiqueta "Beta" en lugar de "Datos de ejemplo" y nuevo texto del pie
 - [ ] Lanzamiento: `INDEXING=1` y `ROBOTS_TAG=all` en el `.env` del servidor cuando haya reportes reales
