@@ -72,6 +72,12 @@ export default function PrivacyPage() {
               para enviarte notificaciones. No incluye tu número de teléfono.
             </li>
             <li>
+              <b>Tu ubicación, si la compartes:</b> la guardamos solo en tu navegador (una cookie de
+              30 días, redondeada a unos 100 metros) para ordenar las farmacias por distancia en
+              cada búsqueda. No la guardamos en nuestro servidor. Puedes borrarla con «Olvidar
+              ubicación» o desde tu navegador.
+            </li>
+            <li>
               <b>Datos técnicos:</b> una cookie de sesión para que no tengas que entrar cada vez, y
               registros del servidor (dirección IP, fecha, página) que se guardan unos días para
               seguridad.

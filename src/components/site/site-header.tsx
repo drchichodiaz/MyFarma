@@ -1,8 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
-import { Icon } from "@/components/ui/icon";
-import { DEFAULT_LOCATION } from "@/lib/geo";
+import { LocationChip, LocationChipStatic } from "./location-chip";
 import { TopNav } from "./nav-links";
 import { UserMenu, UserMenuSkeleton } from "./user-menu";
 
@@ -36,13 +35,17 @@ export function SiteHeader() {
             <span className="font-display text-xl font-black tracking-tight">MyFarma</span>
           </Link>
           <span className="hidden h-8 w-px bg-line lg:block" />
-          <span className="hidden items-center gap-2 lg:flex">
-            <Icon name="pin" className="size-4 text-muted" />
-            <span className="leading-tight">
-              <span className="block text-[10px] font-semibold text-muted">Tu zona</span>
-              <span className="block text-xs font-extrabold">{DEFAULT_LOCATION.label}</span>
-            </span>
-          </span>
+          <div className="hidden lg:block">
+            <Suspense
+              fallback={
+                <span className="flex items-center gap-2 px-2 py-1.5">
+                  <LocationChipStatic />
+                </span>
+              }
+            >
+              <LocationChip />
+            </Suspense>
+          </div>
         </div>
         <TopNav />
         <div className="flex items-center gap-2">

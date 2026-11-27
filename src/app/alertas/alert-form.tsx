@@ -3,6 +3,7 @@
 import { useActionState, useMemo, useState, useSyncExternalStore } from "react";
 import { Icon, type IconName } from "@/components/ui/icon";
 import { DEFAULT_LOCATION } from "@/lib/geo";
+import { LocationError, locateAndSave, useStoredLocation } from "@/lib/location-client";
 import { distanceKm, radarPosition } from "@/lib/geo-math";
 import { pushSupport, subscribeThisDevice, type PushSupport } from "@/lib/push-client";
 import { createAlertAction, savePushAction, type AlertFormState } from "./actions";
@@ -34,7 +35,10 @@ export function AlertForm({
   });
   const [medId, setMedId] = useState(defaultMedId ?? medications[0]?.id ?? 0);
   const [radius, setRadius] = useState(4);
-  const [place, setPlace] = useState<Place | null>(null);
+  const [picked, setPlace] = useState<Place | null>(null);
+  // Sin elegir nada, arranca en la ubicación que el usuario ya compartió en las búsquedas.
+  const stored = useStoredLocation();
+  const place: Place | null = picked ?? (stored ? { label: "tu ubicación", ...stored } : null);
   const [locating, setLocating] = useState(false);
   const [locError, setLocError] = useState<string | null>(null);
   const [email, setEmail] = useState(true);
@@ -67,24 +71,19 @@ export function AlertForm({
   const inside = dots.filter((d) => d.km <= radius);
   const withStock = inside.filter((d) => d.has).length;
 
-  function locate() {
+  async function locate() {
     setLocError(null);
-    if (!("geolocation" in navigator)) {
-      setLocError("Tu navegador no permite compartir ubicación. Elige un barrio.");
-      return;
-    }
     setLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setPlace({ label: "tu ubicación", lat: pos.coords.latitude, lng: pos.coords.longitude });
-        setLocating(false);
-      },
-      () => {
-        setLocError("No pudimos obtener tu ubicación. Elige un barrio de la lista.");
-        setLocating(false);
-      },
-      { enableHighAccuracy: false, timeout: 8_000, maximumAge: 300_000 },
-    );
+    try {
+      // Se guarda también para las búsquedas (cookie de este navegador).
+      const point = await locateAndSave();
+      setPlace({ label: "tu ubicación", ...point });
+    } catch (e) {
+      const why = e instanceof LocationError ? e.message : "No pudimos obtener tu ubicación.";
+      setLocError(`${why} Elige un barrio de la lista.`);
+    } finally {
+      setLocating(false);
+    }
   }
 
   async function togglePush(on: boolean) {

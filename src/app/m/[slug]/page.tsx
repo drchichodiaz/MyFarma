@@ -1,5 +1,6 @@
 import { requestTime } from "@/server/time";
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -10,7 +11,7 @@ import { LocateButton } from "@/components/results/locate-button";
 import type { MapPoint } from "@/components/results/results-map";
 import { Icon } from "@/components/ui/icon";
 import { money, timeAgoShort } from "@/lib/format";
-import { parseLocation } from "@/lib/geo";
+import { LOCATION_COOKIE, parseLocation } from "@/lib/geo";
 import { STATUS, isAvailable, type Status } from "@/lib/status";
 import { getNearbyAvailability, type NearbyBranch } from "@/server/services/availability";
 import { getAllMedications, getMedication } from "@/server/services/catalog";
@@ -78,11 +79,12 @@ async function Results({
   params: Promise<{ slug: string }>;
   searchParams: Promise<SearchParams>;
 }) {
-  const [{ slug }, sp] = await Promise.all([params, searchParams]);
+  const [{ slug }, sp, jar] = await Promise.all([params, searchParams, cookies()]);
   const med = await getMedication(slug);
   if (!med) notFound();
 
-  const here = parseLocation(sp);
+  // Un enlace con lat/lng manda; si no, la ubicación que el usuario guardó en este navegador.
+  const here = parseLocation(sp, jar.get(LOCATION_COOKIE)?.value);
   const all = await getNearbyAvailability(med.id, here.lat, here.lng);
   const now = await requestTime();
 
