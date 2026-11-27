@@ -24,6 +24,7 @@ export function branchShortName(fullName: string, chainWords: RegExp, zone: stri
   const parts = fullName.split(SEPARATOR).filter(Boolean);
   const rest = (parts.length > 1 ? parts.slice(1).join(" ") : fullName.replace(chainWords, ""))
     .replace(chainWords, "")
+    .replace(/^[\s,.;:–-]+/, "")
     .replace(/^(farmacias?|del?|la|el)\s+/i, "")
     .replace(/\s+/g, " ")
     .trim();

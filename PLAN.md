@@ -178,6 +178,7 @@ F0 a F4 están en producción (último deploy: `c5f0903`). **Sigue la F5.**
 - [x] Listado de farmacias de Ciudad de Panamá con Google Places (`LeadSeeker/buscar_farmacias.py`): 464, de ellas 235 de 12 cadenas
 - [x] `branches.place_id` + "Cómo llegar" abre la ficha exacta de Google Maps (`src/lib/maps.ts`)
 - [x] `pnpm branches:import <xlsx>`: confirmadas → `branches.csv`/`chains.csv` con `verified`, coordenadas de OSM si hay una farmacia a menos de 120 m; el seed valida todo el CSV (`src/lib/branch-import.ts`, con tests)
+- [x] Carga rápida en `/admin/carga`: lo que se averigua llamando a una cadena, sucursal por sucursal, en una transacción; sale como «MyFarma (llamada)» (`reports.source = CALL`) y dispara alertas
 - [ ] Pin en `/admin` para corregir coordenadas: ~60 % de las sucursales no tienen punto en OSM y quedan con las de la hoja
 - [x] 227 sucursales de 12 cadenas en `branches.csv` (sin confirmar); lo de ejemplo pasó a `prisma/seed/data/demo/` y solo se carga en desarrollo y CI. En producción `SEED_DEMO=0` (fijo en el compose) borra sucursales, reportes y usuarios de ejemplo
 - [ ] Mapa propio (PMTiles en R2) para no depender de las teselas de OpenStreetMap

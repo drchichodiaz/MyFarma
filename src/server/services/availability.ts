@@ -3,7 +3,7 @@ import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/server/db";
 import { DEFAULT_RADIUS_M } from "@/lib/geo";
 import { env } from "@/lib/env";
-import { publicName } from "@/lib/people";
+import { publicName, reporterName } from "@/lib/people";
 import type { Status } from "@/lib/status";
 import { TAGS } from "./catalog";
 
@@ -98,8 +98,8 @@ export async function getRecentReports(limit = 5): Promise<RecentReport[]> {
   cacheLife("seconds");
   cacheTag(TAGS.reports);
 
-  const rows = await db.$queryRaw<RecentReport[]>`
-    SELECT r.id, u.name AS who, r.status, r.created_at AS "createdAt",
+  const rows = await db.$queryRaw<(RecentReport & { source: "USER" | "CALL" })[]>`
+    SELECT r.id, u.name AS who, r.source, r.status, r.created_at AS "createdAt",
            m.slug AS "medSlug", m.active_ingredient AS "medName", m.strength,
            b.slug AS "branchSlug", b.name AS "branchName", c.name AS "chainName"
     FROM reports r
@@ -110,7 +110,7 @@ export async function getRecentReports(limit = 5): Promise<RecentReport[]> {
     WHERE NOT r.hidden
     ORDER BY r.created_at DESC
     LIMIT ${limit}`;
-  return rows.map((r) => ({ ...r, who: publicName(r.who) }));
+  return rows.map(({ source, ...r }) => ({ ...r, who: reporterName(r.who, source) }));
 }
 
 export type BranchDetail = {
@@ -186,6 +186,7 @@ export async function getBranchMedication(
         photoStatus: true,
         photoWidth: true,
         photoHeight: true,
+        source: true,
         user: { select: { name: true } },
         confirmations: {
           select: { agrees: true, user: { select: { name: true } } },
@@ -204,23 +205,34 @@ export async function getBranchMedication(
     availability,
     reports: reports
       .slice(0, take)
-      .map(({ user, confirmations, photoKey, photoStatus, photoWidth, photoHeight, ...r }) => ({
-        ...r,
-        // Solo las fotos ya procesadas (sin EXIF/GPS) llegan a la página.
-        photo:
-          photoStatus === "READY" && photoKey && photoWidth && photoHeight
-            ? {
-                base: env.PHOTOS_PUBLIC_URL,
-                prefix: photoKey,
-                width: photoWidth,
-                height: photoHeight,
-              }
-            : null,
-        photoPending: photoStatus === "PENDING",
-        who: publicName(user?.name),
-        agreed: confirmations.filter((c) => c.agrees).map((c) => publicName(c.user.name)),
-        disagreed: confirmations.filter((c) => !c.agrees).map((c) => publicName(c.user.name)),
-      })),
+      .map(
+        ({
+          user,
+          source,
+          confirmations,
+          photoKey,
+          photoStatus,
+          photoWidth,
+          photoHeight,
+          ...r
+        }) => ({
+          ...r,
+          // Solo las fotos ya procesadas (sin EXIF/GPS) llegan a la página.
+          photo:
+            photoStatus === "READY" && photoKey && photoWidth && photoHeight
+              ? {
+                  base: env.PHOTOS_PUBLIC_URL,
+                  prefix: photoKey,
+                  width: photoWidth,
+                  height: photoHeight,
+                }
+              : null,
+          photoPending: photoStatus === "PENDING",
+          who: reporterName(user?.name, source),
+          agreed: confirmations.filter((c) => c.agrees).map((c) => publicName(c.user.name)),
+          disagreed: confirmations.filter((c) => !c.agrees).map((c) => publicName(c.user.name)),
+        }),
+      ),
     nextCursor: hasMore ? reports[take - 1]!.id : null,
   };
 }

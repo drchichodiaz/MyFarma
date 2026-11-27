@@ -17,3 +17,9 @@ export function publicName(name: string | null | undefined): string {
 function capitalize(word: string) {
   return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
 }
+
+/** Quién aparece como autor de un reporte: los cargados por llamada salen a nombre de MyFarma. */
+export const CALL_REPORTER = "MyFarma (llamada)";
+export function reporterName(name: string | null | undefined, source: "USER" | "CALL") {
+  return source === "CALL" ? CALL_REPORTER : publicName(name);
+}

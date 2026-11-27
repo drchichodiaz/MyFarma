@@ -8,6 +8,7 @@ import { enqueueAlerts, enqueuePhoto } from "@/server/queue";
 import { limit, release } from "@/server/rate-limit";
 import { BUCKETS, deleteObject, headObject, photosEnabled } from "@/server/storage";
 import { PHOTO_WIDTHS } from "@/lib/photos";
+import type { CallSheetInput } from "@/lib/call-sheet";
 import { TAGS } from "./catalog";
 
 /** Límites contra abuso (PLAN.md → Reglas contra abuso). */
@@ -143,6 +144,53 @@ export async function createReport(userId: string, input: ReportInput): Promise<
   }
 
   return { ok: true, reportId: report.id, medicationId: input.medicationId };
+}
+
+/**
+ * Carga rápida del equipo (llamada a la farmacia): varios reportes de un medicamento en una sola
+ * transacción, sin límites por hora (solo ADMIN llega aquí). Salen en público como "MyFarma (llamada)".
+ */
+export async function createCallReports(
+  adminId: string,
+  input: CallSheetInput,
+): Promise<{ ok: true; saved: number; alerts: number } | { ok: false; error: string }> {
+  const branchIds = input.entries.map((e) => e.branchId);
+  const [med, found] = await Promise.all([
+    db.medication.findUnique({ where: { id: input.medicationId }, select: { id: true } }),
+    db.branch.count({ where: { id: { in: branchIds } } }),
+  ]);
+  if (!med) return { ok: false, error: "Ese medicamento no existe." };
+  if (found !== branchIds.length) return { ok: false, error: "Alguna sucursal ya no existe." };
+
+  // Orden fijo de los candados para que dos cargas a la vez no se bloqueen entre sí.
+  const entries = [...input.entries].sort((a, b) => a.branchId - b.branchId);
+  const withStock = await db.$transaction(
+    async (tx) => {
+      const alertIds: string[] = [];
+      for (const e of entries) {
+        const r = await tx.report.create({
+          data: {
+            userId: adminId,
+            medicationId: input.medicationId,
+            branchId: e.branchId,
+            status: e.status,
+            priceCents: e.status === "OUT" ? null : input.priceCents,
+            source: "CALL",
+          },
+          select: { id: true },
+        });
+        const next = await recomputeAvailability(tx, e.branchId, input.medicationId);
+        if (next && next.status !== "OUT") alertIds.push(r.id);
+      }
+      return alertIds;
+    },
+    { timeout: 30_000 },
+  );
+
+  for (const id of withStock) {
+    await enqueueAlerts(id).catch((e) => console.warn("enqueueAlerts:", e));
+  }
+  return { ok: true, saved: entries.length, alerts: withStock.length };
 }
 
 export type ConfirmResult =

@@ -31,6 +31,11 @@ describe("branchShortName", () => {
       "Bella Vista",
     );
   });
+  it("quita la puntuación que queda al principio", () => {
+    expect(
+      branchShortName("Farmacia Saba, Arraiján Town Center", /(farmacias?\s+)?saba/gi, "x"),
+    ).toBe("Arraiján Town Center");
+  });
   it("si no queda nada, usa la zona", () => {
     expect(branchShortName("Farmacias Arrocha", arrocha, "Betania")).toBe("Betania");
   });

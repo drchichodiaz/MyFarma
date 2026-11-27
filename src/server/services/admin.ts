@@ -52,6 +52,7 @@ export type AdminReport = {
   photoWidth: number | null;
   photoHeight: number | null;
   userId: string | null;
+  source: "USER" | "CALL";
   userName: string | null;
   userEmail: string | null;
   userBlocked: boolean;
@@ -71,7 +72,7 @@ export async function listReports(filter: ReportFilter, cursor?: string, take = 
   await connection();
   const [cAt, cId] = cursor ? decodeCursor(cursor) : [null, null];
   const rows = await db.$queryRaw<AdminReport[]>`
-    SELECT r.id, r.created_at AS "createdAt", r.status, r.price_cents AS "priceCents", r.hidden,
+    SELECT r.id, r.created_at AS "createdAt", r.status, r.price_cents AS "priceCents", r.hidden, r.source,
            r.photo_status AS "photoStatus", r.photo_key AS "photoKey",
            r.photo_width AS "photoWidth", r.photo_height AS "photoHeight",
            u.id AS "userId", u.name AS "userName", u.email AS "userEmail",
@@ -169,4 +170,43 @@ function encodeCursor(at: Date, id: string) {
 function decodeCursor(cursor: string): [string | null, string | null] {
   const [at, id] = Buffer.from(cursor, "base64url").toString().split("|");
   return at && id && !Number.isNaN(Date.parse(at)) ? [at, id] : [null, null];
+}
+
+/** Carga rápida: medicamentos y cadenas (con cuántas sucursales tiene cada una). */
+export async function getCallOptions() {
+  await connection();
+  const [medications, chains] = await Promise.all([
+    db.medication.findMany({
+      select: { id: true, activeIngredient: true, strength: true, form: true },
+      orderBy: [{ scarceInCss: "desc" }, { activeIngredient: "asc" }, { strength: "asc" }],
+    }),
+    db.chain.findMany({
+      select: { id: true, name: true, _count: { select: { branches: true } } },
+      orderBy: { name: "asc" },
+    }),
+  ]);
+  return {
+    medications,
+    chains: chains.map(({ _count, ...c }) => ({ ...c, branches: _count.branches })),
+  };
+}
+
+export type CallSheetRow = {
+  id: number;
+  name: string;
+  address: string;
+  phone: string | null;
+  status: Status | null;
+  confirmedAt: Date | null;
+};
+
+/** Sucursales de una cadena con el estado actual de un medicamento (una consulta). */
+export async function getCallSheet(chainId: number, medicationId: number) {
+  await connection();
+  return db.$queryRaw<CallSheetRow[]>`
+    SELECT b.id, b.name, b.address, b.phone, a.status, a.confirmed_at AS "confirmedAt"
+    FROM branches b
+    LEFT JOIN availability a ON a.branch_id = b.id AND a.medication_id = ${medicationId}
+    WHERE b.chain_id = ${chainId}
+    ORDER BY b.name`;
 }

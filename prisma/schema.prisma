@@ -26,6 +26,12 @@ enum PhotoStatus {
   HIDDEN // ocultada por un admin
 }
 
+/// De dónde sale un reporte.
+enum ReportSource {
+  USER // un paciente desde /reportar
+  CALL // el equipo llamó a la farmacia (carga rápida en /admin/carga)
+}
+
 /// Por dónde avisar una alerta.
 enum Channel {
   EMAIL
@@ -218,6 +224,8 @@ model Report {
   photoWidth   Int?         @map("photo_width")
   photoHeight  Int?         @map("photo_height")
   hidden       Boolean      @default(false)
+  /// CALL: en público sale como "MyFarma (llamada)", no con el nombre de quien lo cargó.
+  source       ReportSource @default(USER)
   createdAt    DateTime     @default(now()) @map("created_at")
 
   user          User?           @relation(fields: [userId], references: [id], onDelete: SetNull)

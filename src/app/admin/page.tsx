@@ -97,7 +97,9 @@ async function Reports({ searchParams }: { searchParams: PageProps<"/admin">["se
                       {r.medName} {r.strength} · {r.branchLabel}
                     </Link>
                     <div className="text-xs text-muted">
-                      {timeAgo(r.createdAt, now)} · {r.userName ?? "Sin nombre"}{" "}
+                      {timeAgo(r.createdAt, now)} ·{" "}
+                      {r.source === "CALL" && <b className="text-brand">Llamada · </b>}
+                      {r.userName ?? "Sin nombre"}{" "}
                       <span className="font-mono">{r.userEmail ?? "—"}</span>
                       {r.userBlocked && <b className="text-bad"> · bloqueado</b>} ·{" "}
                       {r.confirmations} sí / {r.disagreements} no

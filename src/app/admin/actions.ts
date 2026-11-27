@@ -3,7 +3,8 @@
 import { updateTag } from "next/cache";
 import { requireAdmin, setReportHidden, setUserBlocked } from "@/server/services/admin";
 import { TAGS } from "@/server/services/catalog";
-import { hidePhoto } from "@/server/services/reports";
+import { createCallReports, hidePhoto } from "@/server/services/reports";
+import { parseCallSheet, summarizeCall } from "@/lib/call-sheet";
 
 function refresh(medicationIds: number[], userId?: string | null) {
   for (const id of new Set(medicationIds)) updateTag(TAGS.availability(id));
@@ -34,4 +35,31 @@ export async function setUserBlockedAction(form: FormData) {
     form.get("hideReports") === "1",
   );
   refresh(meds, userId);
+}
+
+export type CallSheetState =
+  | { status: "idle" }
+  | { status: "error"; message: string }
+  | { status: "saved"; message: string; at: number };
+
+/** Carga rápida: guarda lo que el equipo averiguó llamando a la cadena. */
+export async function saveCallSheetAction(
+  _prev: CallSheetState,
+  form: FormData,
+): Promise<CallSheetState> {
+  const admin = await requireAdmin();
+  if (!admin) return { status: "error", message: "Solo un admin puede cargar reportes." };
+  const parsed = parseCallSheet(form.entries());
+  if (!parsed.ok) return { status: "error", message: parsed.error };
+
+  const result = await createCallReports(admin.id, parsed.data);
+  if (!result.ok) return { status: "error", message: result.error };
+
+  refresh([parsed.data.medicationId], admin.id);
+  const alerts = result.alerts ? ` Se revisan alertas por ${result.alerts} con existencia.` : "";
+  return {
+    status: "saved",
+    message: `Guardados ${result.saved} reportes: ${summarizeCall(parsed.data.entries)}.${alerts}`,
+    at: Date.now(),
+  };
 }

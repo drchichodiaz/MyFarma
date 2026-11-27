@@ -26,6 +26,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             Reportes
           </Link>
           <Link
+            href="/admin/carga"
+            className="rounded-full px-4 py-2 text-sm font-bold hover:bg-surface"
+          >
+            Carga rápida
+          </Link>
+          <Link
             href="/admin/usuarios"
             className="rounded-full px-4 py-2 text-sm font-bold hover:bg-surface"
           >
