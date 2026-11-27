@@ -18,6 +18,7 @@ pnpm test:e2e       # Playwright contra pnpm dev + Mailpit (entrar → reportar 
 pnpm worker         # alertas y fotos (BullMQ); los e2e de alertas lo necesitan corriendo
 pnpm db:migrate     # nueva migración; después correr `pnpm db:generate` (Prisma 7 no regenera solo)
 pnpm db:seed        # catálogo + reportes de ejemplo si no hay reportes
+pnpm lighthouse      # Lighthouse CI contra pnpm start (presupuesto en lighthouserc.json; necesita CHROME_PATH en Windows)
 pnpm branches:import <xlsx>  # sucursales confirmadas de la hoja de LeadSeeker → CSV del seed (--dry, --todas)
 ```
 

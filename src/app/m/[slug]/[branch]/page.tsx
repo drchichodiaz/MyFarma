@@ -23,7 +23,10 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const { slug, branch } = await params;
   const [med, b] = await Promise.all([getMedication(slug), getBranch(branch)]);
   if (!med || !b) return { title: "No encontrado" };
-  return { title: `${med.activeIngredient} ${med.strength} en ${b.chainName} ${b.name}` };
+  return {
+    title: `${med.activeIngredient} ${med.strength} en ${b.chainName} ${b.name}`,
+    description: `¿Hay ${med.activeIngredient} ${med.strength} en ${b.chainName} ${b.name}? Último reporte, precio, horario y teléfono de la sucursal.`,
+  };
 }
 
 export default function BranchPage({ params, searchParams }: PageProps<"/m/[slug]/[branch]">) {
@@ -148,9 +151,12 @@ async function BranchDetail({
           </div>
         )}
         {!branch.verified && (
-          <div className="flex items-center gap-2 py-3.5 text-xs text-muted">
-            <Icon name="alert" className="size-4 shrink-0 text-warn" />
-            Todavía no confirmamos el teléfono ni el horario de esta sucursal: llama antes de ir.
+          <div className="py-3.5">
+            <dt className="sr-only">Aviso</dt>
+            <dd className="flex items-center gap-2 text-xs text-muted">
+              <Icon name="alert" className="size-4 shrink-0 text-warn" />
+              Todavía no confirmamos el teléfono ni el horario de esta sucursal: llama antes de ir.
+            </dd>
           </div>
         )}
       </dl>

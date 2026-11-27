@@ -246,7 +246,7 @@ async function Results({
               href={href({ stock: onlyStock ? null : "1" })}
               scroll={false}
               className={`chip ${onlyStock ? "chip-on" : ""}`}
-              aria-pressed={onlyStock}
+              aria-current={onlyStock ? "true" : undefined}
             >
               <Icon name="check" className="size-4" />
               Solo con existencia
@@ -255,7 +255,7 @@ async function Results({
               href={href({ fresh: freshOnly ? null : "1" })}
               scroll={false}
               className={`chip ${freshOnly ? "chip-on" : ""}`}
-              aria-pressed={freshOnly}
+              aria-current={freshOnly ? "true" : undefined}
             >
               <Icon name="clock" className="size-4" />
               Confirmado en 24 h

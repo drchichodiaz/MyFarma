@@ -1,6 +1,6 @@
 "use client";
 
-import * as Sentry from "@sentry/nextjs";
+import { reportError } from "@/lib/report-error";
 import { useEffect } from "react";
 
 /**
@@ -9,7 +9,7 @@ import { useEffect } from "react";
  */
 export default function GlobalError({ error, retry }: { error: unknown; retry: () => void }) {
   useEffect(() => {
-    Sentry.captureException(error);
+    reportError(error);
   }, [error]);
   return (
     <html lang="es">
@@ -28,7 +28,7 @@ export default function GlobalError({ error, retry }: { error: unknown; retry: (
       >
         <main style={{ maxWidth: 420 }}>
           <h1 style={{ fontSize: 32, margin: 0 }}>MyFarma no cargó</h1>
-          <p style={{ color: "#626a84" }}>
+          <p style={{ color: "#596079" }}>
             Tuvimos un problema. Intenta de nuevo en un momento. Si sigue, escríbenos a
             hola@myfarma.net.
           </p>

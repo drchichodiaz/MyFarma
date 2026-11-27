@@ -74,6 +74,12 @@ jobs:
       - name: Worker en segundo plano
         run: nohup pnpm worker > worker.log 2>&1 &
       - run: pnpm test:e2e
+      # Presupuesto de rendimiento y accesibilidad (lighthouserc.json) sobre el mismo build.
+      - name: Lighthouse CI
+        run: |
+          nohup pnpm start > start.log 2>&1 &
+          for i in $(seq 1 30); do curl -fsS http://localhost:3000/api/health > /dev/null && break; sleep 2; done
+          pnpm lighthouse
       - name: Log del worker
         if: always()
         run: cat worker.log || true

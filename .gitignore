@@ -63,3 +63,6 @@ next-env.d.ts
 
 # caché de scripts (OpenStreetMap)
 /.cache
+
+# Lighthouse CI
+/.lighthouseci
