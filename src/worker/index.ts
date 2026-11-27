@@ -5,6 +5,8 @@
  *
  * --conditions=react-server: permite importar los módulos "server-only" de src/server.
  */
+// Primero Sentry, para que vea los errores de todo lo que se carga después.
+import { flushSentry, reportJobFailure } from "./sentry";
 import { Worker } from "bullmq";
 import { db } from "@/server/db";
 import {
@@ -27,9 +29,12 @@ const alerts = new Worker<AlertJob>(ALERT_QUEUE, async (job) => dispatchAlerts(j
   concurrency: 2,
 });
 alerts.on("completed", (job, result) => console.log(`✓ alertas ${job.data.reportId}: ${result}`));
-alerts.on("failed", (job, error) =>
-  console.error(`✗ alertas ${job?.data.reportId} (intento ${job?.attemptsMade}):`, error.message),
-);
+alerts.on("failed", (job, error) => {
+  console.error(`✗ alertas ${job?.data.reportId} (intento ${job?.attemptsMade}):`, error.message);
+  if (!job || job.attemptsMade >= (job.opts.attempts ?? 1)) {
+    reportJobFailure(ALERT_QUEUE, job?.data.reportId, error);
+  }
+});
 workers.push(alerts);
 
 // ── Fotos (solo si R2 está configurado) ──
@@ -42,7 +47,10 @@ if (photosEnabled) {
   photos.on("failed", async (job, error) => {
     if (!job) return;
     console.error(`✗ foto ${job.data.reportId} (intento ${job.attemptsMade}):`, error.message);
-    if (job.attemptsMade >= (job.opts.attempts ?? 1)) await failPhoto(job.data.reportId);
+    if (job.attemptsMade >= (job.opts.attempts ?? 1)) {
+      reportJobFailure(PHOTO_QUEUE, job.data.reportId, error);
+      await failPhoto(job.data.reportId);
+    }
   });
   workers.push(photos);
 } else {
@@ -66,10 +74,14 @@ async function sweep() {
 void sweep();
 const timer = setInterval(() => void sweep().catch(console.error), 5 * 60_000);
 
+// Un error que nadie atrapó: a Sentry (que ya lo captura) y al log; el contenedor se reinicia solo.
+process.on("unhandledRejection", (reason) => console.error("unhandledRejection:", reason));
+
 async function shutdown() {
   clearInterval(timer);
   await Promise.all(workers.map((w) => w.close()));
   await db.$disconnect();
+  await flushSentry();
   process.exit(0);
 }
 process.on("SIGTERM", shutdown);

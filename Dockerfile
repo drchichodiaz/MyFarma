@@ -21,8 +21,19 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 # ── Build ───────────────────────────────────────────────────────────────
 FROM deps AS build
 COPY . .
+# Sentry (opcional): el DSN es público (va en el JS del navegador); org, proyecto y release
+# identifican dónde subir los source maps. El token es secreto: entra como secret de BuildKit
+# (no queda en ninguna capa de la imagen). Sin token, el build no sube nada.
+ARG NEXT_PUBLIC_SENTRY_DSN=""
+ARG SENTRY_ORG=""
+ARG SENTRY_PROJECT=""
+ARG SENTRY_RELEASE=""
 # El build no se conecta a nada, pero env.ts valida que existan las URLs.
-RUN DATABASE_URL=postgresql://build:build@localhost:5432/build \
+RUN --mount=type=secret,id=sentry_auth_token,required=false \
+    SENTRY_AUTH_TOKEN="$(cat /run/secrets/sentry_auth_token 2>/dev/null || true)" \
+    NEXT_PUBLIC_SENTRY_DSN="$NEXT_PUBLIC_SENTRY_DSN" \
+    SENTRY_ORG="$SENTRY_ORG" SENTRY_PROJECT="$SENTRY_PROJECT" SENTRY_RELEASE="$SENTRY_RELEASE" \
+    DATABASE_URL=postgresql://build:build@localhost:5432/build \
     REDIS_URL=redis://localhost:6379 \
     pnpm build
 
@@ -49,7 +60,7 @@ ENV NODE_ENV=production
 WORKDIR /app
 RUN npm init -y >/dev/null \
  && npm install --no-audit --no-fund --omit=dev \
-      sharp@0.35 bullmq@6 aws4fetch@1 ioredis@6 zod@4 server-only tsx@4 \
+      sharp@0.35 bullmq@6 aws4fetch@1 ioredis@6 zod@4 server-only tsx@4 @sentry/node@11 \
       nodemailer@8 web-push@3 \
       @prisma/client@7.10.1 @prisma/adapter-pg@7.10.1 pg@8 \
  && npm cache clean --force

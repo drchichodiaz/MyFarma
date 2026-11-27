@@ -1,5 +1,6 @@
 "use client";
 
+import * as Sentry from "@sentry/nextjs";
 import Link from "next/link";
 import { useEffect } from "react";
 import { Icon } from "@/components/ui/icon";
@@ -8,6 +9,7 @@ import { Icon } from "@/components/ui/icon";
 export default function PageError({ error, retry }: { error: unknown; retry: () => void }) {
   useEffect(() => {
     console.error(error);
+    Sentry.captureException(error);
   }, [error]);
 
   const offline = typeof navigator !== "undefined" && !navigator.onLine;

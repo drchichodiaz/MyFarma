@@ -38,6 +38,14 @@ jobs:
           target: app
           platforms: linux/amd64
           push: true
+          # Sentry: variables del repo (no secretas) + el token como secret de BuildKit.
+          build-args: |
+            NEXT_PUBLIC_SENTRY_DSN=${{ vars.SENTRY_DSN }}
+            SENTRY_ORG=${{ vars.SENTRY_ORG }}
+            SENTRY_PROJECT=${{ vars.SENTRY_PROJECT }}
+            SENTRY_RELEASE=${{ github.sha }}
+          secrets: |
+            sentry_auth_token=${{ secrets.SENTRY_AUTH_TOKEN }}
           tags: |
             ghcr.io/drchichodiaz/myfarma:${{ github.sha }}
             ghcr.io/drchichodiaz/myfarma:latest
@@ -89,7 +97,7 @@ jobs:
       - name: Desplegar
         run: |
           ssh -i ~/.ssh/deploy root@$HOST "echo '${{ secrets.GITHUB_TOKEN }}' | docker login ghcr.io -u '${{ github.actor }}' --password-stdin >/dev/null \
-            && bash /opt/myfarma/deploy.sh ${{ github.sha }}; status=\$?; docker logout ghcr.io >/dev/null; exit \$status"
+            && bash /opt/myfarma/deploy.sh ${{ github.sha }} '${{ vars.SENTRY_DSN }}'; status=\$?; docker logout ghcr.io >/dev/null; exit \$status"
       - name: Verificar
         run: |
           for i in $(seq 1 10); do

@@ -1,10 +1,16 @@
 "use client";
 
+import * as Sentry from "@sentry/nextjs";
+import { useEffect } from "react";
+
 /**
  * Último recurso: falló el layout raíz. Reemplaza todo el documento, así que no hay estilos
  * de la app; va con estilos en línea y los colores de la marca.
  */
-export default function GlobalError({ retry }: { error: unknown; retry: () => void }) {
+export default function GlobalError({ error, retry }: { error: unknown; retry: () => void }) {
+  useEffect(() => {
+    Sentry.captureException(error);
+  }, [error]);
   return (
     <html lang="es">
       <body

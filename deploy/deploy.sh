@@ -11,10 +11,19 @@ set -euo pipefail
 cd /opt/myfarma
 
 TAG="${1:?Falta el tag de la imagen}"
+SENTRY_DSN_ARG="${2:-}"
 COMPOSE="docker compose -f docker-compose.prod.yml"
 
+# Escribe CLAVE=valor en .env (reemplaza la línea si ya estaba), sin sed: el valor puede traer / y @.
+set_env() {
+  { grep -v "^$1=" .env || true; printf '%s=%s\n' "$1" "$2"; } > .env.tmp && mv .env.tmp .env
+  chmod 600 .env
+}
+
 # El tag queda guardado en .env: un reinicio del servidor levanta la misma versión.
-if grep -q '^TAG=' .env; then sed -i "s/^TAG=.*/TAG=${TAG}/" .env; else echo "TAG=${TAG}" >> .env; fi
+set_env TAG "$TAG"
+# Sentry (opcional): el DSN viene de la variable SENTRY_DSN del repo; sin ella no se toca.
+if [ -n "$SENTRY_DSN_ARG" ]; then set_env SENTRY_DSN "$SENTRY_DSN_ARG"; fi
 
 echo "▶ Descargando imágenes ${TAG}"
 $COMPOSE pull app migrate worker caddy

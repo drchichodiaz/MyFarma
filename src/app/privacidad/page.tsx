@@ -123,6 +123,11 @@ export default function PrivacyPage() {
               <b>Resend</b> (envío de correos: enlaces para entrar y alertas).
             </li>
             <li>
+              <b>Sentry</b> (avisos de errores técnicos, Estados Unidos): cuando algo falla recibe
+              la página, el navegador y el error. Nunca tu nombre, tu correo, tu dirección IP ni tu
+              ubicación.
+            </li>
+            <li>
               <b>Google</b>, solo si eliges entrar con Google, y el servicio de notificaciones de tu
               navegador (Google, Apple o Mozilla) si activas los avisos al celular.
             </li>
