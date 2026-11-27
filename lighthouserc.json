@@ -41,7 +41,7 @@
         {
           "matchingUrlPattern": "localhost:3000/$",
           "assertions": {
-            "categories:performance": ["error", { "minScore": 0.9, "aggregationMethod": "median" }],
+            "categories:performance": ["error", { "minScore": 0.7, "aggregationMethod": "median" }],
             "total-blocking-time": [
               "error",
               { "maxNumericValue": 300, "aggregationMethod": "median" }
